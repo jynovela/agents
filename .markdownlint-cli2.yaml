@@ -1,0 +1,10 @@
+# Default Markdown lint config. Tailor per project.
+config:
+  default: true
+  MD013: false        # Line length: let editors wrap.
+  MD033:              # Inline HTML: allow comments and common tags only.
+    allowed_elements: [details, summary, br]
+  MD041: false        # First line heading: not required (frontmatter, CLAUDE.md).
+ignores:
+  - "node_modules/**"
+  - ".git/**"
