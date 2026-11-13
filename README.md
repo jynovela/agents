@@ -46,9 +46,11 @@ untested.
    never a shared or production one. Write logs to a file agents can tail.
    [examples/sample-app/base/dev/](examples/sample-app/base/dev/) shows small
    scripts for each command.
-2. **Read-only access to tickets.** Agents take acceptance criteria from your
+2. **Access to tickets.** Agents take acceptance criteria from your
    tracker. For Linear, connect the Linear MCP server in Claude Code or
-   Hermes, and set the "Tickets" line in `AGENTS.md`. Write criteria as
+   Hermes, and set the "Tickets" lines in `AGENTS.md`. Test-Agent only reads
+   tickets. Planner-Agent also creates them, so name the exact Linear team it
+   writes to, and the folders or repos it should read. Write criteria as
    actions anyone can check: "after Y, the X row has status `sent`", "doing A
    writes B to the log", "an offset past the end prints nothing".
 3. **A separate agent writes the code.** The agent that writes the tests must
@@ -77,7 +79,10 @@ untested.
 
 ## Workflow: from ticket to merged code
 
-1. Write the acceptance criteria in the ticket.
+1. Ask the Planner-Agent to plan a brief. It writes tickets with acceptance
+   criteria to Linear Backlog (or local drafts) and stops. Read them, fix
+   what you disagree with, and move the ones you want to To-do yourself. Or
+   write the ticket and its criteria by hand.
 2. Ask the Test-Agent for **Write** mode. It writes one acceptance test per
    criterion, and each must fail because the feature isn't built yet.
 3. Review the tests yourself before anything else. Check that every assertion
@@ -108,6 +113,7 @@ loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 | ---- | ------ |
 | Docs-Agent | Ready |
 | Test-Agent | Ready |
+| Planner-Agent | Ready for testing |
 | Lint/Style-Agent | Planned |
 | API-Agent | Planned |
 | Build-Agent | Planned |

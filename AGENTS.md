@@ -34,6 +34,12 @@ Stack: Markdown only.
 
 Acceptance criteria come from: the ticket text the user gives in the task.
 
+<!-- TAILOR: Where Planner-Agent writes tickets, and which code it reads. For Linear, name the exact team and, if you use one, the project, e.g. "Planner writes tickets to: Linear team Platform, project Checkout v2, status Backlog, label planner". List every folder or repo the plans touch, e.g. "Planner reads code in: this repository, ../api, ../web". -->
+
+Planner writes tickets to: local drafts in `.tickets/drafts/` only.
+
+Planner reads code in: this repository.
+
 ## Shared guardrails
 
 Every agent follows these rules, in every role, before any role-specific rule.
@@ -76,3 +82,4 @@ When asked to act as one of these agents, read its role file first and follow it
 | ----- | --------- | ------- |
 | Docs-Agent | `.agents/roles/docs-agent.md` | Keeps Markdown docs in sync with the code and flags API spec drift |
 | Test-Agent | `.agents/roles/test-agent.md` | Turns ticket acceptance criteria into tests against the running app, then verifies code with real results |
+| Planner-Agent | `.agents/roles/planner-agent.md` | Turns a brief into tickets with testable acceptance criteria, in Linear Backlog or local drafts, then stops |

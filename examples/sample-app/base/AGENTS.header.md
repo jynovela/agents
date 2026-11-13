@@ -26,3 +26,7 @@ Stack: Python 3.9 or later, standard library only. SQLite for the local service.
 ## Tickets
 
 Acceptance criteria come from: files in `.tickets/`, named by ticket ID.
+
+Planner writes tickets to: local drafts in `.tickets/drafts/` only.
+
+Planner reads code in: this repository.
