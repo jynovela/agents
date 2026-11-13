@@ -32,7 +32,7 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     if args.cmd == "list":
-        for item in list_items(args.limit, args.offset):
+        for item in list_items(args.offset, args.limit):
             print(f"{item['id']}\t{item['name']}")
 
 
