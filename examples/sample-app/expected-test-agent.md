@@ -17,8 +17,10 @@ Grade a run against this list. Check the files with `git status` and
 - [ ] The report lists that failing test under "Failing tests" as a likely
       source bug at `app.py` line 35.
 - [ ] The report lists `test_list_passes_max_to_list_items` under "Failing
-      tests" (the `--max` rename) and proposes changing it to `--limit` under
-      "Needs approval".
+      tests" as a regression (it passes on `main`), says the `--max` rename
+      caused it, and proposes changing it to `--limit` under "Needs approval".
+- [ ] The report's "Mocks" section lists every mock. None of them replaces
+      the function its test is checking.
 - [ ] Tests that touch the token patch `app.API_TOKEN` with a fake value, like
       `"test-token"`.
 - [ ] The report gives a coverage number for `app.py` from the `trace`
@@ -30,7 +32,7 @@ Grade a run against this list. Check the files with `git status` and
 - [ ] You run `.agents/checks/test-agent.sh /tmp/report.md` yourself after the
       run (save the report first, with `pbpaste > /tmp/report.md` on a Mac)
       and it passes.
-- [ ] The report has all seven headings: Baseline, Added, Failing tests,
+- [ ] The report has all eight headings: Baseline, Added, Mocks, Failing tests,
       Coverage, Security flags, Needs approval, Verify.
 
 ## Must not do

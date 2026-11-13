@@ -4,7 +4,9 @@
 #
 # Usage: .agents/checks/test-agent.sh [report-file]
 #   report-file: optional file holding the agent's report. When given, the
-#   script also checks its headings and that every failing test is named in it.
+#   script also checks its headings, that every failing test is named in it,
+#   and that it lists the mocks the new tests use.
+# Set BASE to compare against a branch other than main, e.g. BASE=develop.
 #
 # Exit code 0 means all checks passed. Any failure prints FAIL and exits 1.
 # Failing tests alone don't fail this script: a failing test that exposes a bug
@@ -20,6 +22,11 @@ ALLOWED='^(.*/)?(tests?|__tests__|e2e|spec)/.*$|^(.*/)?test_[^/]*\.py$|^(.*/)?[^
 # name of each failing test out of its output (first capture group).
 TEST_CMD='python3 -m unittest discover -s tests -t .'
 FAIL_PATTERN='^(FAIL|ERROR): ([A-Za-z0-9_]+)'
+
+# Mock calls in added lines; each new test file that uses them needs a "Mocks:" entry.
+MOCK_PATTERN='mock\.patch|patch\(|patch\.object|MagicMock|Mock\(|monkeypatch|jest\.mock|vi\.mock|jest\.spyOn|vi\.spyOn|sinon\.'
+
+BASE="${BASE:-main}"
 
 # Patterns avoid \b and backreferences so they work with macOS grep too.
 # Markers that skip, disable, or focus tests, across common frameworks.
@@ -97,12 +104,59 @@ else
   echo "$failing" | sed 's/^/  /'
 fi
 
+echo "== Regressions against $BASE"
+# Runs the same test command on $BASE in a temporary worktree. A test that
+# passes there and fails here is a regression: old behavior broke.
+regressions=""
+if [ -n "$failing" ] && git rev-parse --verify -q "$BASE" >/dev/null; then
+  wt="$(mktemp -d)"
+  if git worktree add -q --detach "$wt" "$BASE" >/dev/null 2>&1; then
+    base_out="$(cd "$wt" && eval "$TEST_CMD" 2>&1)"
+    base_failing="$(echo "$base_out" | grep -Eo "$FAIL_PATTERN" | sed -E "s/$FAIL_PATTERN/\2/" | sort -u)"
+    for t in $failing; do
+      echo "$base_failing" | grep -qx "$t" && continue
+      grep -rqw "$t" "$wt" 2>/dev/null || continue
+      regressions="$regressions $t"
+    done
+    git worktree remove --force "$wt" >/dev/null 2>&1
+  else
+    echo "Could not check out $BASE; skipped."
+  fi
+  rm -rf "$wt"
+  if [ -n "$regressions" ]; then
+    echo "Pass on $BASE, fail now (report each as a regression):"
+    for t in $regressions; do echo "  $t"; done
+  else
+    echo "None. Every failing test is new or already failed on $BASE."
+  fi
+elif [ -z "$failing" ]; then
+  echo "None. No failing tests."
+else
+  echo "No branch $BASE; skipped. Set BASE to the base branch."
+fi
+
+echo "== Mocks in added lines"
+mocks=0
+for f in $tests_changed; do
+  [ -f "$f" ] || continue
+  n="$(added_lines "$f" | grep -cE -- "$MOCK_PATTERN" || true)"
+  [ "$n" -gt 0 ] && echo "  $f: $n line(s) with mocks" && mocks=$((mocks + n))
+done
+[ "$mocks" -eq 0 ] && echo "None."
+
 if [ "${1:-}" != "" ]; then
-  check_headings "$1" "Baseline:" "Added:" "Failing tests (not fixed):" "Coverage:" "Security flags:" "Needs approval:" "Verify:"
+  check_headings "$1" "Baseline:" "Added:" "Mocks:" "Failing tests (not fixed):" "Coverage:" "Security flags:" "Needs approval:" "Verify:"
   if [ -f "$1" ]; then
     for t in $failing; do
       grep -qF "$t" "$1" || say_fail "failing test $t is not named in the report"
     done
+    for t in $regressions; do
+      grep -F "$t" "$1" | grep -qi "regression" || say_fail "regression $t is not marked as a regression in the report"
+    done
+    if [ "$mocks" -gt 0 ]; then
+      listed="$(awk '/^Mocks:/{f=1; next} /^[A-Z][A-Za-z ()]*:/{f=0} f' "$1" | grep -E '^ *- ' | grep -viE '^ *- *None' || true)"
+      [ -n "$listed" ] || say_fail "new tests use mocks but the report's \"Mocks:\" section lists none"
+    fi
   fi
 fi
 
