@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # Builds a throwaway git repo for testing agents against the sample app.
-# Usage: ./setup.sh [target-dir]   (default: $TMPDIR/itemctl-test or /tmp/itemctl-test)
+# Usage: ./setup.sh [target-dir]   (default: /tmp/itemctl-test)
 # The target sits outside this repo so tools do not also load this repo's AGENTS.md or CLAUDE.md.
 set -euo pipefail
 
 here="$(cd "$(dirname "$0")" && pwd)"
 root="$(cd "$here/../.." && pwd)"
-target="${1:-${TMPDIR:-/tmp}/itemctl-test}"
+target="${1:-/tmp/itemctl-test}"
 
 if [ -e "$target" ]; then
-  echo "Target $target already exists. Remove it first for a clean run." >&2
+  echo "Target $target already exists. For a clean run, remove it with: rm -rf \"$target\"" >&2
   exit 1
 fi
 
