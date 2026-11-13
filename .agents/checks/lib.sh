@@ -41,7 +41,8 @@ check_scope() {
 }
 
 # Long tokens that mix letters and digits, or known key prefixes, in added
-# lines of every changed file. Runs gitleaks too when it's installed.
+# lines of every changed file. Names made of short words joined by _ or -
+# (like test_c1_limit_and_offset_2) don't count. Runs gitleaks too when it's installed.
 check_secrets() {
   local f line text hits=0
   echo "== Secret scan on added lines"
@@ -51,7 +52,8 @@ check_secrets() {
       [ -n "$line" ] || continue
       text="${line#*:}"
       if echo "$text" | grep -Eq -- '(-----BEGIN [A-Z ]*PRIVATE KEY|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9]{20,}|xox[abpr]-)' \
-        || echo "$text" | grep -Eo '[A-Za-z0-9_+/=-]{24,}' | grep -v '^-*$' | grep -Eq '[0-9]' ; then
+        || echo "$text" | grep -Eo '[A-Za-z0-9_+/=-]{24,}' | grep -v '^-*$' \
+             | grep -Ev '^([A-Za-z0-9]{1,12}[_-])+[A-Za-z0-9]{1,12}$' | grep -Eq '[0-9]' ; then
         say_fail "possible secret added in $f (value not shown)"
         hits=$((hits + 1))
         break

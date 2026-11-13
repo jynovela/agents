@@ -3,42 +3,51 @@
 # agent finishes, before anything is committed.
 #
 # Usage: .agents/checks/test-agent.sh [report-file]
-#   report-file: optional file holding the agent's report. When given, the
-#   script also checks its headings, that every failing test is named in it,
-#   and that it lists the mocks the new tests use.
+#   report-file: the agent's report. When given, the script also checks its
+#   headings, and compares every "test: ... | result: ..." line under
+#   "Criteria:" with the results of its own acceptance test run.
 # Set BASE to compare against a branch other than main, e.g. BASE=develop.
 #
 # Exit code 0 means all checks passed. Any failure prints FAIL and exits 1.
-# Failing tests alone don't fail this script: a failing test that exposes a bug
-# is a valid result, as long as the report names it.
+# Failing tests alone don't fail this script: a failing test is a valid result,
+# as long as the report names it and reports it truthfully.
 
 set -uo pipefail
 . "$(dirname "$0")/lib.sh"
 
 # TAILOR: files the Test-Agent may change (extended regex on repo-relative paths).
-ALLOWED='^(.*/)?(tests?|__tests__|e2e|spec)/.*$|^(.*/)?test_[^/]*\.py$|^(.*/)?[^/]*_test\.(py|go)$|^(.*/)?[^/]*\.(test|spec)\.[jt]sx?$'
+ALLOWED='^report\.md$|^(.*/)?(tests?|__tests__|e2e|spec|acceptance)/.*$|^(.*/)?test_[^/]*\.py$|^(.*/)?[^/]*_test\.(py|go)$|^(.*/)?[^/]*\.(test|spec)\.[jt]sx?$'
 
-# TAILOR: the project's test command, and an extended regex that pulls the
-# name of each failing test out of its output (first capture group).
-TEST_CMD='python3 -m unittest discover -s tests -t .'
+# TAILOR: acceptance test files (extended regex). Mocks aren't allowed in them.
+ACCEPT_PATH='^(.*/)?(acceptance|e2e)/.*$'
+
+# TAILOR: test commands from the Dev environment section of AGENTS.md. Leave
+# ACCEPT_CMD or the DEV_ commands empty if the project has none.
+UNIT_CMD='python3 -m unittest discover -s tests -t .'
+ACCEPT_CMD='python3 -m unittest discover -v -s acceptance -t .'
+DEV_START='dev/start.sh'
+DEV_STOP='dev/stop.sh'
+DEV_HEALTH='dev/health.sh'
+
+# TAILOR: extended regexes for the test runner's output. FAIL_PATTERN's second
+# group is a failing test's name; RAN_PATTERN's first group is the name of any
+# test that ran (needs verbose output).
 FAIL_PATTERN='^(FAIL|ERROR): ([A-Za-z0-9_]+)'
-
-# Mock calls in added lines; each new test file that uses them needs a "Mocks:" entry.
-MOCK_PATTERN='mock\.patch|patch\(|patch\.object|MagicMock|Mock\(|monkeypatch|jest\.mock|vi\.mock|jest\.spyOn|vi\.spyOn|sinon\.'
+RAN_PATTERN='^(test[A-Za-z0-9_]*) \('
 
 BASE="${BASE:-main}"
 
 # Patterns avoid \b and backreferences so they work with macOS grep too.
-# Markers that skip, disable, or focus tests, across common frameworks.
 SKIP_PATTERN='unittest\.skip|@skip(If|Unless)?([^A-Za-z]|$)|expectedFailure|pytest\.mark\.(skip|xfail)|pytest\.(skip|xfail)\(|(^|[^A-Za-z_.])(xit|xdescribe|xtest|fit|fdescribe)\(|\.(skip|only|todo)\(|@Disabled|@Ignore|t\.Skip(Now|f)?\('
-
-# Asserts that can never fail, and swallowed errors.
 TRIVIAL_PATTERN='assertTrue\((True|1)\)|assert (True|1)( |#|$)|expect\(true\)\.toBe\(true\)|except( Exception)?: *pass|catch *\([^)]*\) *\{ *\}'
+MOCK_PATTERN='mock\.patch|patch\(|patch\.object|MagicMock|Mock\(|monkeypatch|jest\.mock|vi\.mock|jest\.spyOn|vi\.spyOn|sinon\.'
+
+failing_in() { echo "$1" | grep -Eo "$FAIL_PATTERN" | sed -E "s/$FAIL_PATTERN/\2/" | sort -u; }
 
 check_scope "$ALLOWED"
 
 changed="$(changed_files)"
-tests_changed="$(echo "$changed" | grep -E "$ALLOWED" || true)"
+tests_changed="$(echo "$changed" | grep -E "$ALLOWED" | grep -v '^report\.md$' || true)"
 
 echo "== Deleted test files"
 deleted="$(git diff --name-only --diff-filter=D HEAD | grep -E "$ALLOWED" || true)"
@@ -50,8 +59,7 @@ else
 fi
 
 echo "== Changed lines in existing test files"
-# Existing test files are add-only. Any removed or edited line, including an
-# assertion or an import, needs human approval.
+# Existing test files are add-only. Any removed or edited line needs approval.
 edits=0
 for f in $tests_changed; do
   git ls-files --error-unmatch "$f" >/dev/null 2>&1 || continue
@@ -64,56 +72,49 @@ for f in $tests_changed; do
 done
 [ "$edits" -eq 0 ] && echo "None. Existing tests only had lines added."
 
-echo "== Skip, disable, and focus markers"
-marks=0
-for f in $changed; do
+echo "== Skip markers, trivial asserts, and mocks in added lines"
+found=0
+mocks=0
+for f in $tests_changed; do
   [ -f "$f" ] || continue
-  hit="$(added_lines "$f" | grep -E -- "$SKIP_PATTERN" | cut -d: -f1 | tr '\n' ' ' || true)"
-  if [ -n "$hit" ]; then
-    say_fail "skip or disable marker added in $f, diff lines: $hit"
-    marks=1
+  added="$(added_lines "$f")"
+  hit="$(echo "$added" | grep -E -- "$SKIP_PATTERN" | cut -d: -f1 | tr '\n' ' ' || true)"
+  [ -n "$hit" ] && say_fail "skip or disable marker added in $f, diff lines: $hit" && found=1
+  hit="$(echo "$added" | grep -E -- "$TRIVIAL_PATTERN" | cut -d: -f1 | tr '\n' ' ' || true)"
+  [ -n "$hit" ] && say_fail "assert that can't fail, or swallowed error, added in $f, diff lines: $hit" && found=1
+  n="$(echo "$added" | grep -cE -- "$MOCK_PATTERN" || true)"
+  if [ "$n" -gt 0 ]; then
+    if echo "$f" | grep -Eq "$ACCEPT_PATH"; then
+      say_fail "mocks in acceptance test $f: acceptance tests must use the real app"
+      found=1
+    else
+      echo "  $f: $n line(s) with mocks (must be listed under \"Mocks:\")"
+      mocks=$((mocks + n))
+    fi
   fi
 done
-[ "$marks" -eq 0 ] && echo "None added."
-
-echo "== Trivial asserts and swallowed errors"
-trivial=0
-for f in $changed; do
-  [ -f "$f" ] || continue
-  hit="$(added_lines "$f" | grep -E -- "$TRIVIAL_PATTERN" | cut -d: -f1 | tr '\n' ' ' || true)"
-  if [ -n "$hit" ]; then
-    say_fail "assert that can't fail, or swallowed error, added in $f, diff lines: $hit"
-    trivial=1
-  fi
-done
-[ "$trivial" -eq 0 ] && echo "None added."
+[ "$found" -eq 0 ] && echo "No skip markers, trivial asserts, or mocks in acceptance tests."
 
 check_secrets
 
-echo "== Test run: $TEST_CMD"
-out="$(eval "$TEST_CMD" 2>&1)"
-status=$?
-echo "$out" | tail -n 5 | sed "s/^/  | /"
-failing="$(echo "$out" | grep -Eo "$FAIL_PATTERN" | sed -E "s/$FAIL_PATTERN/\2/" | sort -u)"
-if [ "$status" -eq 0 ]; then
-  echo "All tests pass."
-elif [ -z "$failing" ]; then
-  say_fail "the test command failed but no failing test names were found; read the output above"
-else
-  echo "Failing tests (each must be in the report under \"Failing tests (not fixed):\"):"
-  echo "$failing" | sed 's/^/  /'
+echo "== Unit tests: $UNIT_CMD"
+unit_out="$(eval "$UNIT_CMD" 2>&1)"
+unit_status=$?
+echo "$unit_out" | tail -n 3 | sed 's/^/  | /'
+unit_failing="$(failing_in "$unit_out")"
+if [ "$unit_status" -ne 0 ] && [ -z "$unit_failing" ]; then
+  say_fail "unit tests failed but no failing test names were found; read the output above"
 fi
 
 echo "== Regressions against $BASE"
-# Runs the same test command on $BASE in a temporary worktree. A test that
-# passes there and fails here is a regression: old behavior broke.
+# Runs the unit tests on $BASE in a temporary worktree. A test that passes
+# there and fails here is a regression: old behavior broke.
 regressions=""
-if [ -n "$failing" ] && git rev-parse --verify -q "$BASE" >/dev/null; then
+if [ -n "$unit_failing" ] && git rev-parse --verify -q "$BASE" >/dev/null; then
   wt="$(mktemp -d)"
   if git worktree add -q --detach "$wt" "$BASE" >/dev/null 2>&1; then
-    base_out="$(cd "$wt" && eval "$TEST_CMD" 2>&1)"
-    base_failing="$(echo "$base_out" | grep -Eo "$FAIL_PATTERN" | sed -E "s/$FAIL_PATTERN/\2/" | sort -u)"
-    for t in $failing; do
+    base_failing="$(failing_in "$(cd "$wt" && eval "$UNIT_CMD" 2>&1)")"
+    for t in $unit_failing; do
       echo "$base_failing" | grep -qx "$t" && continue
       grep -rqw "$t" "$wt" 2>/dev/null || continue
       regressions="$regressions $t"
@@ -124,38 +125,80 @@ if [ -n "$failing" ] && git rev-parse --verify -q "$BASE" >/dev/null; then
   fi
   rm -rf "$wt"
   if [ -n "$regressions" ]; then
-    echo "Pass on $BASE, fail now (report each as a regression):"
+    echo "Pass on $BASE, fail now (mark each \"Regression:\" in the report):"
     for t in $regressions; do echo "  $t"; done
   else
-    echo "None. Every failing test is new or already failed on $BASE."
+    echo "None."
   fi
-elif [ -z "$failing" ]; then
-  echo "None. No failing tests."
 else
-  echo "No branch $BASE; skipped. Set BASE to the base branch."
+  echo "None to check."
 fi
 
-echo "== Mocks in added lines"
-mocks=0
-for f in $tests_changed; do
-  [ -f "$f" ] || continue
-  n="$(added_lines "$f" | grep -cE -- "$MOCK_PATTERN" || true)"
-  [ "$n" -gt 0 ] && echo "  $f: $n line(s) with mocks" && mocks=$((mocks + n))
-done
-[ "$mocks" -eq 0 ] && echo "None."
+echo "== Acceptance tests: ${ACCEPT_CMD:-none}"
+acc_ran=""
+acc_failing=""
+if [ -z "$ACCEPT_CMD" ]; then
+  echo "No acceptance test command. The report must say the criteria are untested."
+else
+  started=0
+  if [ -n "$DEV_HEALTH" ] && ! eval "$DEV_HEALTH" >/dev/null 2>&1; then
+    if eval "$DEV_START" >/dev/null 2>&1; then started=1; else say_fail "could not start the app with: $DEV_START"; fi
+  fi
+  acc_out="$(eval "$ACCEPT_CMD" 2>&1)"
+  echo "$acc_out" | tail -n 3 | sed 's/^/  | /'
+  acc_ran="$(echo "$acc_out" | grep -Eo "$RAN_PATTERN" | sed -E "s/$RAN_PATTERN/\1/" | sort -u)"
+  acc_failing="$(failing_in "$acc_out")"
+  for t in $acc_ran; do
+    if echo "$acc_failing" | grep -qx "$t"; then echo "  FAIL  $t"; else echo "  PASS  $t"; fi
+  done
+  [ "$started" -eq 1 ] && eval "$DEV_STOP" >/dev/null 2>&1
+fi
 
 if [ "${1:-}" != "" ]; then
-  check_headings "$1" "Baseline:" "Added:" "Mocks:" "Failing tests (not fixed):" "Coverage:" "Security flags:" "Needs approval:" "Verify:"
-  if [ -f "$1" ]; then
-    for t in $failing; do
-      grep -qF "$t" "$1" || say_fail "failing test $t is not named in the report"
+  report="$1"
+  check_headings "$report" "Mode:" "Criteria:" "Added:" "Mocks:" "Failing tests (not fixed):" "Security flags:" "Needs approval:" "Verify:"
+  if [ -f "$report" ]; then
+    section() { awk -v h="$1" '$0 ~ "^"h {f=1; next} /^[A-Z][A-Za-z ()]*:/ {f=0} f' "$report"; }
+    mode="$(grep -E '^Mode:' "$report" | head -1 | sed 's/^Mode: *//')"
+    case "$mode" in Write|Verify) ;; *) say_fail "\"Mode:\" must be Write or Verify, found \"$mode\"" ;; esac
+
+    echo "== Report claims against the real run"
+    claims="$(section 'Criteria:' | grep -E '^ *- ' | grep -viE '^ *- *None' || true)"
+    while IFS= read -r line; do
+      [ -n "$line" ] || continue
+      t="$(echo "$line" | sed -nE 's/.*test: *([A-Za-z0-9_]+).*/\1/p')"
+      r="$(echo "$line" | sed -nE 's/.*result: *(PASS|FAIL).*/\1/p')"
+      if [ -z "$t" ] || [ -z "$r" ]; then
+        say_fail "criterion line lacks \"test: <name>\" or \"result: PASS|FAIL\": ${line:0:60}"
+        continue
+      fi
+      if ! echo "$acc_ran" | grep -qx "$t"; then
+        say_fail "report cites $t, but no acceptance test with that name ran"
+        continue
+      fi
+      actual=PASS
+      echo "$acc_failing" | grep -qx "$t" && actual=FAIL
+      if [ "$r" != "$actual" ]; then
+        say_fail "report says $t is $r, but it is $actual"
+      elif [ "$mode" = "Write" ] && [ "$r" = "PASS" ] && ! echo "$line" | grep -qi "already met"; then
+        say_fail "Write mode: $t passes before the feature exists; mark it \"already met\" or fix the test"
+      else
+        echo "  OK  $t $r"
+      fi
+    done <<< "$claims"
+    for t in $acc_ran; do
+      echo "$claims" | grep -qw "$t" || say_fail "acceptance test $t ran but isn't under \"Criteria:\""
+    done
+
+    for t in $unit_failing $acc_failing; do
+      grep -qw "$t" "$report" || say_fail "failing test $t is not named in the report"
     done
     for t in $regressions; do
-      grep -F "$t" "$1" | grep -qi "regression" || say_fail "regression $t is not marked as a regression in the report"
+      grep -w "$t" "$report" | grep -qi "regression" || say_fail "regression $t is not marked \"Regression:\" in the report"
     done
     if [ "$mocks" -gt 0 ]; then
-      listed="$(awk '/^Mocks:/{f=1; next} /^[A-Z][A-Za-z ()]*:/{f=0} f' "$1" | grep -E '^ *- ' | grep -viE '^ *- *None' || true)"
-      [ -n "$listed" ] || say_fail "new tests use mocks but the report's \"Mocks:\" section lists none"
+      listed="$(section 'Mocks:' | grep -E '^ *- ' | grep -viE '^ *- *None' || true)"
+      [ -n "$listed" ] || say_fail "new tests use mocks but \"Mocks:\" lists none"
     fi
   fi
 fi

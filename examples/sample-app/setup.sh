@@ -35,10 +35,12 @@ git checkout -q -b feature
 cp -R "$here/change/." "$target/"
 git add -A
 git -c user.name=sample -c user.email=sample@example.invalid commit -q \
-  -m "Rename --max to --limit, add --offset, timeout, and auth token"
+  -m "ITEM-12: rename --max to --limit, add --offset, timeout, and auth token"
 
 echo "Ready: $target (branch 'feature', base 'main')"
 echo "Next: open that folder in your agent and say one of:"
 echo "  Act as Docs-Agent. Update the docs for this branch against main."
-echo "  Act as Test-Agent. Write tests for this branch against main."
+echo "  Act as Test-Agent in Verify mode. Verify ticket ITEM-12 on this branch against main."
+echo "For Test-Agent Write mode, first run: git -C \"$target\" checkout -q main"
+echo "  Act as Test-Agent in Write mode. Write acceptance tests for ticket ITEM-12."
 echo "Then grade the run with $here/expected-<agent>.md"
