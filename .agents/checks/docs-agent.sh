@@ -61,6 +61,17 @@ else
 fi
 [ "$hits" -eq 0 ] && echo "No secret-like values found in added lines."
 
+echo "== Markdown tables"
+# Rows starting with "||" stop rendering as a table, and markdownlint can't
+# see it because the lines are no longer parsed as a table.
+for f in $changed; do
+  case "$f" in *.md) ;; *) continue ;; esac
+  [ -f "$f" ] || continue
+  bad="$(grep -n '^[[:space:]]*||' "$f" | cut -d: -f1 | tr '\n' ' ' || true)"
+  [ -n "$bad" ] && say_fail "broken table rows starting with \"||\" in $f, lines: $bad"
+done
+[ "$fail" -eq 0 ] && echo "No broken table rows."
+
 echo "== API spec files"
 specs="$(git ls-files '*openapi*' '*swagger*' '*.graphql' '*.proto')"
 if [ -n "$specs" ]; then
