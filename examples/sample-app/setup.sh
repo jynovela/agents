@@ -38,6 +38,7 @@ git -c user.name=sample -c user.email=sample@example.invalid commit -q \
   -m "Rename --max to --limit, add --offset, timeout, and auth token"
 
 echo "Ready: $target (branch 'feature', base 'main')"
-echo "Next: open that folder in your agent and say:"
+echo "Next: open that folder in your agent and say one of:"
 echo "  Act as Docs-Agent. Update the docs for this branch against main."
-echo "Then grade the run with $here/expected-docs-agent.md"
+echo "  Act as Test-Agent. Write tests for this branch against main."
+echo "Then grade the run with $here/expected-<agent>.md"

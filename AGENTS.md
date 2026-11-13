@@ -50,3 +50,4 @@ When asked to act as one of these agents, read its role file first and follow it
 | Agent | Role file | Purpose |
 | ----- | --------- | ------- |
 | Docs-Agent | `.agents/roles/docs-agent.md` | Keeps Markdown docs in sync with the code and flags API spec drift |
+| Test-Agent | `.agents/roles/test-agent.md` | Writes unit and end-to-end tests and reports failures without skipping or weakening tests |
