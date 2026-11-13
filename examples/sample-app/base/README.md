@@ -4,7 +4,7 @@ A command-line tool that lists items from the inventory service.
 
 ## Quickstart
 
-Requires: Python 3.10 or later.
+Requires: Python 3.9 or later.
 
 1. Point the tool at your inventory service:
 

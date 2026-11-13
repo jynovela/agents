@@ -1,5 +1,5 @@
 """itemctl: list items from the inventory service."""
-
+from __future__ import annotations  # lets the X | None hints run on Python 3.9
 import argparse
 import json
 import os

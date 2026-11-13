@@ -3,7 +3,7 @@
 Project: itemctl, a command-line tool that lists items from an inventory
 service. `server.py` is a local copy of that service, for development.
 
-Stack: Python 3.10, standard library only. SQLite for the local service.
+Stack: Python 3.9 or later, standard library only. SQLite for the local service.
 
 ## Commands
 
