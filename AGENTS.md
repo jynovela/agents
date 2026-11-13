@@ -30,7 +30,7 @@ Stack: Markdown only.
 
 ## Tickets
 
-<!-- TAILOR: Where agents read acceptance criteria, e.g. "Linear, through the Linear MCP server (read-only)", or "the ticket text the user pastes". -->
+<!-- TAILOR: Where agents read acceptance criteria. Name the exact source, e.g. "Linear team ENG, through the Linear MCP server (read-only)", or "the ticket text the user pastes". Without a team or project, agents search every workspace they can reach. -->
 
 Acceptance criteria come from: the ticket text the user gives in the task.
 

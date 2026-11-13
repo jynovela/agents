@@ -20,14 +20,18 @@ Requires: bash and git. Linting needs Node.js for `npx`.
    The folder is outside this repo on purpose, so your tool loads only the
    test app's `AGENTS.md`.
 
-2. Open the test folder in Hermes or Claude Code and ask for one role:
+2. Start Hermes or Claude Code from inside the test folder
+   (`cd /tmp/itemctl-test` first), so it loads the test app's `AGENTS.md`.
+   Check with `pwd` in the agent if unsure. Then ask for one role. The Test-Agent
+   prompts name the role file and ticket path, because an agent with a tracker
+   like Linear connected will otherwise search there for ITEM-12:
 
    ```text
    Act as Docs-Agent. Update the docs for this branch against main.
    ```
 
    ```text
-   Act as Test-Agent in Verify mode. Verify ticket ITEM-12 on this branch against main.
+   Read AGENTS.md and .agents/roles/test-agent.md first. Act as Test-Agent in Verify mode. The ticket is .tickets/ITEM-12.md, not your tracker. Verify ITEM-12 on this branch against main.
    ```
 
    For Test-Agent Write mode, switch to `main` first, where the feature
@@ -38,7 +42,7 @@ Requires: bash and git. Linting needs Node.js for `npx`.
    ```
 
    ```text
-   Act as Test-Agent in Write mode. Write acceptance tests for ticket ITEM-12.
+   Read AGENTS.md and .agents/roles/test-agent.md first. Act as Test-Agent in Write mode. The ticket is .tickets/ITEM-12.md, not your tracker. Write acceptance tests for ITEM-12.
    ```
 
 3. Grade the result with the role's checklist:
