@@ -10,8 +10,13 @@ Generic agent roles and guardrails to copy into a project and tailor.
 | `CLAUDE.md` | Claude Code | `@AGENTS.md`, so Claude Code loads the same file |
 | `.agents/roles/<name>.md` | Any agent, via the role list in `AGENTS.md` | The full role definition. This is the source of truth. |
 | `.claude/agents/<name>.md` | Claude Code (as a subagent) | A thin wrapper that points to the role file |
+| `.agents/checks/<name>.sh` | The agent, and you after a run | Checks in code that back up the written rules (changed files, secrets) |
 | `.markdownlint-cli2.yaml` | markdownlint | Default doc lint rules |
 | `examples/sample-app/` | You, when testing a role | A small test app with traps and an expected result for each agent. Don't copy it into projects. |
+
+Written rules aren't enough on their own, especially with smaller models. Any
+rule that code can check (which files changed, whether a secret leaked) also
+gets a check script that fails the run.
 
 Each rule lives in one file. Wrappers point to role files instead of copying
 them, so the two can't drift apart.
