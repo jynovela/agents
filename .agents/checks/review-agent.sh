@@ -179,6 +179,23 @@ for loc in $risky; do
 done
 [ -n "$risky" ] || echo "None."
 
+echo "== Secret-like values in the diff are under \"Security flags:\""
+# Prints only file and line, never the value.
+flags_sec="$(section 'Security flags:')"
+secret_locs="$(git --no-pager diff -U0 --no-color "$BASE...HEAD" 2>/dev/null | awk '/^\+\+\+ /{f=substr($0,7); next} /^@@ /{split($3,a,","); n=substr(a[1],2)+0; next} /^\+/{print f ":" n ":" substr($0,2); n++}' | while IFS= read -r l; do
+  t="${l#*:}"; t="${t#*:}"
+  secret_like "$t" && echo "${l%%:*}:$(echo "$l" | cut -d: -f2)"
+done)"
+for loc in $secret_locs; do
+  f="${loc%:*}"; n="${loc##*:}"
+  if printf '%s\n' "$flags_sec" | grep -Eq -- "$f(:| line |, line | lines? )$n([^0-9]|$)"; then
+    echo "  OK  $loc"
+  else
+    say_fail "$loc has a secret-like value in the diff but isn't under \"Security flags:\" (write \"$f line $n\")"
+  fi
+done
+[ -n "$secret_locs" ] || echo "None."
+
 echo "== Every changed file is under \"Changes:\""
 if git rev-parse --verify -q "$BASE" >/dev/null; then
   changes="$(section 'Changes:')"
