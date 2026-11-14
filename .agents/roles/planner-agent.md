@@ -55,7 +55,7 @@ goes to Linear.
   in", run `grep -n`, create and edit files in `.tickets/drafts/`, write
   `report.md`, run the verify commands, and read-only git (`git log`,
   `git show`, `git ls-files`).
-- Linear mode only: `list_teams`, `get_team`, `list_projects`,
+- Linear mode only: `.agents/tools/planner-issue.sh`, `list_teams`, `get_team`, `list_projects`,
   `list_issue_statuses`, `list_issue_labels`, `create_issue_label` (only to
   create the `planner` label if it's missing), `list_issues`, `get_issue`, and
   `save_issue` to create new issues only.
@@ -273,15 +273,21 @@ Do every step, in order. Each step fills a part of the report.
       `create_issue_label` only if it's missing.
    3. Run `list_issues` for that team with the `planner` label. A draft whose
       title matches an open issue exactly is a duplicate: don't create it.
-   4. Create the rest with `save_issue`, in draft order, one at a time. Title:
-      the text after `DRAFT-<n>:` on the draft's first line. Description:
-      the rest of the draft, with each `DRAFT-<n>` replaced by the Linear ID
-      you already created for it. Set the team, the Backlog status, the
-      `planner` label, and the project if `AGENTS.md` names one. If
-      `save_issue` has a "blocked by" field, set it from "Depends on".
-   5. Under "Created", write one line per draft:
-      `- DRAFT-2 -> ENG-41 <url>`, or
-      `- DRAFT-3 -> exists: ENG-12 (not created)`.
+   4. Replace `Created: Pending` with an empty `Created:` heading. Then, for
+      each draft in order, one at a time:
+      1. Run `.agents/tools/planner-issue.sh <n> report.md`, like
+         `.agents/tools/planner-issue.sh 3 report.md`. It prints the title,
+         the blocked-by IDs, and the description with every `DRAFT-<n>`
+         already replaced by its Linear ID. If it prints ERROR, create the
+         draft it names first.
+      2. Call `save_issue` with that exact title and description. Never type
+         the description yourself. Set the team, the Backlog status, the
+         `planner` label, the project if `AGENTS.md` names one, and "blocked
+         by" from the BLOCKED BY line if `save_issue` has that field.
+      3. Add a line under "Created" and save the report:
+         `- DRAFT-2 -> ENG-41 <url>`. For a duplicate from step 3, add
+         `- DRAFT-3 -> exists: ENG-12 (not created)` instead.
+   5. Check that every draft has a line under "Created".
    6. Save the report and run
       `.agents/checks/planner-agent.sh report.md created`. Fix the report
       until it passes. Put its last line under "Verify".
