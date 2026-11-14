@@ -114,7 +114,7 @@ loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 | ---- | ------ |
 | Docs-Agent | Ready |
 | Test-Agent | Ready |
-| Planner-Agent | Ready for testing |
+| Planner-Agent | Ready |
 | Lint/Style-Agent | Planned |
 | API-Agent | Planned |
 | Build-Agent | Planned |
