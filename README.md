@@ -91,10 +91,15 @@ untested.
    approval", and add any edge case it missed. Then commit the tests.
 4. Hand the ticket to your code agent, with the tests fenced (setup step 4).
 5. Ask the Test-Agent for **Verify** mode. It runs the acceptance tests
-   against the running app and reports each criterion with evidence.
-6. Ask the Review-Agent to review the branch, using a different model or
-   session than the one that wrote the code. It checks each criterion,
-   scope, and design, and gives a verdict. It never edits code.
+   against the running app and reports each criterion with evidence. If
+   any criterion fails, send the work back to your code agent and skip
+   review until Verify passes.
+6. Ask the Review-Agent to review the branch. Run it on a different model
+   family than the one that wrote the code, and on the strongest model you
+   have: it's the last check before merge. In testing, a dense 31B model
+   scored steadily, while a small mixture-of-experts model (about 3B active)
+   missed different things on every run. It checks each criterion, scope,
+   and design, and gives a verdict. It never edits code.
 7. Read the verdict and findings, then merge or send the work back.
 
 ### Claude Code
@@ -122,4 +127,4 @@ loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 | API-Agent | Planned |
 | Build-Agent | Planned |
 | Security-Agent | Planned |
-| Review-Agent | Testing |
+| Review-Agent | Ready |

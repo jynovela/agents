@@ -40,6 +40,14 @@ check_scope() {
   fi
 }
 
+# True when $1 holds a long token that mixes letters and digits, or a known
+# key prefix. Names made of short words joined by _ or - don't count.
+secret_like() {
+  echo "$1" | grep -Eq -- '(-----BEGIN [A-Z ]*PRIVATE KEY|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9]{20,}|xox[abpr]-)' \
+    || echo "$1" | grep -Eo '[A-Za-z0-9_+/=-]{24,}' | grep -v '^-*$' \
+         | grep -Ev '^([A-Za-z0-9]{1,12}[_-])+[A-Za-z0-9]{1,12}$' | grep -Eq '[0-9]'
+}
+
 # Long tokens that mix letters and digits, or known key prefixes, in added
 # lines of every changed file. Names made of short words joined by _ or -
 # (like test_c1_limit_and_offset_2) don't count. Runs gitleaks too when it's installed.
@@ -51,9 +59,7 @@ check_secrets() {
     while IFS= read -r line; do
       [ -n "$line" ] || continue
       text="${line#*:}"
-      if echo "$text" | grep -Eq -- '(-----BEGIN [A-Z ]*PRIVATE KEY|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9]{20,}|xox[abpr]-)' \
-        || echo "$text" | grep -Eo '[A-Za-z0-9_+/=-]{24,}' | grep -v '^-*$' \
-             | grep -Ev '^([A-Za-z0-9]{1,12}[_-])+[A-Za-z0-9]{1,12}$' | grep -Eq '[0-9]' ; then
+      if secret_like "$text"; then
         say_fail "possible secret added in $f (value not shown)"
         hits=$((hits + 1))
         break
