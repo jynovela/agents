@@ -79,7 +79,9 @@ Pick one per ticket:
 ## Ticket format
 
 Write each ticket as `.tickets/drafts/DRAFT-<n>.md`, numbered from 1 in build
-order. Keep every heading, even when empty: write `- None` under it.
+order. Use that relative path exactly, from the folder you were started in.
+Never write to a path that starts with `/`, `~`, or `.private`. Keep every
+heading, even when empty: write `- None` under it.
 
 Story:
 
@@ -193,14 +195,25 @@ The Dev environment section has no command to trigger a job.
   Never count lines by reading.
 - Check the code before saying something exists. Plans, roadmaps, specs, and
   old tickets are context only: never describe them as built.
+- When the brief says something exists and the code shows it doesn't, list
+  it under "Needs approval" and "Open questions". Don't write a ticket to
+  build it unless a goal needs it.
+- Plan only what the brief asks for. Don't add options, formats, or flags
+  it doesn't mention: list ideas under "Open questions" instead.
+- Every exact message, status body, or value you choose yourself, like
+  `error: file not found` or `{"error": "missing items key"}`, gets
+  `(assumption)` at the end of its criterion.
+- Write criteria against the running app with real data. Never "given a
+  mock" or "a fake list": use the seed data or say how to load the data.
 
 ### Ask first
 
 Put these under "Needs approval" in the report, and don't do them:
 
 - A goal that conflicts with the code or with another goal.
-- A plan that needs a new service, dependency, or dev environment command.
-  Write the ticket anyway and list the need here.
+- A plan that needs a new service, dependency, script in `dev/`, or dev
+  environment command. Write the ticket anyway and list the need here, with
+  the file name.
 - Anything that would change an existing ticket.
 
 ### Never
@@ -246,9 +259,11 @@ Do every step, in order. Each step fills a part of the report.
    by a ticket or listed under "Open questions" or "Needs approval".
 6. Under "Open questions", collect every open question from the drafts,
    with its draft number.
-7. Write `Created: Pending` and save your report to `report.md`. Run
+7. Write `Created: Pending` and `Verify: planner-agent.sh passed (drafts)`,
+   and save your report to `report.md`. Run
    `.agents/checks/planner-agent.sh report.md`. Fix what it reports and rerun
-   until it passes. Put its last line under "Verify".
+   until its last line says "checks: passed". The Verify line is only true
+   once it does.
 8. Local mode: replace `Pending` with `Local mode, drafts only` and go to
    step 9. Linear mode:
    1. Find the team named in `AGENTS.md` with `list_teams`. Find its status

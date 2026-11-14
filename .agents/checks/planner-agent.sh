@@ -122,6 +122,7 @@ for n in $drafts; do
         spans="$(echo "$c" | grep -o '`[^`][^`]*`' | wc -l | tr -d ' ')"
         [ "$spans" -ge 2 ] || err "$id needs the action and the exact result in backticks (at least two), like a command and what it prints, a query and its value, or exit code \`1\`"
         plain="$(echo "$c" | sed 's/`[^`]*`//g')"
+        echo "$c" | grep -Eiwq 'mock|mocked|mocks|fake|stub|stubbed' && err "$id uses a mock, fake, or stub; criteria run against the real app with real data"
         word="$(echo "$plain" | grep -Eiwo "$VAGUE" | head -1 || true)"
         [ -n "$word" ] && err "$id uses the vague word \"$word\"; say exactly what is observed"
         if echo "$c" | grep -qi '(assumption)'; then
@@ -236,6 +237,22 @@ if [ -n "$report" ]; then
       fi
     done <<< "$(rsection 'Goals' | grep -E '^- G[0-9]+' || true)"
     [ "$vg" -eq 0 ] && echo "None."
+
+    echo "== New dev/ scripts"
+    # A dev/ script the drafts use but the repo doesn't have is a new dev
+    # environment command, which needs the user's approval.
+    newdev=0
+    for p in $(cat "$DRAFTS_DIR"/DRAFT-*.md 2>/dev/null | grep -Eo 'dev/[A-Za-z0-9_.-]+' | sort -u); do
+      [ -e "$p" ] && continue
+      newdev=1
+      rsection 'Needs approval' | grep -qF "$p" && echo "  OK  $p is under \"Needs approval:\"" && continue
+      say_fail "drafts use $p, which doesn't exist; list it under \"Needs approval:\" as a new dev environment command"
+    done
+    [ "$newdev" -eq 0 ] && echo "None."
+
+    echo "== Verify line"
+    rsection 'Verify' | grep -Eiq 'planner-agent\.sh passed|Planner-Agent checks: passed' \
+      || say_fail "\"Verify:\" must quote this script's result, like \"planner-agent.sh passed\", after you ran it"
 
     questions="$(rsection 'Open questions')"
     for n in $drafts; do
