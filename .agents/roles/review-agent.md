@@ -139,13 +139,21 @@ Do every step, in order. Each step fills a part of the report.
    something you can check: output, a log line, a response, a database row.
    Find the line that produces it with `grep -n`, even when that line is
    outside the diff, like in a server or a helper. For example, for a log
-   line with `returned=`, run `grep -rn "returned=" .`. Then follow the
-   values the change passes into that code. Set its status:
-   - `MET`: the evidence is the line that produces the result (for an
-     endpoint, its handler), and the values that reach it are right. A
+   line with `returned=`, run `grep -rn "returned=" .`.
+
+   Then write a **trace**: take the example values the criterion names (or
+   a simple input if it names none) and follow them call by call, writing
+   what each function receives, with parameter names, until the line that
+   produces the result. For example:
+   `trace: --limit 2 --offset 1 -> list_items(limit=2, offset=1) -> GET /items?limit=2&offset=1`.
+   Read each call's parameter order from the function's `def` line. Set
+   the status from the trace:
+   - `MET`: every value in the trace is what the criterion needs, and the
+     evidence is the line that produces the result (for an endpoint, its
+     handler). A
      default value or a function signature somewhere else is not evidence.
-   - `NOT MET`: the code does something else, or the change passes it wrong
-     values. Add a Blocker finding. One finding can cover several criteria.
+   - `NOT MET`: any value in the trace differs from what the criterion
+     needs, or the code does something else. Add a Blocker finding. One finding can cover several criteria.
    - `UNCLEAR`: only when `grep -n` finds no code that produces the result.
      Not being able to run the app is never a reason, because you review the
      code. Explain under "Not checked".
@@ -170,6 +178,11 @@ Do every step, in order. Each step fills a part of the report.
      with `rule: scope`.
    - `scope: <item> -> none (nobody would notice)`: only for items not on
      the list.
+
+   Then copy every line from the "Risky lines" part of `review-diff.sh`
+   output under "Risky lines:" in the report, as `<file>:<line>`, followed
+   by exactly one of: `serves C<n>` (a criterion needs it), `-> F<n>` (its
+   finding), or `security flag`. The check script fails if one is missing.
 5. **Correctness.** Check each changed function for these, and add a finding
    for each problem:
    - Arguments passed in the wrong order, or the wrong value passed.
@@ -198,7 +211,7 @@ Do every step, in order. Each step fills a part of the report.
 ## Report
 
 End by printing `report.md` exactly as saved, with no table or summary in
-its place, and nothing after it. Always include all seven headings, even
+its place, and nothing after it. Always include all eight headings, even
 when one is empty. Write "None" under a heading only after you did the step
 that fills it.
 
@@ -206,8 +219,9 @@ Use the exact formats below, because `review-agent.sh` reads them. One
 criterion, file, or finding per line:
 
 ```text
-- C<n>: <criterion> | status: MET or NOT MET or UNCLEAR | evidence: <file>:<line> `<quote>`
+- C<n>: <criterion> | status: MET or NOT MET or UNCLEAR | evidence: <file>:<line> `<quote>` | trace: <input> -> <call> -> <result>
 - <file>: <criteria it serves, or none>; scope: <item> -> F<n> or none (nobody would notice)
+- <file>:<line>: serves C<n>, or -> F<n>, or security flag
 - F<n> | Blocker or Should fix or Nit | rule: <rule name> | <file>:<line> | quote: `<quote>` | problem: <why it matters> | fix: <what to change>
 ```
 
@@ -220,12 +234,17 @@ part of the line.
 Verdict: REJECTED
 
 Criteria:
-- C1: export writes one row per order | status: NOT MET | evidence: export.py:41 `rows = fetch_orders(limit, 0)`
-- C2: export logs "export done rows=N" | status: MET | evidence: export.py:58 `log.info("export done rows=%d", len(rows))`
+- C1: export --limit 3 writes 3 rows | status: NOT MET | evidence: export.py:41 `rows = fetch_orders(limit, 0)` | trace: --limit 3 -> fetch_orders(limit=3, offset=0) -> second page repeats the first
+- C2: export logs "export done rows=N" | status: MET | evidence: export.py:58 `log.info("export done rows=%d", len(rows))` | trace: 3 rows -> log.info(rows=3) -> "export done rows=3"
 
 Changes:
 - export.py: C1, C2; scope: new `--gzip` flag -> F2; scope: renamed local variable `n` to `count` -> none (nobody would notice)
 - tests/test_export.py: C1
+
+Risky lines:
+- export.py:8: security flag
+- export.py:12: -> F2
+- export.py:30: serves C1
 
 Findings:
 - F1 | Blocker | rule: criterion | export.py:41 | quote: `fetch_orders(limit, 0)` | problem: always starts at 0, so C1's second page repeats the first | fix: pass `offset` instead of `0`
