@@ -21,7 +21,9 @@ ALLOWED='^\.tickets/drafts/DRAFT-[0-9]+\.md$|^report\.md$'
 MAX_CRITERIA=5
 MAX_TIMEBOX_DAYS=3
 # Words that make a criterion untestable. Text in backticks is ignored.
-VAGUE='fast|faster|quick|quickly|easy|easily|simple|simply|properly|correctly|appropriate|appropriately|user-friendly|intuitive|robust|seamless|seamlessly|efficient|efficiently|gracefully|reasonable|reasonably|works|handles|should|as expected|etc'
+# Goals with these words need a number in a criterion, or an open question.
+VAGUE_GOAL='fast|faster|quick|quickly|slow|easy|easily|big|bigger|large|huge|many|lots|scalable|scale|efficient|efficiently|responsive'
+VAGUE='fast|faster|quick|quickly|easy|easily|simple|simply|properly|correctly|appropriate|appropriately|user-friendly|intuitive|robust|seamless|seamlessly|efficient|efficiently|gracefully|reasonable|reasonably|works|handles|should|as expected|etc|an error|a warning|is added|are added|is saved|are saved|is stored|are stored|is created|are created|is updated|are updated|succeeds|successfully'
 
 report="${1:-}"
 phase="${2:-drafts}"
@@ -117,7 +119,8 @@ for n in $drafts; do
         id="$(echo "$c" | sed -E 's/^- (C[0-9]+):.*/\1/')"
         [ "$id" = "C$i" ] || err "criteria must be numbered C1, C2, ... in order; found $id where C$i was expected"
         i=$((i + 1))
-        echo "$c" | grep -q '`[^`][^`]*`' || err "$id has nothing in backticks to check (a command, endpoint, query, log line, exit code, or file)"
+        spans="$(echo "$c" | grep -o '`[^`][^`]*`' | wc -l | tr -d ' ')"
+        [ "$spans" -ge 2 ] || err "$id needs the action and the exact result in backticks (at least two), like a command and what it prints, a query and its value, or exit code \`1\`"
         plain="$(echo "$c" | sed 's/`[^`]*`//g')"
         word="$(echo "$plain" | grep -Eiwo "$VAGUE" | head -1 || true)"
         [ -n "$word" ] && err "$id uses the vague word \"$word\"; say exactly what is observed"
@@ -208,6 +211,31 @@ if [ -n "$report" ]; then
     for g in $goals; do
       echo "$covered" | grep -qw "$g" || say_fail "goal $g isn't covered by a ticket in \"Plan:\", or listed under \"Open questions:\" or \"Needs approval:\""
     done
+
+    echo "== Vague goals"
+    vg=0
+    while IFS= read -r gl; do
+      [ -n "$gl" ] || continue
+      g="$(echo "$gl" | sed -E 's/^- (G[0-9]+).*/\1/')"
+      word="$(echo "$gl" | sed -E 's/^- G[0-9]+:?//' | grep -Eiwo "$VAGUE_GOAL" | head -1 || true)"
+      [ -n "$word" ] || continue
+      vg=1
+      if rsection 'Open questions' | grep -qw "$g"; then
+        echo "  OK  $g (\"$word\") is under \"Open questions:\""
+        continue
+      fi
+      ok=0
+      for d in $(rsection 'Plan' | grep -w "$g" | grep -Eo '^- DRAFT-[0-9]+' | sed 's/^- //'); do
+        [ -f "$DRAFTS_DIR/$d.md" ] || continue
+        if criteria_of "$DRAFTS_DIR/$d.md" | grep -i '(assumption)' | grep -q '[0-9]'; then ok=1; fi
+      done
+      if [ "$ok" -eq 1 ]; then
+        echo "  OK  $g (\"$word\") has a number marked (assumption) in its ticket"
+      else
+        say_fail "goal $g says \"$word\": add a criterion with a number marked (assumption) to its ticket, or list $g under \"Open questions:\""
+      fi
+    done <<< "$(rsection 'Goals' | grep -E '^- G[0-9]+' || true)"
+    [ "$vg" -eq 0 ] && echo "None."
 
     questions="$(rsection 'Open questions')"
     for n in $drafts; do

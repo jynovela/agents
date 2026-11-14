@@ -101,7 +101,7 @@ Operators copy items by hand today. `app.py` has a `list` command (app.py line 3
 - C2: When I run that command, `logs/server.log` gets a line starting with
   `GET /items`.
 - C3: When the folder in `--out` doesn't exist, the command prints
-  `error: folder not found` to stderr and exits with code 1. (assumption)
+  `error: folder not found` to stderr and exits with code `1`. (assumption)
 
 ## Out of scope
 
@@ -164,19 +164,31 @@ The Dev environment section has no command to trigger a job.
 - Write the `Story:` line in the user's words, with no code, commands, or
   backticks. One goal per story: no "and" in the "I want" part. If you need
   "and", split the story.
-- Write every criterion as something anyone can check on the running app:
-  a command, an endpoint, a database query, a log line, an exit code, or a
-  file. Put each of those in backticks. Use the commands in the **Dev
-  environment** section of `AGENTS.md` where they fit.
-- Say what is observed, never how to build it.
+- Write every criterion as an action and the exact result anyone can check
+  on the running app. Put both in backticks: at least two per criterion.
+  The action is a command or a request, like `python3 app.py export`. The
+  result is what it prints, the database query and its value, the log line,
+  the exit code like `1`, or the HTTP status like `201`. "Each row is added"
+  or "prints an error" is not a result: name the query and the value, or
+  the exact text. Use the commands in the **Dev environment** section of
+  `AGENTS.md` where they fit.
+- Say what is observed, never how to build it. This applies to
+  "Assumptions" too: write "export includes every item", not "export calls
+  the endpoint in a loop".
 - Number criteria C1, C2, ... in each ticket. Give a Story or Task 1 to 5
   criteria. More than 5 means the ticket is too big: split it.
 - Mark any detail the brief doesn't give, like an exact message, a limit, or
   a sort order, with `(assumption)`, and list it under "Assumptions".
-- When the brief uses a vague word like "fast" or "easy", turn it into a
-  number marked `(assumption)`, or list it under "Open questions".
-- List under "Depends on" every draft that must be built first, so tickets
-  that touch the same new code don't get built at the same time.
+- When a goal uses a vague word like "fast", "big", or "easy", turn it into
+  a criterion with a number marked `(assumption)` in the ticket for that
+  goal, like "with `1000` items, the command exits within `5` seconds", or
+  list the goal's ID under "Open questions" in the report.
+- When a Story needs something that doesn't exist in another part of the
+  system, like a new endpoint or table, write that as its own Task with its
+  own criteria, and list the Task under the Story's "Depends on".
+- List under "Depends on" only drafts the ticket can't be built or tested
+  without. "Comes after" is not a dependency: import doesn't need export.
+- Give a Spike only the goal it researches.
 - Get every line number from `grep -n`, like `grep -n "def main" app.py`.
   Never count lines by reading.
 - Check the code before saying something exists. Plans, roadmaps, specs, and
@@ -204,8 +216,9 @@ Put these under "Needs approval" in the report, and don't do them:
 - Copy a secret into a ticket or the report. Report it by file and line only.
 - Write a criterion with a vague word: fast, quick, easy, simple, properly,
   correctly, appropriate, user-friendly, intuitive, robust, seamless,
-  efficient, gracefully, reasonable, works, handles, should, as expected, or
-  etc.
+  efficient, gracefully, reasonable, works, handles, should, as expected,
+  etc., "an error", "is added", "is saved", "is created", "is updated", or
+  "succeeds". Name the exact text, query, or value instead.
 
 ## Procedure
 
