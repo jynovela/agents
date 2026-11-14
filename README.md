@@ -10,6 +10,7 @@ Generic agent roles and guardrails to copy into a project and tailor.
 | `CLAUDE.md` | Claude Code | `@AGENTS.md`, so Claude Code loads the same file |
 | `.agents/roles/<name>.md` | Any agent, via the role list in `AGENTS.md` | The full role definition. This is the source of truth. |
 | `.claude/agents/<name>.md` | Claude Code (as a subagent) | A thin wrapper that points to the role file |
+| `.agents/tools/*.sh` | The agent | Helper scripts a role runs so a small model doesn't do fiddly text work by hand |
 | `.agents/checks/<name>.sh` | The agent, and you after a run | Checks in code that back up the written rules (changed files, secrets). `lib.sh` holds the checks every role shares. |
 | `.markdownlint-cli2.yaml` | markdownlint | Default doc lint rules |
 | `examples/sample-app/` | You, when testing a role | A small test app with traps and an expected result for each agent. Don't copy it into projects. |
@@ -113,7 +114,7 @@ loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 | ---- | ------ |
 | Docs-Agent | Ready |
 | Test-Agent | Ready |
-| Planner-Agent | Ready for testing |
+| Planner-Agent | Ready |
 | Lint/Style-Agent | Planned |
 | API-Agent | Planned |
 | Build-Agent | Planned |
