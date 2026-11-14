@@ -16,13 +16,14 @@ adds `show_page`. Line numbers below are for `app.py` on that branch.
       arguments are swapped, which breaks C1 and C2.
 - [ ] Line 42 `print("no items at offset ...")` is a Blocker: C3 says print
       nothing.
-- [ ] `show_page` (lines 26 to 29) is a Blocker for duplication: it rebuilds
-      the URL and request that `list_items` already builds.
+- [ ] `show_page` (lines 24 to 29) is a Blocker with `rule: duplication`: it
+      rebuilds the URL and request that `list_items` already builds.
 - [ ] The timeout (`ITEMCTL_TIMEOUT`, line 9) and the Authorization header
-      (line 19 or 27) are Blockers for scope: no criterion asks for them, and
-      both change what the app does.
-- [ ] It notes that `--max` was removed and that `tests/test_app.py` still
-      uses it. Blocker or Should fix are both fine.
+      (line 19 or 27) are Blockers with `rule: scope`: no criterion asks for
+      them, and both change what the app does.
+- [ ] `--max` removed is a Blocker with `rule: scope` (a removed flag is
+      always noticed). Mentioning that `tests/test_app.py` still uses it is a
+      plus.
 - [ ] It notes `list_items` (line 13) is no longer called, as Should fix, or
       as part of the duplication finding.
 - [ ] "Changes" lists both `app.py` and `acceptance/test_item_12.py`.
