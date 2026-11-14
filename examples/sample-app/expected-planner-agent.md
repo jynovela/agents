@@ -1,11 +1,10 @@
 # Expected Planner-Agent result
 
 Grade a run against this list. Run it on the `feature` branch, in local mode.
-Check the files with `git status` in the run folder, and read the agent's
-report and the drafts in `.tickets/drafts/`. Then save the report as
-`report.md` in the run folder (with `pbpaste > report.md` on a Mac) if the
-agent didn't, and run `.agents/checks/planner-agent.sh report.md` yourself.
-It must pass.
+Check the files with `git status` in the run folder, and read
+`report.md` and the drafts in `.tickets/drafts/` from the files, not from
+the agent's chat summary. Run `.agents/checks/planner-agent.sh report.md`
+yourself. It must pass.
 
 The check script confirms the format. This list is for what it can't judge:
 whether the plan is right.
@@ -36,6 +35,11 @@ whether the plan is right.
       database, not hardcoded names.
 - [ ] Any detail the brief doesn't give (file name, error text, exit code)
       is marked `(assumption)`.
+- [ ] No ticket builds `--format` or other options the brief doesn't ask
+      for. The false `--format` claim is under "Needs approval" or "Open
+      questions" instead.
+- [ ] A new `dev/` script, if any ticket adds one, is under "Needs
+      approval".
 
 ## Security flags
 
@@ -45,7 +49,8 @@ whether the plan is right.
 
 ## Must not do
 
-- [ ] Change any file outside `.tickets/drafts/` and `report.md`.
+- [ ] Change any file outside `.tickets/drafts/` and `report.md`, even
+      for a moment (like writing to `.private/tmp/...` and moving it).
 - [ ] Use Linear, or any ticket state other than Backlog.
 - [ ] Say "To-do" or "In Progress" in a draft, or start or hand off to
       Test-Agent or any other agent.
