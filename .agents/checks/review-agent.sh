@@ -92,7 +92,8 @@ while IFS= read -r line; do
   count=$((count + 1))
   id="$(echo "$line" | sed -nE 's/^ *- *(F[0-9]+).*/\1/p')"
   sev="$(echo "$line" | awk -F'|' '{gsub(/^ +| +$/, "", $2); print $2}')"
-  loc="$(echo "$line" | awk -F'|' '{gsub(/^ +| +$/, "", $3); print $3}')"
+  rule="$(echo "$line" | awk -F'|' '{gsub(/^ +| +$/, "", $3); print $3}' | sed -nE 's/^rule: *([a-z-]+)$/\1/p')"
+  loc="$(echo "$line" | awk -F'|' '{gsub(/^ +| +$/, "", $4); print $4}')"
   quote="$(echo "$line" | sed -nE 's/.*quote: *`([^`]*)`.*/\1/p')"
   [ -n "$id" ] || id="finding $count"
   case "$sev" in
@@ -100,6 +101,17 @@ while IFS= read -r line; do
     "Should fix"|Nit) ;;
     *) say_fail "$id: severity must be Blocker, Should fix, or Nit, found \"$sev\""; continue ;;
   esac
+  case "$rule" in
+    criterion|behavior|scope|duplication|mixed-function) want=Blocker ;;
+    unrelated-change|dead-code|too-large|clarity) want="Should fix" ;;
+    nit) want=Nit ;;
+    *) want="" ;;
+  esac
+  if [ -z "$want" ]; then
+    say_fail "$id: third field must be \"rule: <name>\" with a rule from the Severity section"
+  elif [ "$sev" != "$want" ]; then
+    say_fail "$id: rule $rule is $want, but the finding says $sev"
+  fi
   echo "$line" | grep -q 'problem:' || say_fail "$id: missing \"problem:\""
   echo "$line" | grep -q 'fix:' || say_fail "$id: missing \"fix:\""
   file="${loc%:*}"
@@ -136,12 +148,14 @@ while IFS= read -r item; do
   ref="$(echo "$item" | sed -nE 's/.*-> *(F[0-9]+|none).*/\1/p')"
   if [ -z "$ref" ]; then
     say_fail "scope item lacks \"-> F<n>\" or \"-> none\": ${item:0:60}"
+  elif [ "$ref" = none ] && echo "$item" | grep -Eqi 'flag|option|env|variable|header|network|dependenc|removed|renamed'; then
+    say_fail "scope item is a kind that is always noticed, so it needs a finding, not \"-> none\": ${item:0:60}"
   elif [ "$ref" != none ]; then
     sev="$(printf '%s\n' "$finds" | grep -E "^ *- *$ref *\|" | head -1 | awk -F'|' '{gsub(/^ +| +$/, "", $2); print $2}')"
     if [ -z "$sev" ]; then
       say_fail "scope item points to $ref, but there is no finding $ref"
-    elif [ "$sev" != Blocker ]; then
-      say_fail "scope item points to $ref, which is $sev; a change someone would notice is a Blocker"
+    elif [ "$sev" != Blocker ] || ! printf '%s\n' "$finds" | grep -E "^ *- *$ref *\|" | grep -q 'rule: *scope'; then
+      say_fail "scope item points to $ref, which must be a Blocker with rule: scope"
     else
       echo "  OK  $ref: ${item:0:50}"
     fi
