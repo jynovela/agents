@@ -15,6 +15,10 @@ set -uo pipefail
 # TAILOR: the branch reviews compare against.
 BASE="${BASE:-main}"
 MAX_FINDINGS=8
+# TAILOR: added lines that often mean a change users notice (env vars, flags,
+# headers). The script lists them so the agent can check each against the
+# criteria. It doesn't fail on them.
+SCOPE_HINTS='environ|getenv|process\.env|add_argument|addOption|\.option\(|[Hh]eaders?[ =:\[(]|Authorization|^import |^from [A-Za-z_.]+ import|require\('
 
 report="${1:-}"
 if [ -z "$report" ]; then
@@ -122,6 +126,34 @@ if [ "$verdict" = "$expected" ]; then
   echo "$verdict matches $blockers Blocker(s), $count finding(s), $flags security flag(s)."
 else
   say_fail "verdict is \"$verdict\" but $blockers Blocker(s), $count finding(s), $flags security flag(s) means $expected"
+fi
+
+echo "== Scope items under \"Changes:\""
+scope_n=0
+while IFS= read -r item; do
+  [ -n "$item" ] || continue
+  scope_n=$((scope_n + 1))
+  ref="$(echo "$item" | sed -nE 's/.*-> *(F[0-9]+|none).*/\1/p')"
+  if [ -z "$ref" ]; then
+    say_fail "scope item lacks \"-> F<n>\" or \"-> none\": ${item:0:60}"
+  elif [ "$ref" != none ]; then
+    sev="$(printf '%s\n' "$finds" | grep -E "^ *- *$ref *\|" | head -1 | awk -F'|' '{gsub(/^ +| +$/, "", $2); print $2}')"
+    if [ -z "$sev" ]; then
+      say_fail "scope item points to $ref, but there is no finding $ref"
+    elif [ "$sev" != Blocker ]; then
+      say_fail "scope item points to $ref, which is $sev; a change someone would notice is a Blocker"
+    else
+      echo "  OK  $ref: ${item:0:50}"
+    fi
+  fi
+done <<< "$(section 'Changes:' | grep -oE 'scope:[^;]*' || true)"
+echo "$scope_n scope item(s)."
+if git rev-parse --verify -q "$BASE" >/dev/null; then
+  hints="$(git --no-pager diff -U0 --no-color "$BASE...HEAD" | awk '/^\+\+\+ /{f=substr($0,7); next} /^@@ /{split($3,a,","); n=substr(a[1],2)+0; next} /^\+/{print f ":" n ": " substr($0,2); n++}' | grep -E "^[^:]+:[0-9]+: .*($SCOPE_HINTS)" | grep -vE '^[^:]+:[0-9]+: *#' || true)"
+  if [ -n "$hints" ]; then
+    echo "Added lines that often change what users see. Each must serve a criterion or be a scope item:"
+    echo "$hints" | sed -E 's/[A-Za-z0-9_+\/=-]{24,}/<long value hidden>/g' | cut -c1-100 | sed 's/^/  /'
+  fi
 fi
 
 echo "== Every changed file is under \"Changes:\""

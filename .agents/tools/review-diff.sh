@@ -2,6 +2,8 @@
 # Prints a branch's change in a form that is easy to cite: every changed file,
 # then every added line as "<file>:<line>: <text>", with the line number in
 # the file as it is now. Removed lines show as "<file>: (removed) <text>".
+# Long values that could be secrets show as <long value hidden>; quote the
+# part of the line before them.
 #
 # Usage: .agents/tools/review-diff.sh [base]   (default base: main)
 # Compares <base>...HEAD, the same range a pull request shows.
@@ -28,4 +30,4 @@ git --no-pager diff -U0 --no-color "$base...HEAD" | awk '
   }
   /^\+/ { print file ":" line ": " substr($0, 2); line++; next }
   /^-/  { print file ": (removed) " substr($0, 2); next }
-'
+' | sed -E 's/[A-Za-z0-9_+\/=-]{24,}/<long value hidden>/g'
