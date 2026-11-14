@@ -37,6 +37,14 @@ git add -A
 git -c user.name=sample -c user.email=sample@example.invalid commit -q \
   -m "ITEM-12: rename --max to --limit, add --offset, timeout, and auth token"
 
+# Review-Agent reviews this branch: the feature plus a follow-up commit.
+git checkout -q -b review
+cp -R "$here/review/." "$target/"
+git add -A
+git -c user.name=sample -c user.email=sample@example.invalid commit -q \
+  -m "ITEM-12: print pages with show_page"
+git checkout -q feature
+
 echo "Ready: $target (branch 'feature', base 'main')"
 echo "Next: open that folder in your agent and say one of:"
 echo "  Act as Docs-Agent. Update the docs for this branch against main."
@@ -45,4 +53,6 @@ echo "For Test-Agent Write mode, first run: git -C \"$target\" checkout -q main"
 echo "  Read AGENTS.md and .agents/roles/test-agent.md first. Act as Test-Agent in Write mode. The ticket is .tickets/ITEM-12.md, not your tracker. Write acceptance tests for ITEM-12."
 echo "For Planner-Agent, stay on 'feature' and say:"
 echo "  Read AGENTS.md and .agents/roles/planner-agent.md first. Act as Planner-Agent. The brief is .briefs/export.md. This is local mode: write drafts only and don't use Linear."
+echo "For Review-Agent, first run: git -C \"$target\" checkout -q review"
+echo "  Read AGENTS.md and .agents/roles/review-agent.md first. Act as Review-Agent. The ticket is .tickets/ITEM-12.md, not your tracker. Review this branch against main."
 echo "Then grade the run with $here/expected-<agent>.md"
