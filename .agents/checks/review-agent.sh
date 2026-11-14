@@ -15,10 +15,6 @@ set -uo pipefail
 # TAILOR: the branch reviews compare against.
 BASE="${BASE:-main}"
 MAX_FINDINGS=8
-# TAILOR: added lines that often mean a change users notice (env vars, flags,
-# headers). The script lists them so the agent can check each against the
-# criteria. It doesn't fail on them.
-SCOPE_HINTS='environ|getenv|process\.env|add_argument|addOption|\.option\(|[Hh]eaders?[ =:\[(]|Authorization|^import |^from [A-Za-z_.]+ import|require\('
 
 report="${1:-}"
 if [ -z "$report" ]; then
@@ -29,7 +25,7 @@ fi
 # Review-Agent is review-only: the report is the only file it may write.
 check_scope "^$(basename "$report" | sed 's/\./\\./g')\$"
 check_secrets
-check_headings "$report" "Verdict:" "Criteria:" "Changes:" "Findings:" "Security flags:" "Not checked:" "Verify:"
+check_headings "$report" "Verdict:" "Criteria:" "Changes:" "Risky lines:" "Findings:" "Security flags:" "Not checked:" "Verify:"
 [ -f "$report" ] || finish "Review-Agent"
 
 section() { awk -v h="$1" '$0 ~ "^"h {f=1; next} /^[A-Z][A-Za-z ()]*:/ {f=0} f' "$report"; }
@@ -81,6 +77,7 @@ while IFS= read -r line; do
     continue
   fi
   check_quote "$id" "$file" "$n" "$quote"
+  echo "$line" | grep -Eq 'trace: *[^|]*->' || say_fail "$id is $status but has no \"trace: <input> -> <what the code does>\""
 done <<< "$crit"
 
 echo "== Findings"
@@ -162,13 +159,25 @@ while IFS= read -r item; do
   fi
 done <<< "$(section 'Changes:' | grep -oE 'scope:[^;]*' || true)"
 echo "$scope_n scope item(s)."
-if git rev-parse --verify -q "$BASE" >/dev/null; then
-  hints="$(git --no-pager diff -U0 --no-color "$BASE...HEAD" | awk '/^\+\+\+ /{f=substr($0,7); next} /^@@ /{split($3,a,","); n=substr(a[1],2)+0; next} /^\+/{print f ":" n ": " substr($0,2); n++}' | grep -E "^[^:]+:[0-9]+: .*($SCOPE_HINTS)" | grep -vE '^[^:]+:[0-9]+: *#' || true)"
-  if [ -n "$hints" ]; then
-    echo "Added lines that often change what users see. Each must serve a criterion or be a scope item:"
-    echo "$hints" | sed -E 's/[A-Za-z0-9_+\/=-]{24,}/<long value hidden>/g' | cut -c1-100 | sed 's/^/  /'
+echo "== Risky lines are accounted for"
+risky="$("$(dirname "$0")/../tools/review-diff.sh" "$BASE" 2>/dev/null | sed -n '/^== Risky lines/,$p' | grep -E '^[^:= ]+:[0-9]+: ' | cut -d: -f1,2 || true)"
+risky_sec="$(section 'Risky lines:')"
+for loc in $risky; do
+  entry="$(printf '%s\n' "$risky_sec" | grep -E "^ *- *$loc[^0-9]" | head -1)"
+  if [ -z "$entry" ]; then
+    say_fail "risky line $loc isn't under \"Risky lines:\"; write \"serves C<n>\", \"-> F<n>\", or \"security flag\""
+  elif ! echo "$entry" | grep -Eq 'serves C[0-9]|-> *F[0-9]|security flag'; then
+    say_fail "risky line $loc needs \"serves C<n>\", \"-> F<n>\", or \"security flag\""
+  else
+    ref="$(echo "$entry" | sed -nE 's/.*-> *(F[0-9]+).*/\1/p')"
+    if [ -n "$ref" ] && ! printf '%s\n' "$finds" | grep -Eq "^ *- *$ref *\|"; then
+      say_fail "risky line $loc points to $ref, but there is no finding $ref"
+    else
+      echo "  OK  $loc"
+    fi
   fi
-fi
+done
+[ -n "$risky" ] || echo "None."
 
 echo "== Every changed file is under \"Changes:\""
 if git rev-parse --verify -q "$BASE" >/dev/null; then
