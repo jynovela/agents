@@ -9,9 +9,13 @@ Stack: Markdown only.
 
 ## Commands
 
-<!-- TAILOR: Replace with the project's real commands. Agents run these to check their work. -->
+<!-- TAILOR: Replace with the project's real commands. Agents run these to check their work. For code lint, e.g. "Lint code: `ruff check . && ruff format --check .`" and "Fix lint: `ruff check --fix . && ruff format .`". Write "None" for anything the project doesn't have. See setup/lint.md in the agents repo. -->
 
 - Lint docs: `npx markdownlint-cli2 "**/*.md"`
+- Lint code: None
+- Fix lint: None
+- Lint guard: `.agents/checks/lint-guard.sh`
+- Lint agent files: `.agents/checks/context-lint.sh`
 
 ## Dev environment
 
@@ -53,6 +57,11 @@ Every agent follows these rules, in every role, before any role-specific rule.
 3. **Use only the tools your role lists.** If the task needs more, stop and ask.
 4. **Stay in scope.** Change only what the task needs. Report other problems
    you notice instead of fixing them.
+5. **Fix lint; never silence it.** Don't add suppression comments (like
+   `# noqa`, `# type: ignore`, or `eslint-disable`), change lint config, or
+   skip hooks with `--no-verify`. If a rule looks wrong, stop and ask. If you
+   changed code, run "Lint code" and "Lint guard" before you finish, when
+   **Commands** lists them, and fix what they report.
 
 ## Sources of truth
 
