@@ -1,0 +1,41 @@
+# Ruff config for code that agents write. Copy to the project root as
+# ruff.toml, or move the [lint] tables into pyproject.toml under [tool.ruff].
+# Each rule group below catches a mistake agents make often. Add a rule
+# instead of writing the same advice in AGENTS.md.
+
+# <!-- TAILOR: the oldest Python version the project supports. -->
+target-version = "py39"
+line-length = 100
+
+[lint]
+select = [
+  "F",      # pyflakes: unused imports and variables, undefined names
+  "E",      # pycodestyle errors
+  "W",      # pycodestyle warnings
+  "I",      # import order
+  "B",      # bugbear: likely bugs, like mutable default arguments
+  "UP",     # old syntax for the target Python version
+  "E722",   # bare except
+  "BLE",    # except Exception that hides every error (BLE001)
+  "S110",   # try-except-pass: swallowed error
+  "S112",   # try-except-continue: swallowed error
+  "S",      # bandit security checks: eval, shell=True, SQL strings, hardcoded passwords
+  "ASYNC",  # blocking calls (sleep, open, requests) inside async functions
+  "T20",    # print() and pprint() left in from debugging
+  "ERA",    # commented-out code
+  "TID251", # banned APIs: list them under [lint.flake8-tidy-imports.banned-api]
+  "PGH004", # a blanket "# noqa" with no rule code
+  "RUF100", # a "# noqa" that suppresses nothing
+]
+
+[lint.per-file-ignores]
+# Tests may use assert and print.
+"tests/**" = ["S101", "T20"]
+"acceptance/**" = ["S101", "T20"]
+# <!-- TAILOR: CLI entry points that print on purpose, for example: -->
+# "app.py" = ["T20"]
+
+[lint.flake8-tidy-imports.banned-api]
+# Point agents at the project's own helpers. One line per banned API.
+# <!-- TAILOR: replace the example with your project's rules. -->
+# "requests.get".msg = "Use api_client.get() so retries and auth headers apply."
