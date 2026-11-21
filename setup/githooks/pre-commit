@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Pre-commit hook: lint the staged files and catch lint shortcuts before they
+# reach a commit. Install it from the repo root with:
+#   mkdir -p .githooks && cp setup/githooks/pre-commit .githooks/ && git config core.hooksPath .githooks
+# See setup/lint.md.
+set -uo pipefail
+
+# <!-- TAILOR: your linter. Each command gets the staged files that match PATTERN. -->
+LINT='ruff check --output-format concise'
+FORMAT_CHECK='ruff format --check'
+PATTERN='\.py$'
+
+status=0
+
+staged="$(git diff --cached --name-only --diff-filter=ACMR | grep -E "$PATTERN" || true)"
+if [ -n "$staged" ]; then
+  # shellcheck disable=SC2086
+  $LINT $staged || status=1
+  # shellcheck disable=SC2086
+  $FORMAT_CHECK $staged || status=1
+fi
+
+.agents/checks/lint-guard.sh >/dev/null || {
+  .agents/checks/lint-guard.sh | grep '^FAIL'
+  status=1
+}
+
+.agents/checks/context-lint.sh >/dev/null || {
+  .agents/checks/context-lint.sh | grep '^FAIL'
+  status=1
+}
+
+if [ "$status" -ne 0 ]; then
+  echo
+  echo "Commit blocked. Fix the problems above and commit again."
+  echo "Agents: never skip this hook. Ask a human if a rule looks wrong."
+fi
+exit "$status"
