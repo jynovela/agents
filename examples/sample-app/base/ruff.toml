@@ -1,0 +1,16 @@
+# Ruff config for itemctl, tailored from setup/ruff.toml in the agents repo.
+target-version = "py39"
+line-length = 100
+
+[lint]
+select = [
+  "F", "E", "W", "I", "B", "UP",
+  "E722", "BLE", "S110", "S112", "S", "ASYNC",
+  "T20", "ERA", "TID251", "PGH004", "RUF100",
+]
+
+[lint.per-file-ignores]
+"tests/**" = ["S101", "T20"]
+"acceptance/**" = ["S101", "T20"]
+# The CLI prints on purpose and opens the configured service URL.
+"app.py" = ["T20", "S310"]

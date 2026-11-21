@@ -61,7 +61,8 @@ Every agent follows these rules, in every role, before any role-specific rule.
    `# noqa`, `# type: ignore`, or `eslint-disable`), change lint config, or
    skip hooks with `--no-verify`. If a rule looks wrong, stop and ask. If you
    changed code, run "Lint code" and "Lint guard" before you finish, when
-   **Commands** lists them, and fix what they report.
+   **Commands** lists them, and fix what they report in the files you
+   changed.
 
 ## Sources of truth
 
@@ -93,3 +94,4 @@ When asked to act as one of these agents, read its role file first and follow it
 | Test-Agent | `.agents/roles/test-agent.md` | Turns ticket acceptance criteria into tests against the running app, then verifies code with real results |
 | Planner-Agent | `.agents/roles/planner-agent.md` | Turns a brief into tickets with testable acceptance criteria, in Linear Backlog or local drafts, then stops |
 | Review-Agent | `.agents/roles/review-agent.md` | Reviews a branch against its ticket for correctness, scope, and design, and gives a verdict; never edits code |
+| Lint-Agent | `.agents/roles/lint-agent.md` | Makes lint pass on a branch's changed files without changing behavior; lists what it can't safely fix |
