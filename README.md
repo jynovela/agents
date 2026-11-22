@@ -131,7 +131,7 @@ loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 | Docs-Agent | Ready |
 | Test-Agent | Ready |
 | Planner-Agent | Ready |
-| Lint-Agent | Testing: needs a Qwen run |
+| Lint-Agent | Ready |
 | API-Agent | Planned |
 | Build-Agent | Planned |
 | Security-Agent | Planned |
