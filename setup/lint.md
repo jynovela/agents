@@ -184,6 +184,14 @@ When you see the same mistake twice in review, don't add a sentence to
 
 Test each new rule on the existing code before you commit it.
 
+## Lint-Agent
+
+With this setup, most lint errors get fixed while the code is written. The
+Lint-Agent (`.agents/roles/lint-agent.md`) handles what's left: errors
+autofix can't fix, and old errors when you turn on a new rule. It fixes only
+safe rules by hand and lists the rest for you to approve. Point it at a
+folder to clean up old errors one folder at a time.
+
 ## Other stacks
 
 This setup is tested only with Ruff. For other linters, the same ideas

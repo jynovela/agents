@@ -96,6 +96,8 @@ untested.
    traces to a criterion, read the assumptions it lists under "Needs
    approval", and add any edge case it missed. Then commit the tests.
 4. Hand the ticket to your code agent, with the tests fenced (setup step 4).
+   If lint errors are left when it's done, ask the Lint-Agent to fix lint on
+   the branch.
 5. Ask the Test-Agent for **Verify** mode. It runs the acceptance tests
    against the running app and reports each criterion with evidence. If
    any criterion fails, send the work back to your code agent and skip
@@ -129,7 +131,7 @@ loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 | Docs-Agent | Ready |
 | Test-Agent | Ready |
 | Planner-Agent | Ready |
-| Lint/Style-Agent | Planned |
+| Lint-Agent | Testing: needs a Qwen run |
 | API-Agent | Planned |
 | Build-Agent | Planned |
 | Security-Agent | Planned |

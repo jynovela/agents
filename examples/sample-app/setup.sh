@@ -43,6 +43,14 @@ cp -R "$here/review/." "$target/"
 git add -A
 git -c user.name=sample -c user.email=sample@example.invalid commit -q \
   -m "ITEM-12: print pages with show_page"
+
+# Lint-Agent lints this branch: main plus a commit with lint errors and traps.
+git checkout -q main
+git checkout -q -b lint
+cp -R "$here/lint/." "$target/"
+git add -A
+git -c user.name=sample -c user.email=sample@example.invalid commit -q \
+  -m "ITEM-15: add price stats"
 git checkout -q feature
 
 echo "Ready: $target (branch 'feature', base 'main')"
@@ -55,4 +63,6 @@ echo "For Planner-Agent, stay on 'feature' and say:"
 echo "  Read AGENTS.md and .agents/roles/planner-agent.md first. Act as Planner-Agent. The brief is .briefs/export.md. This is local mode: write drafts only and don't use Linear."
 echo "For Review-Agent, first run: git -C \"$target\" checkout -q review"
 echo "  Read AGENTS.md and .agents/roles/review-agent.md first. Act as Review-Agent. The ticket is .tickets/ITEM-12.md, not your tracker. Review this branch against main."
+echo "For Lint-Agent, first run: git -C \"$target\" checkout -q lint"
+echo "  Read AGENTS.md and .agents/roles/lint-agent.md first. Act as Lint-Agent. Fix lint on this branch against main."
 echo "Then grade the run with $here/expected-<agent>.md"
