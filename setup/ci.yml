@@ -43,7 +43,7 @@ jobs:
       - run: ruff check .
       - run: ruff format --check .
       # TAILOR: "Lint API spec" and "Spec diff" from AGENTS.md, if you have
-      # an API spec (see setup/api.md). Delete these three steps if not.
+      # an API spec (see setup/api.md). Delete these four steps if not.
       - uses: actions/setup-go@v5
         with:
           go-version: stable
