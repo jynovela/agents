@@ -111,14 +111,19 @@ List these under "Needs approval" and don't write them into the spec:
 
 Do every step, in order. Each step fills a part of the report.
 
-1. Run `.agents/tools/api-diff.sh main`. Under "Spec files:", copy each line
-   of its "Spec files" part. Write the **API spec is** value from `AGENTS.md`
-   after "Mode:".
+1. Run `.agents/tools/api-diff.sh main`. If it prints an error instead of
+   the "Interface lines" part, stop. Write the error under "Verify", save the
+   report, and tell the user. Don't trace the diff by hand. Otherwise, under
+   "Spec files:", copy each line of its "Spec files" part. Write the
+   **API spec is** value from `AGENTS.md` after "Mode:".
 2. **Read the approvals.** Run `cat .api/approved.md`. Under "Approvals:",
    copy each approval line (the lines that start with a dash) without its
    leading dash, or write `none`.
-3. **Sort each interface line.** For each line under "Interface lines",
-   read the code around it with `grep -n` and decide what it changes:
+3. **Sort each interface line.** Copy every location from "Interface lines"
+   exactly as printed, including removed lines like `app.py:-22`. Never type
+   a location from memory. For each one, read the code around it with
+   `grep -n` (for a removed line, `git show main:<file> | sed -n <n>p`) and
+   decide what it changes:
    - A route, parameter, header, or response field the **server** handles:
      find it in the spec. If the spec already matches, it's
      `already in spec`. If the change adds something optional, edit the spec
@@ -127,7 +132,9 @@ Do every step, in order. Each step fills a part of the report.
      for it, edit the spec and write `spec updated (approved): <what>`;
      otherwise add an `A<n>` item under "Needs approval" and write `-> A<n>`.
    - A CLI flag, command, or environment variable: added is
-     `no spec: additive`. Removed or renamed is `-> A<n>`.
+     `no spec: additive`. Removed or renamed is `-> A<n>`. A flag replaced
+     by a new name is removed, even when the new one does the same job:
+     scripts that pass the old name fail.
    - Anything else, such as a client calling an endpoint or a header the
      server never reads: `not interface: <why, in a few words>`.
 4. **Check the spec.** Run `.agents/checks/spec-diff.sh main`. Copy every

@@ -83,7 +83,13 @@ has_aid() { echo " $aids " | grep -q " $1 "; }
 
 echo "== Interface lines are accounted for"
 iface_sec="$(section 'Interface lines:')"
-locs="$("$(dirname "$0")/../tools/api-diff.sh" "$BASE" 2>/dev/null | sed -n '/^== Interface lines/,$p' | sed -nE 's/^([^ =]+:-?[0-9]+) \[.*/\1/p')"
+api_diff_out="$("$(dirname "$0")/../tools/api-diff.sh" "$BASE" 2>&1)"
+api_diff_rc=$?
+if [ "$api_diff_rc" -ne 0 ] || ! printf '%s\n' "$api_diff_out" | grep -q '^== Interface lines'; then
+  printf '%s\n' "$api_diff_out" | tail -3 | sed 's/^/  /'
+  say_fail "api-diff.sh failed, so interface lines can't be checked. Report the error; don't trace the diff by hand."
+fi
+locs="$(printf '%s\n' "$api_diff_out" | sed -n '/^== Interface lines/,$p' | sed -nE 's/^([^ =]+:-?[0-9]+) \[.*/\1/p')"
 updated=0
 while IFS= read -r loc; do
   [ -n "$loc" ] || continue

@@ -14,6 +14,7 @@
 #
 # Usage: .agents/tools/api-diff.sh [base]   (default base: main)
 # Compares <base>...HEAD, the same range a pull request shows.
+# Written for bash 3.2 (the macOS default): no case statements inside $( ).
 
 set -uo pipefail
 base="${1:-main}"
@@ -79,7 +80,8 @@ out="$(printf '%s\n' "$lines" | while IFS="$(printf '\t')" read -r loc text; do
   echo "$text" | grep -Eq "$CLI" && tags="$tags,cli"
   echo "$text" | grep -Eq "$ENV" && tags="$tags,env"
   [ -n "$tags" ] || continue
-  case "$loc" in *:-*) kind=removed ;; *) kind=added ;; esac
+  kind=added
+  echo "$loc" | grep -q ':-' && kind=removed
   echo "$loc [$kind${tags}]: $(echo "$text" | sed -E 's/^[[:space:]]+//; s/[A-Za-z0-9_+\/=-]{24,}/<long value hidden>/g')"
 done)"
 if [ -n "$out" ]; then echo "$out"; else echo "None."; fi
