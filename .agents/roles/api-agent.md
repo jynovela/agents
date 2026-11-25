@@ -82,8 +82,8 @@ when **API spec is** says `the contract`.
   Never type one from memory.
 - Check what the code really does before you write it into the spec. A
   client sending a header doesn't mean the server reads it.
-- Follow the API guidelines (`docs/api-guidelines.md`, if the project has
-  it) for endpoints you add to the spec. Write each style warning Spectral
+- Follow the project's API guidelines, if it has them (the API setup puts
+  them at docs/api-guidelines.md), for endpoints you add to the spec. Write each style warning Spectral
   prints for a new or changed operation under "Style warnings".
 - Run `.agents/checks/spec-diff.sh main` after every spec edit.
 
