@@ -6,10 +6,11 @@ Generic agent roles and guardrails to copy into a project and tailor.
 
 | Path | Read by | What it holds |
 | ---- | ------- | ------------- |
-| `agents/<name>/` | You, and `install.sh` | One folder per agent with everything it owns: `SKILL.md` (the instructions, and the source of truth), `check.sh`, `tools/` (helper scripts, so a small model doesn't do fiddly text work by hand), and `claude.md` (the Claude Code wrapper) |
+| `agents/<name>/` | You, and `install.sh` | One folder per agent with everything it owns: `SKILL.md` (the instructions, and the source of truth), `agent.yaml` (what it needs from the project), `check.sh`, `tools/` (helper scripts, so a small model doesn't do fiddly text work by hand), and `claude.md` (the Claude Code wrapper) |
 | `skills/<name>/` | You, and `install.sh` | The same shape for a skill: a procedure any agent, or you, can run. It has no wrapper. |
-| `shared/` | Every agent | `lib.sh`, the helpers every check script uses, and the checks that serve all agents: `lint-guard.sh`, `context-lint.sh`, `secret-scan.sh`, `spec-diff.sh`, and `build-guard.sh`. See `setup/lint.md`, `setup/security.md`, `setup/api.md`, and `setup/build.md`. |
-| `install.sh` | You | Copies agents and skills into a project |
+| `shared/` | Every agent | `lib.sh`, the helpers every check script uses, and the checks that serve all agents: `lint-guard.sh`, `context-lint.sh`, `secret-scan.sh`, `spec-diff.sh`, `build-guard.sh`, and `doctor.sh`, which lists what each installed agent still needs. See `setup/lint.md`, `setup/security.md`, `setup/api.md`, and `setup/build.md`. |
+| `install.sh` | You | Copies agents and skills into a project and lists them in its `AGENTS.md` |
+| `tests/install-alone.sh` | You and CI, when changing this repo | Proves every agent installs and runs on its own |
 | `AGENTS.md` | Hermes, Codex, Cursor, and most tools | Project basics, shared guardrails, sources of truth, agent list |
 | `CLAUDE.md` | Claude Code | `@AGENTS.md`, so Claude Code loads the same file |
 | `setup/` | You, once per project | Setup guides, plus files they tell you to copy, such as the Ruff config and git hooks |
@@ -42,17 +43,29 @@ it, so the two can't drift apart.
 
    | Path | What it holds |
    | ---- | ------------- |
-   | `.agents/skills/<name>/` | `SKILL.md`, `check.sh`, and `tools/` for each agent or skill |
-   | `.agents/shared/` | `lib.sh` and the shared checks |
+   | `.agents/skills/<name>/` | `SKILL.md`, `agent.yaml`, `check.sh`, and `tools/` for each agent or skill |
+   | `.agents/shared/` | `lib.sh`, `doctor.sh`, and the shared checks |
    | `.claude/agents/<name>.md` | The Claude Code wrapper for each agent |
    | `.claude/skills/<name>` | A link to each skill, so Claude Code finds it |
+   | `AGENTS.md` | Created from this repo's copy when the project has none. In an existing one, only the tables of installed agents change: the part between the `agents:start` and `agents:end` comments. |
+   | `CLAUDE.md`, `.markdownlint-cli2.yaml` | Created only when the project has none |
 
-   Running it again replaces those files with this repo's version. It never
-   commits.
-2. Copy `AGENTS.md`, `CLAUDE.md`, and `.markdownlint-cli2.yaml` into the
-   project root. Fill in every `<!-- TAILOR: ... -->` comment: the project
-   overview, stack, commands, and each agent's verify commands.
-3. Remove agents you didn't install from the table in `AGENTS.md`.
+   Running it again replaces the files under `.agents/` and `.claude/` with
+   this repo's version, and adds what you newly installed to the tables. It
+   never commits.
+2. In the project's `AGENTS.md`, fill in every `<!-- TAILOR: ... -->`
+   comment: the project overview, stack, and commands. Do the same in the
+   `SKILL.md` of each agent you installed.
+3. See what each agent still needs. The install prints this, and you can
+   run it again at any time from the project:
+
+   ```sh
+   .agents/shared/doctor.sh
+   ```
+
+   `READY` means the agent has every `AGENTS.md` line and tool it needs.
+   `NOT READY` lists what to set or install, and the setup guide to read.
+   An agent that isn't ready doesn't stop the others from working.
 4. In a monorepo, add a short `AGENTS.md` in a package folder for rules that
    apply only there. Hermes and Codex merge nested files from the repo root
    down to the working folder.

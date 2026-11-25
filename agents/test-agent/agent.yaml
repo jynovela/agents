@@ -1,0 +1,6 @@
+kind: agent
+title: Test-Agent
+purpose: "Turns ticket acceptance criteria into tests against the running app, then verifies code with real results"
+needs_commands: Start the app, Stop the app, Health check, Base URL, Reset test data, Acceptance tests, Acceptance criteria come from
+needs_tools:
+setup:
