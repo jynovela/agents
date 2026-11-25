@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Catches the shortcuts agents take to make lint pass, which a linter can't see:
-#   1. a new suppression comment (noqa, type: ignore, eslint-disable, ...)
-#   2. a change to a lint config file or the git hooks
+#   1. a new suppression comment (noqa, type: ignore, gitleaks:allow, ...)
+#   2. a change to a lint or secret scanner config file, or the git hooks
 #   3. a new leftover file such as app_old.py, auth_v2.py, or notes.bak
 #   4. "--no-verify" added to a script or doc
 #
@@ -19,10 +19,10 @@ set -uo pipefail
 . "$(dirname "$0")/lib.sh"
 
 # <!-- TAILOR: comments that switch a check off, as an extended regex. -->
-SUPPRESS='(#[[:space:]]*noqa|#[[:space:]]*type:[[:space:]]*ignore|#[[:space:]]*nosec|#[[:space:]]*pragma:[[:space:]]*no[[:space:]]*cover|pylint:[[:space:]]*disable|#[[:space:]]*fmt:[[:space:]]*(off|skip)|#[[:space:]]*ruff:[[:space:]]*noqa|eslint-disable|@ts-ignore|@ts-expect-error|@ts-nocheck|biome-ignore|//[[:space:]]*nolint|rubocop:disable|@SuppressWarnings|markdownlint-disable|<!--[[:space:]]*vale[[:space:]]+off)'
+SUPPRESS='(#[[:space:]]*noqa|#[[:space:]]*type:[[:space:]]*ignore|#[[:space:]]*nosec|#[[:space:]]*pragma:[[:space:]]*no[[:space:]]*cover|pylint:[[:space:]]*disable|#[[:space:]]*fmt:[[:space:]]*(off|skip)|#[[:space:]]*ruff:[[:space:]]*noqa|eslint-disable|@ts-ignore|@ts-expect-error|@ts-nocheck|biome-ignore|//[[:space:]]*nolint|rubocop:disable|@SuppressWarnings|markdownlint-disable|gitleaks:allow|<!--[[:space:]]*vale[[:space:]]+off)'
 
 # <!-- TAILOR: lint config files and hooks agents must not change. -->
-CONFIG='(^|/)(ruff\.toml|\.ruff\.toml|\.flake8|\.pylintrc|pylintrc|mypy\.ini|\.eslintrc(\..*)?|eslint\.config\.[a-z]+|\.prettierrc(\..*)?|biome\.jsonc?|\.markdownlint[^/]*|\.vale\.ini|\.editorconfig|\.pre-commit-config\.yaml|\.golangci\.ya?ml|\.rubocop\.yml)$|^\.githooks/|^\.agents/checks/|^\.github/workflows/'
+CONFIG='(^|/)(ruff\.toml|\.ruff\.toml|\.flake8|\.pylintrc|pylintrc|mypy\.ini|\.eslintrc(\..*)?|eslint\.config\.[a-z]+|\.prettierrc(\..*)?|biome\.jsonc?|\.markdownlint[^/]*|\.vale\.ini|\.editorconfig|\.pre-commit-config\.yaml|\.golangci\.ya?ml|\.rubocop\.yml|\.gitleaks\.toml|\.gitleaksignore)$|^\.githooks/|^\.agents/checks/|^\.github/workflows/'
 
 # Files that hold lint settings among other things. Only changed lines that
 # look like lint settings count.
