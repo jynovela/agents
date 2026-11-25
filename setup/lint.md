@@ -143,32 +143,15 @@ Its input format may differ.
 ## 7. Run the same checks in CI
 
 The hook only runs on machines where it's installed. CI runs the same checks
-on every pull request. For GitHub Actions:
-
-```yaml
-name: lint
-on: pull_request
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - run: pip install ruff==0.16.9
-      - run: ruff check .
-      - run: ruff format --check .
-      - run: .agents/checks/context-lint.sh
-      - name: Lint guard (shows shortcuts for the reviewer)
-        run: .agents/checks/lint-guard.sh origin/${{ github.base_ref }}
-        continue-on-error: true
-```
-
-Pin the Ruff version so a new release doesn't fail every open pull request.
+on every pull request. Use the one project workflow in `setup/ci.yml` (see
+`setup/build.md`). It installs Ruff at a pinned version, runs "Lint code" and
+`context-lint.sh`, and runs the lint guard. Pin the Ruff version so a new
+release doesn't fail every open pull request.
 
 The lint guard doesn't block in CI. A suppression you approved would fail it
 on every run, and CI can't tell an approved one from a shortcut. It shows up
-as a failed step for the reviewer to read.
+as a failed step for the reviewer to read. `build-guard.sh` allows
+`continue-on-error` on this one step.
 
 ## 8. Turn repeated mistakes into rules
 

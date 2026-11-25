@@ -86,6 +86,12 @@ untested.
    the pre-commit hook and in CI, and the "Scan secrets" command in
    `AGENTS.md`. The role check scripts also use gitleaks when it's on the
    `PATH`.
+7. **Staging, and a production only you can deploy.** Follow
+   [setup/build.md](setup/build.md): a local, staging, and production
+   environment, a deploy script with no production target, a build guard,
+   one CI workflow that runs the `AGENTS.md` commands, and a Claude Code hook
+   that blocks production commands. Most important: keep production
+   credentials off the machine agents run on.
 
 ## Workflow: from ticket to merged code
 

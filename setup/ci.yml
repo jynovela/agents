@@ -1,0 +1,59 @@
+# One CI workflow that runs the same commands as AGENTS.md, in the same
+# order agents run them. Copy it to .github/workflows/ci.yml and fill in the
+# TAILOR lines. See setup/build.md.
+#
+# Every step blocks the merge except the lint guard, which is report-only on
+# purpose (see setup/lint.md). Never add continue-on-error to any other step:
+# build-guard.sh fails on it.
+#
+# There is no production deploy job here. With Vercel or a similar host,
+# production deploys when a person merges to main. See setup/build.md.
+name: ci
+on: pull_request
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # TAILOR: install your tools at pinned versions.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - run: pip install ruff==0.16.9
+      - name: Install gitleaks
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz | tar -xz gitleaks
+          sudo mv gitleaks /usr/local/bin/
+
+      # Guards: shortcuts on this branch.
+      - name: Scan secrets
+        run: .agents/checks/secret-scan.sh origin/${{ github.base_ref }}
+      - name: Build guard
+        run: .agents/checks/build-guard.sh origin/${{ github.base_ref }}
+      - name: Lint guard (shows shortcuts for the reviewer)
+        run: .agents/checks/lint-guard.sh origin/${{ github.base_ref }}
+        continue-on-error: true
+      - run: .agents/checks/context-lint.sh
+
+      # TAILOR: "Lint code" from AGENTS.md.
+      - run: ruff check .
+      - run: ruff format --check .
+      # TAILOR: add "Lint API spec" and "Spec diff" from AGENTS.md if you have
+      # an API spec. See setup/api.md.
+
+      # TAILOR: "Unit tests" from AGENTS.md.
+      - run: python3 -m unittest discover -s tests -t .
+
+      # TAILOR: "Build" from AGENTS.md.
+      - run: dev/build.sh
+
+      # TAILOR: "Start the app" and "Acceptance tests" from AGENTS.md.
+      - run: dev/start.sh
+      - run: python3 -m unittest discover -s acceptance -t .
+      - name: App log, for failed runs
+        if: failure()
+        run: dev/logs.sh 100
