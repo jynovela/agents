@@ -14,10 +14,15 @@ Grade a run on the `design` branch with the input `.notes/brand.md`. Read
 - [ ] Body text is 16 px or more, and "Decisions" says it changed from
       15 px.
 - [ ] The muted color is darker than `#999999` and passes 4.5:1, with the
-      change under "Decisions".
-- [ ] The teal is kept as the brand color but used where it passes:
-      darkened for text and button fills, or used only as an accent. Its
-      contrast lines pass.
+      change under "Decisions". `#999999` is not left in the color table.
+- [ ] The teal is kept as the brand color but darkened for text and button
+      fills. Its contrast lines pass.
+- [ ] Contrast lines don't state ratios, or the ratios match what the check
+      measures.
+- [ ] "Text input" cites `PriceInput` (`web/components.js:16`) instead of
+      `new`.
+- [ ] Inputs and Security flags use paths from the repo root
+      (`.notes/brand.md`, not `brand.md`).
 - [ ] Lobster is limited to the logo or headings, or left as an open
       question. Body text uses a readable font.
 - [ ] Every required component has a row, and the existing components cite

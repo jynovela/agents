@@ -79,12 +79,23 @@ while IFS= read -r p; do
     function lum(s) { return 0.2126 * ch(s, 2) + 0.7152 * ch(s, 4) + 0.0722 * ch(s, 6) }
     BEGIN { x = lum(a); y = lum(b); if (x < y) { t = x; x = y; y = t }
       printf "%.2f", (x + 0.05) / (y + 0.05) }')"
+  said="$(printf '%s\n' "$p" | grep -oE '[0-9]+(\.[0-9]+)? *: *1' | head -1 | sed -E 's/ *: *1//')"
+  if [ -n "$said" ] && awk -v a="$said" -v b="$ratio" 'BEGIN { d = a - b; exit !(d > 0.1 || d < -0.1) }'; then
+    say_fail "contrast line says $said:1, but $fg on $bg measures $ratio:1. Don't write ratios; the check measures them."
+  fi
   if awk -v r="$ratio" -v m="$MIN_CONTRAST" 'BEGIN { exit !(r < m) }'; then
     say_fail "contrast $ratio:1 is under $MIN_CONTRAST:1 for $fg on $bg (${p:0:40})"
   else
     echo "  OK  $ratio:1  $fg on $bg"
   fi
 done <<< "$pairs"
+
+echo "== Every color has a contrast line"
+for c in $(part Color | grep -E '^\|' | awk -F'|' '{print $3}' | grep -oE '#[0-9A-Fa-f]{6}' | tr 'a-f' 'A-F' | sort -u); do
+  printf '%s\n' "$pairs" | tr 'a-f' 'A-F' | grep -qF "$c" \
+    || say_fail "$c is in the color table but in no \"Contrast:\" line. Pair it with its background, or replace it with a color that passes."
+done
+echo "Done."
 
 echo "== Body text size"
 body="$(part Type | grep -iE '^- *Body:' | head -1)"
@@ -108,6 +119,17 @@ while IFS= read -r line; do
     say_fail "existing UI points to $1 line $2, past the end of the file"
   fi
 done <<< "$(section 'Existing UI:' | grep -E '^ *- ' || true)"
+echo "Done."
+
+echo "== Report file paths are real"
+while IFS= read -r line; do
+  f="$(printf '%s\n' "$line" | sed -nE 's/^ *- *`?([^` ]+)`?.*/\1/p')"
+  [ -n "$f" ] && [ ! -f "$f" ] && say_fail "\"Inputs:\" lists $f, which doesn't exist. Write the path from the repo root."
+done <<< "$(section 'Inputs:' | grep -E '^ *- ' || true)"
+while IFS= read -r line; do
+  f="$(printf '%s\n' "$line" | sed -nE 's/^ *- *`?([^` ]+)`? line [0-9]+.*/\1/p')"
+  [ -n "$f" ] && [ ! -f "$f" ] && say_fail "\"Security flags:\" points to $f, which doesn't exist. Write the path from the repo root."
+done <<< "$(section 'Security flags:' | grep -E '^ *- ' || true)"
 echo "Done."
 
 finish "design-system"

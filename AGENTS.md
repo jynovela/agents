@@ -128,6 +128,7 @@ When asked to act as one of these agents, read its role file first and follow it
 | API-Agent | `.agents/skills/api-agent/SKILL.md` | Keeps the API spec in step with the code; writes additive changes, lists breaking ones for approval; never edits code |
 | Build-Agent | `.agents/skills/build-agent/SKILL.md` | Finds why the build fails and fixes build scripts only; deploys to staging when asked, never to production |
 | Design-Agent | `.agents/skills/design-agent/SKILL.md` | Turns an existing user flow into screen specs and clickable low-fi wireframes; never changes the flow or writes code |
+| Implementer-Agent | `.agents/skills/implementer-agent/SKILL.md` | Writes the smallest code change that makes one ticket's acceptance tests pass, with evidence from its own runs; never edits tests, spec, CI, or docs |
 
 ## Skills
 
