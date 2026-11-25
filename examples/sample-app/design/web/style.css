@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  background: #ffffff;
+  color: #222222;
+  font: 15px/1.4 system-ui, sans-serif;
+}
+
+.items li span {
+  color: #999999;
+}
+
+.empty a {
+  color: #14b8a6;
+}

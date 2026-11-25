@@ -133,4 +133,5 @@ read its file first and follow it.
 
 | Skill | File | Purpose |
 | ----- | ---- | ------- |
+| design-system | `.agents/skills/design-system/SKILL.md` | Sets up the project's design system once in `design/system.md`: layout, type, color with checked contrast, components, form rules |
 | user-flows | `.agents/skills/user-flows/SKILL.md` | Turns journeys, research, or a brief into flow files for Design-Agent; never edits existing flows |
