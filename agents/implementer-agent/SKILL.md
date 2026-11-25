@@ -109,7 +109,7 @@ Put these under "Needs approval" with the exact change, and don't make them:
 - Deleting or renaming a file.
 - Adding a dependency.
 - Fixing anything the ticket doesn't ask for, even a one-line bug, a lint
-  error, or a TODO.
+  error, or a to-do note.
 
 ### Never
 

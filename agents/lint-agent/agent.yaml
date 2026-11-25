@@ -1,0 +1,6 @@
+kind: agent
+title: Lint-Agent
+purpose: "Makes lint pass on a branch's changed files without changing behavior; lists what it can't safely fix"
+needs_commands: Lint code, Fix lint, Lint guard
+needs_tools:
+setup: setup/lint.md

@@ -1,0 +1,6 @@
+kind: agent
+title: Implementer-Agent
+purpose: "Writes the smallest code change that makes one ticket's acceptance tests pass, with evidence from its own runs; never edits tests, spec, CI, or docs"
+needs_commands: Acceptance criteria come from, Start the app, Stop the app, Acceptance tests
+needs_tools:
+setup:

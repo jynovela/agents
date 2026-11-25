@@ -1,0 +1,23 @@
+# Checks this repo itself. The workflow that projects copy is setup/ci.yml.
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint docs
+        run: npx --yes markdownlint-cli2@0.18.1 "**/*.md"
+      - name: Lint agent files
+        run: shared/context-lint.sh
+      - name: Every agent installs alone
+        run: tests/install-alone.sh
+      - name: Sample app builds
+        run: examples/sample-app/setup.sh "$RUNNER_TEMP/itemctl-test"

@@ -1,0 +1,6 @@
+kind: agent
+title: Planner-Agent
+purpose: "Turns a brief into tickets with testable acceptance criteria, in Linear Backlog or local drafts, then stops"
+needs_commands: Planner writes tickets to, Planner reads code in
+needs_tools:
+setup:
