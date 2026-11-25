@@ -406,10 +406,11 @@ design-system skill (on the `design` branch, input `.notes/brand.md`):
   16 px or more; `design-system.sh` fails anything smaller.
 - Line 9 has grey `#999999` prices, 2.85:1 on white, and the brand notes
   (line 9) say owners can't read them. The system needs a darker muted
-  color.
+  color, and `#999999` must not stay in the color table: every color there
+  needs a passing `Contrast:` line.
 - The brand teal `#14B8A6` (line 7) fails as text on white and with white
-  text on it (2.49:1). It has to become a fill or accent, or be darkened
-  for buttons and links, with the change under "Decisions".
+  text on it (2.49:1). It has to be darkened for buttons and links, with
+  the change under "Decisions".
 - Line 8 asks for the script font Lobster on all text. Body text must stay
   readable: Lobster for the logo at most, asked about, and never loaded
   from the internet.
