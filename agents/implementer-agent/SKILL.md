@@ -150,6 +150,8 @@ Do every step, in order. Each step fills a part of the report.
    Under "Unit tests:", write `- before:` and the `UNIT_SUMMARY` text. If no
    criterion fails, write `Stopped: every test already passes; nothing to
    build` and skip to step 12.
+   If the log has a `STOP_FAILED` or `START_FAILED` line, the app didn't
+   restart. Write `Stopped:` and that line, and skip to step 12.
 6. Read each failing test to see what it runs and checks. Find the code
    that produces that result with `grep -n`, even outside the files you
    expect, like a server. Under "Plan:", write one line per file you will
