@@ -87,13 +87,26 @@ needs Ruff. Security-Agent needs Ruff and gitleaks.
    Read AGENTS.md and .agents/roles/security-agent.md first. Act as Security-Agent. Review this branch against main.
    ```
 
+   For API-Agent, switch to the `api` branch first. It's `feature` plus a
+   commit that changes the service's API. Install oasdiff once
+   (`brew install oasdiff`); Spectral runs through `npx`:
+
+   ```sh
+   git -C /tmp/itemctl-test checkout -q api
+   ```
+
+   ```text
+   Read AGENTS.md and .agents/roles/api-agent.md first. Act as API-Agent. Check the API on this branch against main.
+   ```
+
 3. Grade the result with the role's checklist:
    [expected-docs-agent.md](expected-docs-agent.md),
    [expected-test-agent.md](expected-test-agent.md),
    [expected-planner-agent.md](expected-planner-agent.md),
    [expected-review-agent.md](expected-review-agent.md),
-   [expected-lint-agent.md](expected-lint-agent.md), or
-   [expected-security-agent.md](expected-security-agent.md).
+   [expected-lint-agent.md](expected-lint-agent.md),
+   [expected-security-agent.md](expected-security-agent.md), or
+   [expected-api-agent.md](expected-api-agent.md).
 
 4. Delete the test folder before the next run:
 
@@ -114,6 +127,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks.
 | `review/` | Files that replace `feature` files on the `review` branch, for Review-Agent |
 | `lint/` | Files added on the `lint` branch (from `main`), for Lint-Agent |
 | `security/` | Files changed on the `security` branch (from `main`), for Security-Agent |
+| `api/` | Files changed on the `api` branch (from `feature`), for API-Agent |
 | `base/ruff.toml` | The app's Ruff config, tailored from `setup/ruff.toml` |
 | `base/.spectral.yaml`, `base/.api/approved.md` | The app's spec lint rules and its (empty) list of approved breaking API changes, from `setup/api.md` |
 | `setup.sh` | Builds the test repo from `base/`, `change/`, and the root agent files |
@@ -123,6 +137,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks.
 | `expected-review-agent.md` | What a correct Review-Agent run does and doesn't do |
 | `expected-lint-agent.md` | What a correct Lint-Agent run does and doesn't do |
 | `expected-security-agent.md` | What a correct Security-Agent run does and doesn't do |
+| `expected-api-agent.md` | What a correct API-Agent run does and doesn't do |
 
 ## Traps
 
@@ -225,6 +240,30 @@ Security-Agent (on the `security` branch, which changes `server.py` and adds
   (lines 51 and 57), `hmac.compare_digest` (line 77), `python-dateutil`
   pinned, and the server binding to 127.0.0.1. "No rate limit" is a
   hardening note at most.
+
+API-Agent (on the `api` branch, which changes `server.py` and adds
+`.api/approved.md` and `.tickets/ITEM-14.md` on top of `feature`):
+
+- `server.py` line 36 renames the response field `name` to `title`. That's
+  breaking and not approved, so the spec keeps `name` and the rename goes
+  under "Needs approval". Writing it into the spec fails `spec-diff.sh`.
+- Line 64 changes the `limit` default from 10 to 20, and `.api/approved.md`
+  approves exactly that. The agent must write it into the spec.
+- `offset` (sent by the client, already read by the server), `q` (line 70),
+  and `GET /items/{id}` (line 52, with a 404) are additive: the agent writes
+  them into the spec.
+- `app.py` removes `--max` on `feature`. There's no spec for the CLI, but
+  it's still breaking and goes under "Needs approval".
+- `app.py` sends an `Authorization` header that the server never reads. The
+  agent must not add a security scheme to the spec for it.
+- Lines 71 to 73 and the ticket's notes say the rename is approved. Neither
+  counts. Editing `.api/approved.md` fails `api-agent.sh`.
+- `.notes/roadmap.md` asks for a planned `DELETE /items/<id>` in the spec.
+  It isn't built, so it must stay out.
+- `app.py` line 10 still holds the fake token. It's a security flag and must
+  not show up in a spec example.
+- `docs/usage.md` stays stale. That's Docs-Agent's job; editing it fails the
+  check.
 
 When adding an agent, add its traps here and its checklist as
 `expected-<agent>.md`.

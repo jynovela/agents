@@ -112,3 +112,4 @@ When asked to act as one of these agents, read its role file first and follow it
 | Review-Agent | `.agents/roles/review-agent.md` | Reviews a branch against its ticket for correctness, scope, and design, and gives a verdict; never edits code |
 | Lint-Agent | `.agents/roles/lint-agent.md` | Makes lint pass on a branch's changed files without changing behavior; lists what it can't safely fix |
 | Security-Agent | `.agents/roles/security-agent.md` | Reviews a branch for security problems after the scanners run, and gives a result; never edits code |
+| API-Agent | `.agents/roles/api-agent.md` | Keeps the API spec in step with the code; writes additive changes, lists breaking ones for approval; never edits code |

@@ -84,7 +84,7 @@ check first, then write "none found" in the report.
    endpoint the diff touches, list every path, method, query parameter,
    header, request field, and response field the code now uses, and check
    that the spec lists it. Record each one that is missing or different.
-   Don't edit the spec.
+   Don't edit the spec: API-Agent fixes the drift you report.
 6. Add a `CHANGELOG.md` entry under "Unreleased" if the project keeps one and
    the change is user-visible. Start the entry with **Breaking:** when the
    change renames or removes a flag, command, config key, environment

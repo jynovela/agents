@@ -61,6 +61,14 @@ git -c user.name=sample -c user.email=sample@example.invalid commit -q \
   -m "ITEM-16: search, delete, and export items"
 git checkout -q feature
 
+# API-Agent checks this branch: the feature plus a commit that changes the service's API.
+git checkout -q -b api
+cp -R "$here/api/." "$target/"
+git add -A
+git -c user.name=sample -c user.email=sample@example.invalid commit -q \
+  -m "ITEM-14: search items, fetch one item, rename name to title"
+git checkout -q feature
+
 echo "Ready: $target (branch 'feature', base 'main')"
 echo "Next: open that folder in your agent and say one of:"
 echo "  Act as Docs-Agent. Update the docs for this branch against main."
@@ -75,4 +83,6 @@ echo "For Lint-Agent, first run: git -C \"$target\" checkout -q lint"
 echo "  Read AGENTS.md and .agents/roles/lint-agent.md first. Act as Lint-Agent. Fix lint on this branch against main."
 echo "For Security-Agent, first run: git -C \"$target\" checkout -q security"
 echo "  Read AGENTS.md and .agents/roles/security-agent.md first. Act as Security-Agent. Review this branch against main."
+echo "For API-Agent, first run: git -C \"$target\" checkout -q api"
+echo "  Read AGENTS.md and .agents/roles/api-agent.md first. Act as API-Agent. Check the API on this branch against main."
 echo "Then grade the run with $here/expected-<agent>.md"
