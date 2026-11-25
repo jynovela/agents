@@ -18,6 +18,10 @@ NOT_EDITABLE='^dev/deploy\.sh$'
 # <!-- TAILOR: the deploy targets dev/deploy.sh allows. -->
 ALLOWED='local staging'
 
+# <!-- TAILOR: steps whose owner is always the same, as "Step name|Owner",
+# one per line. Keep in sync with step 2 of the role's procedure. -->
+STEP_OWNERS='Lint code|Lint-Agent'
+
 report="${1:-}"
 if [ -z "$report" ]; then
   echo "Usage: .agents/checks/build-agent.sh report.md"
@@ -102,8 +106,13 @@ while IFS= read -r l; do
   fi
   if [ "$state" = FAIL ]; then
     red="$red $name,"
-    if ! echo "$failing" | grep -F -- "- $name |" | grep -q 'owner:'; then
+    line="$(echo "$failing" | grep -F -- "- $name |" | head -1)"
+    if ! echo "$line" | grep -q 'owner:'; then
       say_fail "$name fails, but \"Failing steps\" has no \"- $name | ... | owner: ...\" line"
+    fi
+    want="$(echo "$STEP_OWNERS" | grep -F -- "$name|" | head -1 | cut -d'|' -f2)"
+    if [ -n "$want" ] && ! echo "$line" | grep -qF -- "owner: $want"; then
+      say_fail "$name always belongs to $want. Write \"owner: $want\" on its \"Failing steps\" line."
     fi
   fi
 done <<< "$steps"
