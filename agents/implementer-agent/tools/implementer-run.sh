@@ -12,6 +12,7 @@
 #             Review, with the lines that make each one needed.
 #   raw       Like tests, but prints only the result lines and saves no log.
 #             The check script uses it.
+#   stop      Stop the app and wait until it no longer answers.
 #   hash      Print a fingerprint of the current code change. Each log holds
 #             the fingerprint of the code it ran.
 #
@@ -26,6 +27,7 @@ ACCEPT_CMD='python3 -m unittest discover -v -s acceptance -t .'
 UNIT_CMD='python3 -m unittest discover -s tests -t .'
 DEV_START='dev/start.sh'
 DEV_STOP='dev/stop.sh'
+DEV_HEALTH='dev/health.sh'
 
 # <!-- TAILOR: extended regexes for the test runner's output. RAN_PATTERN's
 # first group is the name of a test that ran; FAIL_PATTERN's second group is
@@ -93,11 +95,25 @@ changed_lines() {
   done
 }
 
+# Stops the app and waits up to 10 seconds until the health check fails, so
+# the next start loads the new code instead of finding the old app running.
+stop_app() {
+  local i
+  [ -n "$DEV_STOP" ] || return 0
+  eval "$DEV_STOP" >/dev/null 2>&1
+  [ -n "$DEV_HEALTH" ] || return 0
+  for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
+    eval "$DEV_HEALTH" >/dev/null 2>&1 || return 0
+    sleep 0.5
+  done
+  echo "STOP_FAILED: the app still answers after $DEV_STOP"
+}
+
 # Restarts the app, runs both test suites, and prints the raw output followed
 # by result lines. The last line is RUN_DONE when it finished.
 run_all() {
   local acc_out unit_out t unit_failing acc_failing
-  if [ -n "$DEV_STOP" ]; then eval "$DEV_STOP" >/dev/null 2>&1; fi
+  stop_app
   if [ -n "$DEV_START" ]; then
     if ! eval "$DEV_START" >/dev/null 2>&1; then
       echo "START_FAILED: $DEV_START"
@@ -204,7 +220,8 @@ cmd_handoffs() {
 
 case "${1:-}" in
   tests) cmd_tests ;;
-  raw) run_all | grep -E '^(START_FAILED|ACCEPT_RESULT|UNIT_SUMMARY|UNIT_FAIL|RUN_DONE)' ;;
+  stop) stop_app ;;
+  raw) run_all | grep -E '^(STOP_FAILED|START_FAILED|ACCEPT_RESULT|UNIT_SUMMARY|UNIT_FAIL|RUN_DONE)' ;;
   files) cmd_files ;;
   handoffs) cmd_handoffs ;;
   hash) code_hash ;;

@@ -109,7 +109,7 @@ Put these under "Needs approval" with the exact change, and don't make them:
 - Deleting or renaming a file.
 - Adding a dependency.
 - Fixing anything the ticket doesn't ask for, even a one-line bug, a lint
-  error, or a TODO.
+  error, or a leftover to-do note.
 
 ### Never
 
@@ -150,6 +150,8 @@ Do every step, in order. Each step fills a part of the report.
    Under "Unit tests:", write `- before:` and the `UNIT_SUMMARY` text. If no
    criterion fails, write `Stopped: every test already passes; nothing to
    build` and skip to step 12.
+   If the log has a `STOP_FAILED` or `START_FAILED` line, the app didn't
+   restart. Write `Stopped:` and that line, and skip to step 12.
 6. Read each failing test to see what it runs and checks. Find the code
    that produces that result with `grep -n`, even outside the files you
    expect, like a server. Under "Plan:", write one line per file you will
