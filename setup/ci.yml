@@ -42,8 +42,14 @@ jobs:
       # TAILOR: "Lint code" from AGENTS.md.
       - run: ruff check .
       - run: ruff format --check .
-      # TAILOR: add "Lint API spec" and "Spec diff" from AGENTS.md if you have
-      # an API spec. See setup/api.md.
+      # TAILOR: "Lint API spec" and "Spec diff" from AGENTS.md, if you have
+      # an API spec (see setup/api.md). Delete these three steps if not.
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - run: go install github.com/oasdiff/oasdiff@v1.39.0
+      - run: npx --yes @stoplight/spectral-cli@6 lint --fail-severity error openapi.yaml
+      - run: PATH="$PATH:$HOME/go/bin" .agents/checks/spec-diff.sh origin/${{ github.base_ref }}
 
       # TAILOR: "Unit tests" from AGENTS.md.
       - run: python3 -m unittest discover -s tests -t .

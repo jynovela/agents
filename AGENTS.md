@@ -18,6 +18,9 @@ Stack: Markdown only.
 - Scan secrets: `.agents/checks/secret-scan.sh`
 - Audit dependencies: None
 - Lint agent files: `.agents/checks/context-lint.sh`
+- API spec is: None
+- Lint API spec: None
+- Spec diff: None
 - Build: None
 - Build guard: `.agents/checks/build-guard.sh`
 - Deploy (local or staging only): None
