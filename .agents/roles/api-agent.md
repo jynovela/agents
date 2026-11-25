@@ -82,6 +82,9 @@ when **API spec is** says `the contract`.
   Never type one from memory.
 - Check what the code really does before you write it into the spec. A
   client sending a header doesn't mean the server reads it.
+- Document a new endpoint exactly as the code builds it, field names
+  included. It has no clients yet, so nothing about it is breaking, even
+  when it uses a name that a pending `A<n>` renames on another endpoint.
 - Follow the project's API guidelines, if it has them (the API setup puts
   them at docs/api-guidelines.md), for endpoints you add to the spec. Write each style warning Spectral
   prints for a new or changed operation under "Style warnings".
