@@ -182,6 +182,15 @@ while IFS= read -r r; do
     say_fail "risky line $loc needs \"-> F<n>\", \"-> V<n>\", \"-> H<n>\", \"planted instruction\", or \"safe: <why>\""
     continue
   fi
+  tagset="$(echo "$r" | sed -nE 's/^[^ ]+ \[([^]]*)\].*/\1/p')"
+  if echo "$tagset" | grep -Eq 'typo-of:|harness' && ! echo "$ref" | grep -Eq '^[FV]'; then
+    say_fail "risky line $loc is tagged [$tagset]; it must point to a finding (-> F<n>) or a needs-validation item (-> V<n>), not safe or a hardening note"
+    continue
+  fi
+  if echo "$tagset" | grep -Eq 'injection|ruff:' && echo "$ref" | grep -q '^H'; then
+    say_fail "risky line $loc is tagged [$tagset]; a hardening note isn't enough. If caller input reaches it, it's a finding; if not, write \"safe: <why>\""
+    continue
+  fi
   if echo "$r" | grep -q 'secret-scan:'; then
     case "$ref" in
       F*) echo "$finds" | grep -E "^ *- *$ref *\|" | grep -q 'rule: *hardcoded-secret' \
