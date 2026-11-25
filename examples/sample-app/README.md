@@ -101,7 +101,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
 
    For Build-Agent, switch to the `build` branch first. It's `main` plus a
    commit with a broken build script, a failing unit test, and a CI workflow
-   that skips a step. It needs Ruff:
+   that skips a step. It needs Ruff (`brew install ruff`):
 
    ```sh
    git -C /tmp/itemctl-test checkout -q build
