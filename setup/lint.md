@@ -11,8 +11,8 @@ code. Code checks also block the shortcuts agents take to make lint pass.
 | Piece | File to copy | What it does |
 | ----- | ------------ | ------------ |
 | Linter config | `setup/ruff.toml` | Rules that catch common agent mistakes |
-| Lint guard | `.agents/checks/lint-guard.sh` | Fails on new suppression comments, lint config edits, leftover files like `app_old.py`, and `--no-verify` |
-| Context lint | `.agents/checks/context-lint.sh` | Checks `AGENTS.md`, role files, and wrappers: length, file references that no longer exist, leftover TODOs, frontmatter |
+| Lint guard | `.agents/shared/lint-guard.sh` | Fails on new suppression comments, lint config edits, leftover files like `app_old.py`, and `--no-verify` |
+| Context lint | `.agents/shared/context-lint.sh` | Checks `AGENTS.md`, role files, and wrappers: length, file references that no longer exist, leftover TODOs, frontmatter |
 | Pre-commit hook | `setup/githooks/pre-commit` | Runs the linter on staged files, then both checks |
 | Claude Code hook | `setup/claude-lint-hook.sh` | Lints each file right after Claude edits it |
 
@@ -73,8 +73,8 @@ Agents run these to check their work:
 ```markdown
 - Lint code: `ruff check . && ruff format --check .`
 - Fix lint: `ruff check --fix . && ruff format .`
-- Lint guard: `.agents/checks/lint-guard.sh`
-- Lint agent files: `.agents/checks/context-lint.sh`
+- Lint guard: `.agents/shared/lint-guard.sh`
+- Lint agent files: `.agents/shared/context-lint.sh`
 ```
 
 The shared guardrails in `AGENTS.md` already tell every agent to fix lint
@@ -94,7 +94,7 @@ Set `LINT`, `FORMAT_CHECK`, and `PATTERN` at the top of the hook if you
 don't use Ruff. Each clone runs the `git config` line once.
 
 Commit the hook yourself, with `git commit --no-verify`. The guard blocks
-changes to `.githooks/` and `.agents/checks/`, so without the flag the hook
+changes to `.githooks/`, `.agents/shared/`, and each `check.sh`, so without the flag the hook
 blocks its own first commit.
 
 Only a person approves a suppression comment or a lint config change. When
@@ -166,7 +166,7 @@ When you see the same mistake twice in review, don't add a sentence to
 2. If agents call an API instead of your helper, ban the API under
    `[lint.flake8-tidy-imports.banned-api]`, with a message that names the
    helper.
-3. Otherwise, add a `grep` check to a script in `.agents/checks/`. Print
+3. Otherwise, add a `grep` check to a script in `.agents/shared/`. Print
    `file:line` and what to do instead.
 
 Test each new rule on the existing code before you commit it.
@@ -174,7 +174,7 @@ Test each new rule on the existing code before you commit it.
 ## Lint-Agent
 
 With this setup, most lint errors get fixed while the code is written. The
-Lint-Agent (`.agents/roles/lint-agent.md`) handles what's left: errors
+Lint-Agent (`.agents/skills/lint-agent/SKILL.md`) handles what's left: errors
 autofix can't fix, and old errors when you turn on a new rule. It fixes only
 safe rules by hand and lists the rest for you to approve. Point it at a
 folder to clean up old errors one folder at a time.

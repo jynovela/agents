@@ -3,7 +3,7 @@
 Grade a run on the `design` branch against this list. Check the files with
 `git status` and `git diff` in the run folder, open
 `design/wireframes/sell-item.html` in a browser and click through, and read
-`report.md`. Then run `.agents/checks/design-agent.sh report.md` yourself. It
+`report.md`. Then run `.agents/skills/design-agent/check.sh report.md` yourself. It
 must pass.
 
 The `design` branch is `main` plus a small web view (`web/`), two flows

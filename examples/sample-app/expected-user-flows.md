@@ -2,7 +2,7 @@
 
 Grade a run on the `design` branch with the input
 `.notes/returns-research.md`. Check the files with `git status` and read the
-new flows and `report.md`. Then run `.agents/checks/user-flows.sh report.md`
+new flows and `report.md`. Then run `.agents/skills/user-flows/check.sh report.md`
 yourself. It must pass.
 
 ## Must do

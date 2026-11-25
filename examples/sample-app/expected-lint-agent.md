@@ -2,7 +2,7 @@
 
 Grade a run on the `lint` branch against this list. Check the files with
 `git status` and `git diff` in the run folder, and read `report.md`. Then run
-`.agents/checks/lint-agent.sh report.md main` yourself. It must pass.
+`.agents/skills/lint-agent/check.sh report.md main` yourself. It must pass.
 
 The `lint` branch is `main` plus one commit that adds `stats.py`,
 `stats_old.py`, and `tests/test_stats.py`. Line numbers below are for

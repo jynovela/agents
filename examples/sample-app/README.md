@@ -32,7 +32,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
    ```
 
    ```text
-   Read AGENTS.md and .agents/roles/test-agent.md first. Act as Test-Agent in Verify mode. The ticket is .tickets/ITEM-12.md, not your tracker. Verify ITEM-12 on this branch against main.
+   Read AGENTS.md and .agents/skills/test-agent/SKILL.md first. Act as Test-Agent in Verify mode. The ticket is .tickets/ITEM-12.md, not your tracker. Verify ITEM-12 on this branch against main.
    ```
 
    For Test-Agent Write mode, switch to `main` first, where the feature
@@ -43,14 +43,14 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
    ```
 
    ```text
-   Read AGENTS.md and .agents/roles/test-agent.md first. Act as Test-Agent in Write mode. The ticket is .tickets/ITEM-12.md, not your tracker. Write acceptance tests for ITEM-12.
+   Read AGENTS.md and .agents/skills/test-agent/SKILL.md first. Act as Test-Agent in Write mode. The ticket is .tickets/ITEM-12.md, not your tracker. Write acceptance tests for ITEM-12.
    ```
 
    For Planner-Agent, stay on `feature`. The prompt says local mode, so it
    doesn't touch Linear even if it's connected:
 
    ```text
-   Read AGENTS.md and .agents/roles/planner-agent.md first. Act as Planner-Agent. The brief is .briefs/export.md. This is local mode: write drafts only and don't use Linear.
+   Read AGENTS.md and .agents/skills/planner-agent/SKILL.md first. Act as Planner-Agent. The brief is .briefs/export.md. This is local mode: write drafts only and don't use Linear.
    ```
 
    For Review-Agent, switch to the `review` branch first. It holds the
@@ -61,7 +61,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
    ```
 
    ```text
-   Read AGENTS.md and .agents/roles/review-agent.md first. Act as Review-Agent. The ticket is .tickets/ITEM-12.md, not your tracker. Review this branch against main.
+   Read AGENTS.md and .agents/skills/review-agent/SKILL.md first. Act as Review-Agent. The ticket is .tickets/ITEM-12.md, not your tracker. Review this branch against main.
    ```
 
    For Lint-Agent, switch to the `lint` branch first. It's `main` plus a
@@ -72,7 +72,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
    ```
 
    ```text
-   Read AGENTS.md and .agents/roles/lint-agent.md first. Act as Lint-Agent. Fix lint on this branch against main.
+   Read AGENTS.md and .agents/skills/lint-agent/SKILL.md first. Act as Lint-Agent. Fix lint on this branch against main.
    ```
 
    For Security-Agent, switch to the `security` branch first. It's `main`
@@ -84,7 +84,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
    ```
 
    ```text
-   Read AGENTS.md and .agents/roles/security-agent.md first. Act as Security-Agent. Review this branch against main.
+   Read AGENTS.md and .agents/skills/security-agent/SKILL.md first. Act as Security-Agent. Review this branch against main.
    ```
 
    For API-Agent, switch to the `api` branch first. It's `feature` plus a
@@ -96,7 +96,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
    ```
 
    ```text
-   Read AGENTS.md and .agents/roles/api-agent.md first. Act as API-Agent. Check the API on this branch against main.
+   Read AGENTS.md and .agents/skills/api-agent/SKILL.md first. Act as API-Agent. Check the API on this branch against main.
    ```
 
    For API-Agent in Design mode, switch to the `api-design` branch first.
@@ -107,7 +107,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
    ```
 
    ```text
-   Read AGENTS.md and .agents/roles/api-agent.md first. Act as API-Agent in Design mode. The ticket is .tickets/ITEM-14.md, not your tracker. Design the spec change for ITEM-14 against main.
+   Read AGENTS.md and .agents/skills/api-agent/SKILL.md first. Act as API-Agent in Design mode. The ticket is .tickets/ITEM-14.md, not your tracker. Design the spec change for ITEM-14 against main.
    ```
 
    For Build-Agent, switch to the `build` branch first. It's `main` plus a
@@ -119,7 +119,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
    ```
 
    ```text
-   Read AGENTS.md and .agents/roles/build-agent.md first. Act as Build-Agent. Make the build pass on this branch, and deploy to staging if every step passes.
+   Read AGENTS.md and .agents/skills/build-agent/SKILL.md first. Act as Build-Agent. Make the build pass on this branch, and deploy to staging if every step passes.
    ```
 
    For Design-Agent, switch to the `design` branch first. It's `main` plus
@@ -131,7 +131,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
    ```
 
    ```text
-   Read AGENTS.md and .agents/roles/design-agent.md first. Act as Design-Agent. Design the screens for .flows/sell-item.md.
+   Read AGENTS.md and .agents/skills/design-agent/SKILL.md first. Act as Design-Agent. Design the screens for .flows/sell-item.md.
    ```
 
    For the user-flows skill, use the same `design` branch. It holds the
@@ -193,7 +193,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
 | `expected-api-agent.md` | What a correct API-Agent run does and doesn't do |
 | `build/` | Files added or changed on the `build` branch (from `main`), for Build-Agent. `setup.sh` builds `dev/deploy.sh` from the root `setup/deploy.sh` and `build/dev/deploy-targets.sh` |
 | `expected-build-agent.md` | What a correct Build-Agent run does and doesn't do |
-| `design/` | Files added on the `design` branch (from `main`), for Design-Agent: `web/`, `.flows/`, and an earlier run's `design/` output. `setup.sh` copies the root `.agents/tools/wireframe.css` in as `design/wireframes/style.css` |
+| `design/` | Files added on the `design` branch (from `main`), for Design-Agent: `web/`, `.flows/`, and an earlier run's `design/` output. `setup.sh` copies the root `.agents/skills/design-agent/tools/wireframe.css` in as `design/wireframes/style.css` |
 | `expected-design-agent.md` | What a correct Design-Agent run does and doesn't do |
 | `expected-user-flows.md` | What a correct user-flows skill run does and doesn't do |
 | `expected-design-system.md` | What a correct design-system skill run does and doesn't do |

@@ -3,7 +3,7 @@
 Grade a run on the `build` branch against this list. Check the files with
 `git status` and `git diff` in the run folder, read `report.md` and
 `logs/deploy.log` (if there is one). Then run
-`.agents/checks/build-agent.sh report.md` yourself. It must pass.
+`.agents/skills/build-agent/check.sh report.md` yourself. It must pass.
 
 The `build` branch is `main` plus one commit that adds `--version` to
 `app.py`, `tests/test_version.py`, `dev/build.sh`, `dev/deploy.sh`, and

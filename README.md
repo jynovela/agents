@@ -6,40 +6,53 @@ Generic agent roles and guardrails to copy into a project and tailor.
 
 | Path | Read by | What it holds |
 | ---- | ------- | ------------- |
-| `AGENTS.md` | Hermes, Codex, Cursor, and most tools | Project basics, shared guardrails, sources of truth, role list |
+| `agents/<name>/` | You, and `install.sh` | One folder per agent with everything it owns: `SKILL.md` (the instructions, and the source of truth), `check.sh`, `tools/` (helper scripts, so a small model doesn't do fiddly text work by hand), and `claude.md` (the Claude Code wrapper) |
+| `skills/<name>/` | You, and `install.sh` | The same shape for a skill: a procedure any agent, or you, can run. It has no wrapper. |
+| `shared/` | Every agent | `lib.sh`, the helpers every check script uses, and the checks that serve all agents: `lint-guard.sh`, `context-lint.sh`, `secret-scan.sh`, `spec-diff.sh`, and `build-guard.sh`. See `setup/lint.md`, `setup/security.md`, `setup/api.md`, and `setup/build.md`. |
+| `install.sh` | You | Copies agents and skills into a project |
+| `AGENTS.md` | Hermes, Codex, Cursor, and most tools | Project basics, shared guardrails, sources of truth, agent list |
 | `CLAUDE.md` | Claude Code | `@AGENTS.md`, so Claude Code loads the same file |
-| `agents/<name>/` | You, and `install.sh` | One folder per agent with everything it owns: `SKILL.md` (the instructions, and the source of truth), `check.sh`, and `claude.md` (the Claude Code wrapper). Docs-Agent lives here now. The other agents move in next. |
-| `shared/` | Every check script | `lib.sh`, the helpers the check scripts share |
-| `install.sh` | You | Copies agents from `agents/` into a project: `./install.sh <project-dir> docs-agent` |
-| `.agents/roles/<name>.md` | Any agent, via the role list in `AGENTS.md` | The full role definition of an agent that hasn't moved to `agents/` yet |
-| `.claude/agents/<name>.md` | Claude Code (as a subagent) | A thin wrapper that points to the role file |
-| `.agents/skills/<name>/SKILL.md` | Hermes, and Claude Code through the `.claude/skills/<name>` link | A procedure any agent can run, like writing user flows |
-| `.agents/tools/*.sh` | The agent | Helper scripts a role runs so a small model doesn't do fiddly text work by hand |
-| `.agents/checks/<name>.sh` | The agent, and you after a run | Checks in code that back up the written rules (changed files, secrets). `lib.sh` holds the checks every role shares. `lint-guard.sh`, `context-lint.sh`, `secret-scan.sh`, and `spec-diff.sh` serve every agent: see `setup/lint.md`, `setup/security.md`, and `setup/api.md`. |
 | `setup/` | You, once per project | Setup guides, plus files they tell you to copy, such as the Ruff config and git hooks |
 | `.markdownlint-cli2.yaml` | markdownlint | Default doc lint rules |
-| `examples/sample-app/` | You, when testing a role | A small test app with traps and an expected result for each agent. Don't copy it into projects. |
+| `examples/sample-app/` | You, when testing an agent | A small test app with traps and an expected result for each agent. Don't copy it into projects. |
+| `.agents/`, `.claude/` | Tools opened in this repo | Links to `agents/`, `skills/`, and `shared/`, so this repo looks like a project with everything installed. Don't copy them. |
 
 Written rules aren't enough on their own, especially with smaller models. Any
 rule that code can check (which files changed, whether a secret leaked) also
 gets a check script that fails the run.
 
-Each rule lives in one file. Wrappers point to role files instead of copying
-them, so the two can't drift apart.
+Each rule lives in one file. Wrappers point to `SKILL.md` instead of copying
+it, so the two can't drift apart.
 
 ## Use in a project
 
-1. Copy `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/agents/`, `.claude/skills/`, and
-   `.markdownlint-cli2.yaml` into the project root.
-   Then install the agents that live in `agents/`. From this repo, run
-   `./install.sh <project-dir> docs-agent`. It writes
-   `.agents/skills/docs-agent/`, `.agents/shared/lib.sh`, and
-   `.claude/agents/docs-agent.md` in the project. The `.agents/` and
-   `.claude/` folders in this repo hold links for those agents, so copying
-   alone leaves them broken.
-2. Fill in every `<!-- TAILOR: ... -->` comment: the project overview, stack,
-   commands, and each role's verify commands.
-3. Remove roles you don't use from the table in `AGENTS.md`.
+1. Clone this repo next to your project. From this repo, install everything:
+
+   ```sh
+   ./install.sh <project-dir> all
+   ```
+
+   Or install only what you want, by folder name:
+
+   ```sh
+   ./install.sh <project-dir> docs-agent test-agent
+   ```
+
+   In the project this writes:
+
+   | Path | What it holds |
+   | ---- | ------------- |
+   | `.agents/skills/<name>/` | `SKILL.md`, `check.sh`, and `tools/` for each agent or skill |
+   | `.agents/shared/` | `lib.sh` and the shared checks |
+   | `.claude/agents/<name>.md` | The Claude Code wrapper for each agent |
+   | `.claude/skills/<name>` | A link to each skill, so Claude Code finds it |
+
+   Running it again replaces those files with this repo's version. It never
+   commits.
+2. Copy `AGENTS.md`, `CLAUDE.md`, and `.markdownlint-cli2.yaml` into the
+   project root. Fill in every `<!-- TAILOR: ... -->` comment: the project
+   overview, stack, commands, and each agent's verify commands.
+3. Remove agents you didn't install from the table in `AGENTS.md`.
 4. In a monorepo, add a short `AGENTS.md` in a package folder for rules that
    apply only there. Hermes and Codex merge nested files from the repo root
    down to the working folder.
@@ -201,9 +214,9 @@ gets. To limit which shell commands it can run, add permission rules in
 
 ### Hermes
 
-Hermes loads `AGENTS.md` automatically. It has no role files, so ask for the
-role by name, for example "act as Docs-Agent". The role list in `AGENTS.md`
-tells the model which file to read. Don't add a `.hermes.md` file: Hermes
+Hermes loads `AGENTS.md` automatically. Ask for the agent by name, for
+example "act as Docs-Agent". The agent list in `AGENTS.md` tells the model
+which `SKILL.md` to read. Don't add a `.hermes.md` file: Hermes
 loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 
 ## Roles

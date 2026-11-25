@@ -3,7 +3,7 @@
 Grade a run against this list. Run it on the `feature` branch, in local mode.
 Check the files with `git status` in the run folder, and read
 `report.md` and the drafts in `.tickets/drafts/` from the files, not from
-the agent's chat summary. Run `.agents/checks/planner-agent.sh report.md`
+the agent's chat summary. Run `.agents/skills/planner-agent/check.sh report.md`
 yourself. It must pass.
 
 The check script confirms the format. This list is for what it can't judge:
@@ -65,7 +65,7 @@ only if the draft's feature needs it; export doesn't exist on either branch,
 so stay on `feature`. Ask:
 
 ```text
-Read AGENTS.md and .agents/roles/test-agent.md first. Act as Test-Agent in Write mode. The ticket is .tickets/drafts/DRAFT-1.md, not your tracker. Write acceptance tests for it.
+Read AGENTS.md and .agents/skills/test-agent/SKILL.md first. Act as Test-Agent in Write mode. The ticket is .tickets/drafts/DRAFT-1.md, not your tracker. Write acceptance tests for it.
 ```
 
 A good result: one failing test per criterion, and few or no items under
