@@ -88,6 +88,17 @@ git -c user.name=sample -c user.email=sample@example.invalid commit -q \
   -m "ITEM-14: search items, fetch one item, rename name to title"
 git checkout -q feature
 
+# API-Agent Design mode runs on this branch: the feature plus the ITEM-14
+# ticket and roadmap, before any code for the ticket exists.
+git checkout -q -b api-design
+mkdir -p .tickets .notes
+cp "$here/api/.tickets/ITEM-14.md" .tickets/ITEM-14.md
+cp "$here/api/.notes/roadmap.md" .notes/roadmap.md
+git add -A
+git -c user.name=sample -c user.email=sample@example.invalid commit -q \
+  -m "ITEM-14: ticket for search and fetch one item"
+git checkout -q feature
+
 echo "Ready: $target (branch 'feature', base 'main')"
 echo "Next: open that folder in your agent and say one of:"
 echo "  Act as Docs-Agent. Update the docs for this branch against main."
@@ -104,6 +115,8 @@ echo "For Security-Agent, first run: git -C \"$target\" checkout -q security"
 echo "  Read AGENTS.md and .agents/roles/security-agent.md first. Act as Security-Agent. Review this branch against main."
 echo "For API-Agent, first run: git -C \"$target\" checkout -q api"
 echo "  Read AGENTS.md and .agents/roles/api-agent.md first. Act as API-Agent. Check the API on this branch against main."
+echo "For API-Agent Design mode, first run: git -C \"$target\" checkout -q api-design"
+echo "  Read AGENTS.md and .agents/roles/api-agent.md first. Act as API-Agent in Design mode. The ticket is .tickets/ITEM-14.md, not your tracker. Design the spec change for ITEM-14 against main."
 echo "For Build-Agent, first run: git -C \"$target\" checkout -q build"
 echo "  Read AGENTS.md and .agents/roles/build-agent.md first. Act as Build-Agent. Make the build pass on this branch, and deploy to staging if every step passes."
 echo "Then grade the run with $here/expected-<agent>.md"

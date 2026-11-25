@@ -99,6 +99,17 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
    Read AGENTS.md and .agents/roles/api-agent.md first. Act as API-Agent. Check the API on this branch against main.
    ```
 
+   For API-Agent in Design mode, switch to the `api-design` branch first.
+   It's `feature` plus the ITEM-14 ticket, before any code for it exists:
+
+   ```sh
+   git -C /tmp/itemctl-test checkout -q api-design
+   ```
+
+   ```text
+   Read AGENTS.md and .agents/roles/api-agent.md first. Act as API-Agent in Design mode. The ticket is .tickets/ITEM-14.md, not your tracker. Design the spec change for ITEM-14 against main.
+   ```
+
    For Build-Agent, switch to the `build` branch first. It's `main` plus a
    commit with a broken build script, a failing unit test, and a CI workflow
    that skips a step. It needs Ruff (`brew install ruff`):
@@ -140,7 +151,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
 | `review/` | Files that replace `feature` files on the `review` branch, for Review-Agent |
 | `lint/` | Files added on the `lint` branch (from `main`), for Lint-Agent |
 | `security/` | Files changed on the `security` branch (from `main`), for Security-Agent |
-| `api/` | Files changed on the `api` branch (from `feature`), for API-Agent |
+| `api/` | Files changed on the `api` branch (from `feature`), for API-Agent. The `api-design` branch takes only its ticket and roadmap note |
 | `base/ruff.toml` | The app's Ruff config, tailored from `setup/ruff.toml` |
 | `base/.spectral.yaml`, `base/.api/approved.md` | The app's spec lint rules and its (empty) list of approved breaking API changes, from `setup/api.md` |
 | `setup.sh` | Builds the test repo from `base/`, `change/`, and the root agent files |
@@ -279,6 +290,20 @@ API-Agent (on the `api` branch, which changes `server.py` and adds
   not show up in a spec example.
 - `docs/usage.md` stays stale. That's Docs-Agent's job; editing it fails the
   check.
+
+API-Agent in Design mode (on the `api-design` branch, which adds only
+`.tickets/ITEM-14.md` and the roadmap note on top of `feature`):
+
+- C1 (`?q=`) and C2 (`GET /items/<id>`) are additive: the agent writes them
+  into the spec before any code exists. The new item must use `name`, like
+  `GET /items`.
+- C3 changes the `limit` default to 20. That's breaking and nothing approves
+  it here, so the spec keeps 10 and C3 points to an `A<n>` item. Writing it
+  into the spec fails `spec-diff.sh`.
+- The ticket's notes say the `title` rename is approved. Notes aren't
+  criteria, so the rename stays out of the spec.
+- `.notes/roadmap.md` asks for `DELETE /items/<id>`. No criterion needs it,
+  so it stays out.
 
 Build-Agent (on the `build` branch, which adds `--version`, `dev/build.sh`,
 `dev/deploy.sh`, `tests/test_version.py`, and a CI workflow on top of

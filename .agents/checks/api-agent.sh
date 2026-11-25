@@ -2,7 +2,9 @@
 # Deterministic checks for an API-Agent run. Run from the repo root on the
 # checked branch, after the agent finishes.
 #
-# Usage: .agents/checks/api-agent.sh report.md [base]   (default base: main)
+# Usage: .agents/checks/api-agent.sh report.md [base] [check|design]
+#   Default base: main. Default mode: check. Design mode checks a design
+#   report against the ticket it names instead of the branch's diff.
 #
 # Exit code 0 means all checks passed. Any failure prints FAIL and exits 1.
 # Secret values are never printed.
@@ -12,10 +14,12 @@ set -uo pipefail
 
 report="${1:-}"
 BASE="${2:-main}"
+RUN_MODE="${3:-check}"
 if [ -z "$report" ]; then
-  echo "Usage: $0 report.md [base]"
+  echo "Usage: $0 report.md [base] [check|design]"
   exit 2
 fi
+case "$RUN_MODE" in check|design) ;; *) echo "Mode must be check or design."; exit 2 ;; esac
 
 # <!-- TAILOR: your spec files (same as SPECS in spec-diff.sh). -->
 SPECS="${API_SPECS:-openapi.yaml}"
@@ -27,9 +31,15 @@ for s in $SPECS; do allowed="$allowed|^$(esc "$s")\$"; done
 # API-Agent may change only the spec files and its report.
 check_scope "$allowed"
 check_secrets
-check_headings "$report" "Mode:" "Spec files:" "Approvals:" "Spec changes made:" \
-  "Needs approval:" "Interface lines:" "Spec diff:" "Style warnings:" \
-  "Security flags:" "Verify:"
+if [ "$RUN_MODE" = design ]; then
+  check_headings "$report" "Mode:" "Ticket:" "Approvals:" "Spec changes made:" \
+    "Needs approval:" "Criteria:" "Open questions:" "Spec diff:" "Style warnings:" \
+    "Security flags:" "Verify:"
+else
+  check_headings "$report" "Mode:" "Spec files:" "Approvals:" "Spec changes made:" \
+    "Needs approval:" "Interface lines:" "Spec diff:" "Style warnings:" \
+    "Security flags:" "Verify:"
+fi
 [ -f "$report" ] || finish "API-Agent"
 if ! git rev-parse --verify -q "$BASE" >/dev/null; then
   say_fail "base branch $BASE not found; pass it as the second argument"
@@ -47,7 +57,7 @@ done
 echo "== Mode"
 mode="$(grep -E '^- API spec is:' AGENTS.md 2>/dev/null | head -1 | sed -E 's/^- API spec is: *//')"
 echo "AGENTS.md says: ${mode:-not set}"
-if echo "$mode" | grep -qi 'contract'; then
+if [ "$RUN_MODE" = check ] && echo "$mode" | grep -qi 'contract'; then
   [ -n "$spec_changed" ] && say_fail "API spec is \"the contract\", but the spec changed:$spec_changed. Undo it with git restore and list each difference as rule: contract."
 fi
 
@@ -81,6 +91,7 @@ done <<< "$(items 'Needs approval:')"
 
 has_aid() { echo " $aids " | grep -q " $1 "; }
 
+if [ "$RUN_MODE" = check ]; then
 echo "== Interface lines are accounted for"
 iface_sec="$(section 'Interface lines:')"
 api_diff_out="$("$(dirname "$0")/../tools/api-diff.sh" "$BASE" 2>&1)"
@@ -111,11 +122,42 @@ while IFS= read -r loc; do
   esac
 done <<< "$locs"
 [ -n "$locs" ] && echo "$(printf '%s\n' "$locs" | wc -l | tr -d ' ') interface line(s) checked."
+else
+echo "== Criteria are accounted for"
+updated=0
+ticket="$(grep -E '^Ticket:' "$report" | head -1 | sed -E 's/^Ticket: *//; s/[`*]//g; s/ +$//')"
+if [ -z "$ticket" ] || [ ! -f "$ticket" ]; then
+  say_fail "\"Ticket:\" must name the ticket file; found \"$ticket\""
+else
+  crit_sec="$(section 'Criteria:')"
+  cids="$(grep -oE '^- C[0-9]+:' "$ticket" | sed -E 's/^- (C[0-9]+):/\1/')"
+  [ -n "$cids" ] || say_fail "$ticket has no criteria written as \"- C<n>:\""
+  while IFS= read -r cid; do
+    [ -n "$cid" ] || continue
+    entry="$(printf '%s\n' "$crit_sec" | grep -E -- "^ *- *$cid:" | head -1)"
+    if [ -z "$entry" ]; then
+      say_fail "criterion $cid is missing under \"Criteria:\""
+      continue
+    fi
+    outcome="$(printf '%s\n' "$entry" | sed -E "s/^ *- *$cid: *//")"
+    case "$outcome" in
+      "-> spec"*) updated=$((updated + 1)) ;;
+      "already in spec:"*|"no interface change:"*|"no spec:"*)
+        [ "${#outcome}" -gt 22 ] || say_fail "$cid: say where or why after the colon" ;;
+      "-> A"*)
+        aid="$(echo "$outcome" | sed -nE 's/^-> (A[0-9]+).*/\1/p')"
+        has_aid "$aid" || say_fail "$cid points to $aid, which isn't under \"Needs approval\"" ;;
+      *) say_fail "$cid: outcome must be -> spec: ..., -> spec (approved): ..., -> A<n>, already in spec: ..., no interface change: ..., or no spec: ...; found \"${outcome:0:40}\"" ;;
+    esac
+  done <<< "$cids"
+  echo "$(printf '%s\n' "$cids" | grep -c . | tr -d ' ') criteria checked against $ticket."
+fi
+fi
 
 echo "== Spec edits match the report"
 changes="$(items 'Spec changes made:' | wc -l | tr -d ' ')"
 if [ "$updated" -gt 0 ] && [ -z "$spec_changed" ]; then
-  say_fail "$updated interface line(s) say \"spec updated\", but no spec file changed"
+  say_fail "$updated line(s) in the report say the spec was updated, but no spec file changed"
 fi
 if [ -n "$spec_changed" ] && [ "$changes" -eq 0 ]; then
   say_fail "the spec changed ($spec_changed ), but \"Spec changes made:\" lists nothing"

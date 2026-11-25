@@ -129,12 +129,17 @@ changes to hooks and config, so agents can't loosen them later.
    criteria to Linear Backlog (or local drafts) and stops. Read them, fix
    what you disagree with, and move the ones you want to To-do yourself. Or
    write the ticket and its criteria by hand.
-2. Ask the Test-Agent for **Write** mode. It writes one acceptance test per
+2. If the ticket changes an endpoint, ask the API-Agent for **Design** mode
+   first. It writes the additive parts of the ticket into the spec and lists
+   breaking ones for approval. Review the spec diff and commit it, along with
+   any approval lines you add to `.api/approved.md`. Tests and code are then
+   written against that spec.
+3. Ask the Test-Agent for **Write** mode. It writes one acceptance test per
    criterion, and each must fail because the feature isn't built yet.
-3. Review the tests yourself before anything else. Check that every assertion
+4. Review the tests yourself before anything else. Check that every assertion
    traces to a criterion, read the assumptions it lists under "Needs
    approval", and add any edge case it missed. Then commit the tests.
-4. Hand the ticket to your code agent, with the tests fenced (setup step 4).
+5. Hand the ticket to your code agent, with the tests fenced (setup step 4).
    If lint errors are left when it's done, ask the Lint-Agent to fix lint on
    the branch. If the branch touches an endpoint, a CLI flag, or an
    environment variable, ask the API-Agent to check the API. It writes
@@ -144,26 +149,26 @@ changes to hooks and config, so agents can't loosen them later.
    If the build fails, ask the Build-Agent why. It fixes build
    scripts and names the owner of every other cause. Commit its fixes as
    their own commit, so review doesn't count them as scope creep.
-5. Ask the Test-Agent for **Verify** mode. It runs the acceptance tests
+6. Ask the Test-Agent for **Verify** mode. It runs the acceptance tests
    against the running app and reports each criterion with evidence. If
    any criterion fails, send the work back to your code agent and skip
    review until Verify passes.
-6. Ask the Review-Agent to review the branch. Run it on a different model
+7. Ask the Review-Agent to review the branch. Run it on a different model
    family than the one that wrote the code, and on the strongest model you
    have: it's the last check before merge. In testing, a dense 31B model
    scored steadily, while a small mixture-of-experts model (about 3B active)
    missed different things on every run. It checks each criterion, scope,
    and design, and gives a verdict. It never edits code.
-7. Ask the Security-Agent to review the branch. It runs the secret scanner
+8. Ask the Security-Agent to review the branch. It runs the secret scanner
    and security lint, checks what they miss, and gives a result of BLOCK,
    REVIEW, or PASS. It never edits code. In testing, a small model (about 3B
    active) scored 13, 11, and 13 of 14 against a frontier model's 13, because
    the scanners and check script do most of the work. Its misses were
    judgment calls like path traversal, so for risky changes (auth, file
    handling, new endpoints) run it on your strongest model too.
-8. Read the verdict, the security result, and the findings, then merge or
+9. Read the verdict, the security result, and the findings, then merge or
    send the work back.
-9. Test on staging before it goes live. Ask the Build-Agent to deploy to
+10. Test on staging before it goes live. Ask the Build-Agent to deploy to
    staging (or let your host build the preview), and click through the
    change. Then release to production yourself. No agent can.
 

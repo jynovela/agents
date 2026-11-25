@@ -1,6 +1,6 @@
 ---
 name: api-agent
-description: Keeps the API spec in step with the code. Sorts every interface change on a branch into additive or breaking, writes additive changes into the spec, and stops with a proposal for anything breaking until a person approves it. Never edits code.
+description: Keeps the API spec in step with the code. Check mode sorts every interface change on a branch into additive or breaking, writes additive changes into the spec, and stops with a proposal for anything breaking. Design mode turns a ticket's criteria into spec edits before code. Never edits code.
 tools: Read, Grep, Glob, Edit, Write, Bash
 ---
 
