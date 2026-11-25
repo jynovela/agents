@@ -1,0 +1,17 @@
+/* Shared low-fidelity wireframe style. Grayscale on purpose: layout and flow only. */
+* { box-sizing: border-box; }
+body { margin: 0; background: #eee; color: #222; font: 16px/1.5 system-ui, sans-serif; }
+.screen { max-width: 390px; min-height: 100vh; margin: 0 auto; padding: 16px; background: #fff; border-left: 1px solid #ccc; border-right: 1px solid #ccc; }
+.crumb { font-size: 13px; color: #666; }
+h1 { font-size: 22px; margin: 8px 0 16px; }
+label { display: block; font-weight: 600; margin-top: 12px; }
+input, select, textarea { display: block; width: 100%; min-height: 44px; padding: 8px; border: 1px solid #888; border-radius: 4px; font: inherit; }
+input[type="checkbox"], input[type="radio"] { display: inline-block; width: 24px; min-height: 24px; margin-right: 8px; }
+.error { color: #222; font-size: 14px; border-left: 4px solid #222; padding-left: 8px; }
+.button { display: block; min-height: 44px; margin-top: 12px; padding: 10px; border: 1px solid #222; border-radius: 4px; color: #222; text-align: center; text-decoration: none; }
+.button.primary { background: #222; color: #fff; }
+.box { border: 1px dashed #888; padding: 12px; margin: 12px 0; }
+.list { list-style: none; padding: 0; }
+.list li { border-bottom: 1px solid #ccc; min-height: 44px; padding: 10px 0; }
+.placeholder { background: #ddd; padding: 8px; font-style: italic; }
+.states { margin-top: 24px; padding: 8px; border-top: 1px dashed #888; font-size: 13px; color: #555; }

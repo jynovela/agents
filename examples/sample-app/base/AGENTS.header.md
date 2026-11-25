@@ -42,3 +42,11 @@ Acceptance criteria come from: files in `.tickets/`, named by ticket ID.
 Planner writes tickets to: local drafts in `.tickets/drafts/` only.
 
 Planner reads code in: this repository.
+
+## Design
+
+Flows come from: `.flows/`, one file per flow.
+
+Design writes to: `design/`
+
+UI code lives in: `web/`
