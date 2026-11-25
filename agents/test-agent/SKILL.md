@@ -146,7 +146,8 @@ Do every step, in order. Each step fills a part of the report.
 5. Run the acceptance tests. Record each criterion under "Criteria" with
    `result: PASS` or `result: FAIL` and the evidence. For each FAIL, check the
    database and the logs to find the cause. If the code is wrong, add it under
-   "Failing tests" as a likely source bug, with the file and line.
+   "Failing tests" as a likely source bug, with the file and line, for
+   Implementer-Agent to fix.
 6. Run the unit tests. List each failing test under "Failing tests". Don't
    touch existing tests. If a failing test passed on the base branch, start
    its line with "Regression:". `test-agent.sh` lists these for you.
