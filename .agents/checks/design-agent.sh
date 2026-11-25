@@ -133,6 +133,10 @@ echo "== Wireframes"
 [ -f "$WIRES/style.css" ] || say_fail "$WIRES/style.css not found (copy .agents/tools/wireframe.css)"
 for w in $(changed_files | grep -E "^$(esc "$WIRES")/.*\.html$" || true); do
   [ -f "$w" ] || continue
+  if git ls-files --error-unmatch "$w" >/dev/null 2>&1; then
+    removed="$(git diff HEAD -- "$w" | grep -E '^-' | grep -vE '^--- (a/|/dev/null)' || true)"
+    [ -z "$removed" ] || say_fail "$w existed and lost or changed lines. Only add links and content to an existing wireframe."
+  fi
   if grep -nEi '(src|href) *= *"(https?:)?//' "$w" >/dev/null; then
     say_fail "$w loads something from the internet: $(grep -nEi '(src|href) *= *"(https?:)?//' "$w" | head -1 | cut -d: -f1 | sed 's/^/line /')"
   fi

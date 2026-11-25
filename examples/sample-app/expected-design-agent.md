@@ -45,6 +45,11 @@ run designed for edit-item (`S1` Item list, `S2` Item detail).
 - [ ] No screen for the D1 branch's missing half or for the exit. Those are
       questions, not designs.
 - [ ] No colors, fonts, or images beyond the shared `style.css`.
+- [ ] No content the flow doesn't ask for, like an "original price" next
+      to the sale price, and no button that answers an open question, like
+      a "Last unit" action for D1's missing branch.
+- [ ] The S2 wireframe keeps "Save" as its primary button; only the new
+      link is added.
 
 ## Must not do
 

@@ -141,7 +141,8 @@ Do every step, in order. Each step fills a part of the report.
    exist, run `cp .agents/tools/wireframe.css design/wireframes/style.css`.
    Write `design/wireframes/S<n>.html` for each new screen, using the
    wireframe format below. Every action is a link to its target screen's
-   file. Add new links to reused screens' wireframes. Write
+   file. Add new links to reused screens' wireframes, without changing
+   or removing any line already there. Write
    `design/wireframes/<flow>.html` listing the flow's screens in step order.
 7. **Ask first and security.** Read the flow's "Notes" section and its
    steps again. Under "Ask first:", list each screen, step, or feature the
