@@ -154,9 +154,13 @@ changes to hooks and config, so agents can't loosen them later.
    scored steadily, while a small mixture-of-experts model (about 3B active)
    missed different things on every run. It checks each criterion, scope,
    and design, and gives a verdict. It never edits code.
-7. Ask the Security-Agent to review the branch, on the same strong model.
-   It runs the secret scanner and security lint, checks what they miss, and
-   gives a result of BLOCK, REVIEW, or PASS. It never edits code.
+7. Ask the Security-Agent to review the branch. It runs the secret scanner
+   and security lint, checks what they miss, and gives a result of BLOCK,
+   REVIEW, or PASS. It never edits code. In testing, a small model (about 3B
+   active) scored 13, 11, and 13 of 14 against a frontier model's 13, because
+   the scanners and check script do most of the work. Its misses were
+   judgment calls like path traversal, so for risky changes (auth, file
+   handling, new endpoints) run it on your strongest model too.
 8. Read the verdict, the security result, and the findings, then merge or
    send the work back.
 9. Test on staging before it goes live. Ask the Build-Agent to deploy to
@@ -187,5 +191,5 @@ loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 | Lint-Agent | Ready |
 | API-Agent | Testing |
 | Build-Agent | Testing |
-| Security-Agent | Testing |
+| Security-Agent | Ready |
 | Review-Agent | Ready |

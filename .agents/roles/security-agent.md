@@ -171,6 +171,11 @@ Do every step, in order. Each step fills a part of the report.
    (`?` with a tuple) or only fixed values, it's safe. A file path built
    from caller input with no check that it stays in its folder is
    `injection` (path traversal), a finding, never a hardening note.
+   A folder prefix doesn't count as that check:
+   `os.path.join("exports", name)` still escapes with `name="../x"`, and
+   returns `name` itself when it's an absolute path like `/etc/x`. A
+   real check looks like `os.path.basename(name) == name`, or a resolved
+   path compared against the folder.
 5. **Auth.** List every handler or route the change adds or changes. For
    each, write under "Handlers:" what it does, which auth check it calls,
    and the line of that check, or `no check`. Compare handlers that touch

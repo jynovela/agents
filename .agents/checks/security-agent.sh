@@ -202,6 +202,19 @@ while IFS= read -r r; do
 done <<< "$risky"
 [ -n "$risky" ] || echo "None."
 
+echo "== Lines with a finding point to it"
+# A finding's own line can't be marked safe under "Risky lines:".
+while IFS= read -r line; do
+  [ -n "$line" ] || continue
+  fid="$(echo "$line" | sed -nE 's/^ *- *(F[0-9]+) *\|.*/\1/p')"
+  floc="$(field "$line" 4)"
+  [ -n "$fid" ] && [ -n "$floc" ] || continue
+  entry="$(printf '%s\n' "$risky_sec" | grep -E "^ *- *$floc[^0-9]" | head -1)"
+  if [ -n "$entry" ] && ! echo "$entry" | grep -Eq -- "-> *$fid([^0-9]|$)"; then
+    say_fail "$fid is at $floc, but that risky line doesn't point to $fid"
+  fi
+done <<< "$finds"
+
 echo "== Harness and dependency files are listed"
 hd_sec="$(section 'Harness and dependency files:')"
 hd_files="$(printf '%s\n' "$diff_out" | awk '/^== (Harness|Dependency) files/{f=1; next} /^== /{f=0} f && NF && $0 != "None."')"
