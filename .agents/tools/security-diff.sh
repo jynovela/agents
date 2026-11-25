@@ -66,14 +66,32 @@ if command -v gitleaks >/dev/null 2>&1 && [ -x "$here/../checks/secret-scan.sh" 
   scanned="$("$here/../checks/secret-scan.sh" "$base" 2>/dev/null | sed -nE 's/^FAIL: ([^ ]+:[0-9]+) ([^ ]+) \(value not shown\)$/\1 secret-scan:\2/p')"
 fi
 pyfiles="$(echo "$files" | grep -E '\.py$' || true)"
-if command -v ruff >/dev/null 2>&1 && [ -n "$pyfiles" ]; then
+# Hermes and some agent shells don't have pip's user bin folder on PATH, so
+# fall back to running Ruff as a Python module.
+RUFF=""
+if command -v ruff >/dev/null 2>&1; then
+  RUFF="ruff"
+elif python3 -m ruff --version >/dev/null 2>&1; then
+  RUFF="python3 -m ruff"
+fi
+if [ -n "$RUFF" ] && [ -n "$pyfiles" ]; then
   existing=""
   for f in $pyfiles; do [ -f "$f" ] && existing="$existing $f"; done
   if [ -n "$existing" ]; then
     # shellcheck disable=SC2086
     scanned="$scanned
-$(ruff check --select S --output-format concise --no-cache $existing 2>/dev/null | sed -nE 's/^([^:]+):([0-9]+):[0-9]+: ([A-Z]+[0-9]+).*/\1:\2 ruff:\3/p')"
+$($RUFF check --select S --output-format concise --no-cache $existing 2>/dev/null | sed -nE 's/^([^:]+):([0-9]+):[0-9]+: ([A-Z]+[0-9]+).*/\1:\2 ruff:\3/p')"
   fi
+fi
+
+echo
+echo "== Security lint"
+if [ -z "$pyfiles" ]; then
+  echo "No .py files changed."
+elif [ -n "$RUFF" ]; then
+  echo "Ran: $RUFF check --select S. Its hits are tagged ruff:<code> below."
+else
+  echo "RUFF NOT INSTALLED: Ruff's hits are missing from the risky lines. Install it with: brew install ruff (or pipx install ruff)"
 fi
 
 echo

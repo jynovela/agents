@@ -21,19 +21,23 @@ the end.
 
 ## 1. Install the linter
 
+On macOS:
+
 ```sh
-pip3 install --user ruff
+brew install ruff
 ```
 
-Or `brew install ruff`. Check that it runs from the same shell your agent
-uses (Hermes uses the system Python):
+Elsewhere, `pipx install ruff` or `pip3 install --user ruff`. Homebrew's
+Python refuses `pip3 install` ("externally-managed-environment"), so use
+`brew` there. Check that it runs from the same shell your agent uses:
 
 ```sh
-ruff --version
+which ruff && ruff --version
 ```
 
 If `ruff` isn't found after a `--user` install, `python3 -m ruff --version`
-works too. Then use `python3 -m ruff` in place of `ruff` in the commands below.
+may work instead. Then use `python3 -m ruff` in place of `ruff` in the
+commands below.
 
 ## 2. Add the config
 
