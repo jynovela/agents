@@ -141,6 +141,9 @@ changes to hooks and config, so agents can't loosen them later.
    additive changes into the spec and lists breaking ones. Approve a breaking
    change by committing its line to `.api/approved.md`, or send the work
    back.
+   If the build fails, ask the Build-Agent why. It fixes build
+   scripts and names the owner of every other cause. Commit its fixes as
+   their own commit, so review doesn't count them as scope creep.
 5. Ask the Test-Agent for **Verify** mode. It runs the acceptance tests
    against the running app and reports each criterion with evidence. If
    any criterion fails, send the work back to your code agent and skip
@@ -156,6 +159,9 @@ changes to hooks and config, so agents can't loosen them later.
    gives a result of BLOCK, REVIEW, or PASS. It never edits code.
 8. Read the verdict, the security result, and the findings, then merge or
    send the work back.
+9. Test on staging before it goes live. Ask the Build-Agent to deploy to
+   staging (or let your host build the preview), and click through the
+   change. Then release to production yourself. No agent can.
 
 ### Claude Code
 
@@ -180,6 +186,6 @@ loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 | Planner-Agent | Ready |
 | Lint-Agent | Ready |
 | API-Agent | Testing |
-| Build-Agent | Planned |
+| Build-Agent | Testing |
 | Security-Agent | Testing |
 | Review-Agent | Ready |

@@ -59,6 +59,25 @@ cp -R "$here/security/." "$target/"
 git add -A
 git -c user.name=sample -c user.email=sample@example.invalid commit -q \
   -m "ITEM-16: search, delete, and export items"
+
+# Build-Agent fixes the build on this branch: main plus a commit with a broken
+# build script, a failing unit test, and a CI workflow that skips a step.
+git checkout -q main
+git checkout -q -b build
+cp -R "$here/build/." "$target/"
+cp "$root/setup/deploy.sh" dev/deploy.sh
+awk -v targets=dev/deploy-targets.sh '
+  /^(DEPLOY|ROLLBACK)_(local|staging)=/ {
+    if (!done) { while ((getline l < targets) > 0) print l; done = 1 }
+    next
+  }
+  { print }' dev/deploy.sh > dev/deploy.sh.new
+mv dev/deploy.sh.new dev/deploy.sh
+chmod +x dev/deploy.sh
+rm dev/deploy-targets.sh
+git add -A
+git -c user.name=sample -c user.email=sample@example.invalid commit -q \
+  -m "ITEM-17: version flag, single-file build, CI, staging deploy"
 git checkout -q feature
 
 # API-Agent checks this branch: the feature plus a commit that changes the service's API.
@@ -85,4 +104,6 @@ echo "For Security-Agent, first run: git -C \"$target\" checkout -q security"
 echo "  Read AGENTS.md and .agents/roles/security-agent.md first. Act as Security-Agent. Review this branch against main."
 echo "For API-Agent, first run: git -C \"$target\" checkout -q api"
 echo "  Read AGENTS.md and .agents/roles/api-agent.md first. Act as API-Agent. Check the API on this branch against main."
+echo "For Build-Agent, first run: git -C \"$target\" checkout -q build"
+echo "  Read AGENTS.md and .agents/roles/build-agent.md first. Act as Build-Agent. Make the build pass on this branch, and deploy to staging if every step passes."
 echo "Then grade the run with $here/expected-<agent>.md"
