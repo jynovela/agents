@@ -112,6 +112,16 @@ git -c user.name=sample -c user.email=sample@example.invalid commit -q \
   -m "Web view, edit-item screens, and the sell-item flow"
 git checkout -q feature
 
+# Implementer-Agent builds ITEM-18 on this branch: main plus the ticket and its
+# acceptance tests, as if Test-Agent's Write mode ran and you committed them.
+git checkout -q main
+git checkout -q -b implement
+cp -R "$here/implement/." "$target/"
+git add -A
+git -c user.name=sample -c user.email=sample@example.invalid commit -q \
+  -m "ITEM-18: ticket and acceptance tests for itemctl show"
+git checkout -q feature
+
 echo "Ready: $target (branch 'feature', base 'main')"
 echo "Next: open that folder in your agent and say one of:"
 echo "  Act as Docs-Agent. Update the docs for this branch against main."
@@ -138,4 +148,6 @@ echo "For the user-flows skill, also on 'design':"
 echo "  Read AGENTS.md and .agents/skills/user-flows/SKILL.md first. Use the user-flows skill. The input is .notes/returns-research.md."
 echo "For the design-system skill, also on 'design':"
 echo "  Read AGENTS.md and .agents/skills/design-system/SKILL.md first. Use the design-system skill. The input is .notes/brand.md."
+echo "For Implementer-Agent, first run: git -C \"$target\" checkout -q implement"
+echo "  Read AGENTS.md and .agents/skills/implementer-agent/SKILL.md first. Act as Implementer-Agent. The ticket is .tickets/ITEM-18.md, not your tracker. Build ITEM-18 on this branch against main."
 echo "Then grade the run with $here/expected-<agent>.md"
