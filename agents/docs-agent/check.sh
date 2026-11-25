@@ -2,13 +2,13 @@
 # Deterministic checks for a Docs-Agent run. Run from the repo root after the
 # agent finishes, before anything is committed.
 #
-# Usage: .agents/checks/docs-agent.sh [report-file]
+# Usage: .agents/skills/docs-agent/check.sh [report-file]
 #   report-file: optional file holding the agent's report, to check its headings.
 #
 # Exit code 0 means all checks passed. Any failure prints FAIL and exits 1.
 
 set -uo pipefail
-. "$(dirname "$0")/lib.sh"
+. "$(dirname "$0")/../../shared/lib.sh"
 
 # TAILOR: files the Docs-Agent may change (extended regex on repo-relative paths).
 ALLOWED='^(docs/.*|README\.md|CHANGELOG\.md)$'

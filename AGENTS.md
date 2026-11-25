@@ -119,7 +119,7 @@ When asked to act as one of these agents, read its role file first and follow it
 
 | Agent | Role file | Purpose |
 | ----- | --------- | ------- |
-| Docs-Agent | `.agents/roles/docs-agent.md` | Keeps Markdown docs in sync with the code and flags API spec drift |
+| Docs-Agent | `.agents/skills/docs-agent/SKILL.md` | Keeps Markdown docs in sync with the code and flags API spec drift |
 | Test-Agent | `.agents/roles/test-agent.md` | Turns ticket acceptance criteria into tests against the running app, then verifies code with real results |
 | Planner-Agent | `.agents/roles/planner-agent.md` | Turns a brief into tickets with testable acceptance criteria, in Linear Backlog or local drafts, then stops |
 | Review-Agent | `.agents/roles/review-agent.md` | Reviews a branch against its ticket for correctness, scope, and design, and gives a verdict; never edits code |

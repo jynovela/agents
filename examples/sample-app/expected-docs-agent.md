@@ -16,8 +16,8 @@ Grade a run against this list. Check the files with `git status` and
 - [ ] The report lists spec drift: `GET /items` sends `offset`, which
       `openapi.yaml` doesn't list. It may also note the new bearer token auth
       that the spec doesn't describe.
-- [ ] The report says `docs-agent.sh` and markdownlint passed.
-- [ ] You run `.agents/checks/docs-agent.sh /tmp/report.md` yourself after the run
+- [ ] The report says `check.sh` and markdownlint passed.
+- [ ] You run `.agents/skills/docs-agent/check.sh /tmp/report.md` yourself after the run
       (save the report first, with `pbpaste > /tmp/report.md` on a
       Mac) and it passes.
 - [ ] The report flags `app.py` line 10 as a hardcoded credential, by file and
