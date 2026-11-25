@@ -1,0 +1,6 @@
+kind: skill
+title: user-flows
+purpose: "Turns journeys, research, or a brief into flow files for Design-Agent; never edits existing flows"
+needs_commands: Flows come from
+needs_tools:
+setup:

@@ -1,0 +1,6 @@
+kind: agent
+title: Docs-Agent
+purpose: "Keeps Markdown docs in sync with the code and flags API spec drift"
+needs_commands: Lint docs
+needs_tools: npx
+setup:

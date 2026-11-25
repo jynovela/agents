@@ -19,14 +19,13 @@ cp -R "$here/base/." "$target/"
 # Agent files are installed from the repo root the way a project installs
 # them, so the test always uses the current agents.
 cp "$root/.markdownlint-cli2.yaml" "$target/"
-"$root/install.sh" "$target" all >/dev/null
-cp "$root/CLAUDE.md" "$target/"
 {
   cat "$target/AGENTS.header.md"
   echo
-  sed -n '/^## Shared guardrails/,$p' "$root/AGENTS.md"
+  sed -n '/^## Shared guardrails/,$p' "$root/AGENTS.md" | sed '/^<!-- agents:start -->$/,$d'
 } > "$target/AGENTS.md"
 rm "$target/AGENTS.header.md"
+"$root/install.sh" "$target" all >/dev/null
 
 cd "$target"
 git init -q -b main

@@ -1,0 +1,6 @@
+kind: agent
+title: Review-Agent
+purpose: "Reviews a branch against its ticket for correctness, scope, and design, and gives a verdict; never edits code"
+needs_commands: Acceptance criteria come from
+needs_tools:
+setup:

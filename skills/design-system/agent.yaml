@@ -1,0 +1,6 @@
+kind: skill
+title: design-system
+purpose: "Sets up the project's design system once in `design/system.md`: layout, type, color with checked contrast, components, form rules"
+needs_commands: Design writes to
+needs_tools:
+setup:

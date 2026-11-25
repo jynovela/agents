@@ -1,0 +1,6 @@
+kind: agent
+title: API-Agent
+purpose: "Keeps the API spec in step with the code; writes additive changes, lists breaking ones for approval; never edits code"
+needs_commands: API spec is, Lint API spec, Spec diff
+needs_tools: oasdiff, npx
+setup: setup/api.md
