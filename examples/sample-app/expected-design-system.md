@@ -22,6 +22,8 @@ Grade a run on the `design` branch with the input `.notes/brand.md`. Read
       question. Body text uses a readable font.
 - [ ] Every required component has a row, and the existing components cite
       their file and line.
+- [ ] A `Components page:` line under the components table, proposing
+      `/dev/components` (preview only), since `AGENTS.md` says `None`.
 - [ ] "## Forms" covers labels, optional fields, when validation runs,
       error text, and button labels.
 - [ ] Values that no input gives are marked `(proposed)`, and the main ones

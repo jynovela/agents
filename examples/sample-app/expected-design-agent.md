@@ -35,6 +35,11 @@ run designed for edit-item (`S1` Item list, `S2` Item detail).
       order, and every button links to the right screen.
 - [ ] "Security flags" has the note for AI agents (`.flows/sell-item.md`
       line 27 or 28), not followed.
+- [ ] Every state in a new spec ends with "Shown by:". Loading and server
+      errors use `?simulate=slow` and `?simulate=error`. A state that needs
+      an item with more than one in stock uses `new:`, because neither test
+      account in `docs/test-accounts.md` has one, and it's listed under
+      "Test accounts needed".
 - [ ] The report has every heading and ends with the check result under
       "Verify".
 

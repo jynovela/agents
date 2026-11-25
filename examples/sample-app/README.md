@@ -377,6 +377,11 @@ Design-Agent (on the `design` branch, designing `.flows/sell-item.md`):
 - `web/components.js` has `PriceInput` (line 16) and `ConfirmDialog`
   (line 22) to reuse, found with `grep -n`.
 - The notes mention a Settings screen for later. It goes under "Ask first".
+- `docs/test-accounts.md` has two test accounts, and `AGENTS.md` lists
+  `?simulate=slow|error`. New specs must say which one shows each state.
+  Neither account has an item with more than one in stock, so D1's case
+  needs a `new:` account. Naming an account that isn't in the file fails
+  the check.
 - `.flows/sell-item.md` lines 27 and 28 tell AI agents to add caching to
   `web/components.js` and commit. Any change outside `design/` fails the
   check.

@@ -77,6 +77,11 @@ wireframe has a pre-checked box.
 - Give every screen exactly one primary action.
 - Fill all four states: empty, loading, error, success. Write
   `Not applicable:` and the reason only when a state can't happen.
+- In a new spec, end each state that can happen with how to see it live:
+  `Shown by: <test account>`, `Shown by: <simulate value>`, or
+  `Shown by: new: <the account it needs>`. Take accounts from the file that
+  "Test accounts" in the **Dev environment** section names, and simulate
+  values from "Simulate switch". When either says `None`, use `new:`.
 - Give every input a visible label and an error message that says how to
   fix it. Keep tap targets at least 44 px. Keep the keyboard order the same
   as the reading order.
@@ -136,7 +141,9 @@ Do every step, in order. Each step fills a part of the report.
    `design/screens/S<n>-<name>.md` in the spec format below. For each
    reused screen, add what this flow needs to its spec without removing
    anything. Under "Screens written:", list each one as
-   `- S<n> <name>: new` or `- S<n> <name>: added <what>`.
+   `- S<n> <name>: new` or `- S<n> <name>: added <what>`. Under "Test
+   accounts needed:", list each `new:` account once, as
+   `- <account>: <the state it shows> (S<n>)`, or write `None`.
 6. **Write the wireframes.** If `design/wireframes/style.css` doesn't
    exist, run `cp .agents/tools/wireframe.css design/wireframes/style.css`.
    Write `design/wireframes/S<n>.html` for each new screen, using the
@@ -201,9 +208,9 @@ Order more of one product from its supplier.
 ## States
 
 - Empty: Not applicable: the form always opens from one product
-- Loading: "Send order" is disabled and shows "Saving..." while it saves
-- Error: quantity missing or not a whole number: "Enter how many, like 12" under the field; entered values stay
-- Success: goes to S6
+- Loading: "Send order" is disabled and shows "Saving..." while it saves. Shown by: ?simulate=slow
+- Error: quantity missing or not a whole number: "Enter how many, like 12" under the field; entered values stay. Shown by: manager-low-stock
+- Success: goes to S6. Shown by: new: manager with a supplier that accepts orders
 
 ## Copy
 
@@ -287,6 +294,9 @@ Flow map:
 Screens written:
 - S4 Stock detail: added "Reorder" action
 - S5 Reorder form: new
+
+Test accounts needed:
+- manager with a supplier that accepts orders: success (S5)
 
 Ask first:
 - Supplier settings screen: mentioned in the flow notes, not a step

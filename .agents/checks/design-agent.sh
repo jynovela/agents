@@ -31,7 +31,8 @@ if changed_files | grep -qx "$DESIGN/system.md"; then
 fi
 check_secrets
 check_headings "$report" "Flow:" "Actor:" "Goal:" "Entry:" "Exit:" "Needs your answer:" \
-  "Existing UI:" "Flow map:" "Screens written:" "Ask first:" "Security flags:" "Verify:"
+  "Existing UI:" "Flow map:" "Screens written:" "Test accounts needed:" "Ask first:" \
+  "Security flags:" "Verify:"
 [ -f "$report" ] || finish "Design-Agent"
 
 section() { awk -v h="$1" '$0 ~ "^"h {f=1; next} /^[A-Z][A-Za-z ()]*:/ {f=0} f' "$report"; }
@@ -86,8 +87,29 @@ for spec in $specs; do
     val="$(printf '%s\n' "$line" | sed -E "s/^- $st: *//")"
     if [ -z "$line" ] || [ -z "$val" ]; then
       say_fail "$spec: state \"- $st:\" is missing or empty"
-    elif printf '%s\n' "$val" | grep -qi '^not applicable' && [ "${#val}" -lt 24 ]; then
-      say_fail "$spec: \"$st: Not applicable\" needs a reason"
+    elif printf '%s\n' "$val" | grep -qi '^not applicable'; then
+      [ "${#val}" -ge 24 ] || say_fail "$spec: \"$st: Not applicable\" needs a reason"
+    elif ! git ls-files --error-unmatch "$spec" >/dev/null 2>&1; then
+      shown="$(printf '%s\n' "$val" | sed -nE 's/.*Shown by: *(.*)$/\1/p')"
+      if [ -z "$shown" ]; then
+        say_fail "$spec: state \"$st\" doesn't end with \"Shown by: <test account | simulate value | new: ...>\""
+      elif printf '%s\n' "$shown" | grep -q '^?simulate='; then
+        sim="$(grep -E '^- Simulate switch:' AGENTS.md 2>/dev/null | head -1)"
+        printf '%s\n' "$sim" | grep -qiE ':\s*None\s*$|^$' \
+          && say_fail "$spec: state \"$st\" uses $shown, but AGENTS.md has no simulate switch; use \"new:\""
+      elif printf '%s\n' "$shown" | grep -q '^new:'; then
+        acct="$(printf '%s\n' "$shown" | sed -E 's/^new: *//')"
+        section 'Test accounts needed:' | grep -qF -- "$acct" \
+          || say_fail "$spec: new test account \"${acct:0:40}\" isn't under \"Test accounts needed:\""
+      else
+        acct_file="$(grep -E '^- Test accounts:' AGENTS.md 2>/dev/null | head -1 | sed -nE 's/.*`([^`]+)`.*/\1/p')"
+        acct_name="$(printf '%s\n' "$shown" | awk '{print $1}' | sed 's/[.,;]$//')"
+        if [ -z "$acct_file" ] || [ ! -f "$acct_file" ]; then
+          say_fail "$spec: state \"$st\" names test account \"$acct_name\", but AGENTS.md lists no test accounts file; use \"new:\""
+        elif ! grep -qw -- "$acct_name" "$acct_file"; then
+          say_fail "$spec: test account \"$acct_name\" isn't in $acct_file; use \"new: <what it needs>\""
+        fi
+      fi
     fi
   done
   actions="$(awk '/^## Actions/ {f=1; next} /^## / {f=0} f' "$spec" | grep -E '^- ' || true)"

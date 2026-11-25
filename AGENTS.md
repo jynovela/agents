@@ -28,7 +28,7 @@ Stack: Markdown only.
 
 ## Dev environment
 
-<!-- TAILOR: Commands that let agents run the whole app locally and check real behavior. Test-Agent needs these; without them it can only write unit tests. Use a throwaway local database, never a shared or production one. Write "None" for anything the project doesn't have. See README "Set up before using the agents". -->
+<!-- TAILOR: Commands that let agents run the whole app locally and check real behavior. Test-Agent needs these; without them it can only write unit tests. Use a throwaway local database, never a shared or production one. Write "None" for anything the project doesn't have. See README "Set up before using the agents". For Test accounts, Simulate switch, and Components page, see setup/demo-data.md. -->
 
 - Start the app (returns once it's healthy): None
 - Stop the app: None
@@ -40,6 +40,9 @@ Stack: Markdown only.
 - Trigger a job: None
 - Unit tests: None
 - Acceptance tests (need the app running): None
+- Test accounts: None
+- Simulate switch: None
+- Components page: None
 
 ## Tickets
 
