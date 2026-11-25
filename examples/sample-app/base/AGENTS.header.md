@@ -13,6 +13,7 @@ Stack: Python 3.9 or later, standard library only. SQLite for the local service.
 - Fix lint: `ruff check --fix . && ruff format .`
 - Lint guard: `.agents/checks/lint-guard.sh`
 - Scan secrets: `.agents/checks/secret-scan.sh`
+- Audit dependencies: None
 - Lint agent files: `.agents/checks/context-lint.sh`
 
 ## Dev environment

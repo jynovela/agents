@@ -111,7 +111,11 @@ untested.
    scored steadily, while a small mixture-of-experts model (about 3B active)
    missed different things on every run. It checks each criterion, scope,
    and design, and gives a verdict. It never edits code.
-7. Read the verdict and findings, then merge or send the work back.
+7. Ask the Security-Agent to review the branch, on the same strong model.
+   It runs the secret scanner and security lint, checks what they miss, and
+   gives a result of BLOCK, REVIEW, or PASS. It never edits code.
+8. Read the verdict, the security result, and the findings, then merge or
+   send the work back.
 
 ### Claude Code
 
@@ -137,5 +141,5 @@ loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 | Lint-Agent | Ready |
 | API-Agent | Planned |
 | Build-Agent | Planned |
-| Security-Agent | Planned |
+| Security-Agent | Testing |
 | Review-Agent | Ready |

@@ -107,6 +107,22 @@ Pin the gitleaks version, so a new release with new rules doesn't fail every
 open pull request. Unlike the lint guard, this step blocks: there's no such
 thing as an approved leak.
 
+## Optional: audit dependencies
+
+Agents add packages freely, and a misspelled name can install malware. A
+dependency audit checks each package against known vulnerabilities. For
+Python, `pip install pip-audit`, then set this in `AGENTS.md`:
+
+```markdown
+- Audit dependencies: `pip-audit -r requirements.txt`
+```
+
+For several languages at once, [osv-scanner](https://github.com/google/osv-scanner)
+(`brew install osv-scanner`, then `osv-scanner scan source -r .`) does the
+same. Both need network access to look up advisories. The Security-Agent runs
+this command when it's set, and checks new package names by eye when it
+isn't.
+
 ## When the scanner finds a secret
 
 1. **Rotate it first.** Revoke the key where it was issued and make a new
@@ -129,4 +145,4 @@ If it's a false positive, a person decides how to allow it: a fixture path in
 gitleaks matches known token formats and long random-looking strings. It
 misses short passwords, secrets split across lines, and secrets built at run
 time. It also can't tell whether a key is live. The Security-Agent
-(planned) reviews what it misses.
+(`.agents/roles/security-agent.md`) reviews what it misses on each branch.
