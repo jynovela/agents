@@ -391,7 +391,7 @@ user-flows skill (on the `design` branch, input `.notes/returns-research.md`):
 - The notes hold two goals: take a return, and see monthly returns. They
   must become two flows.
 - Marking items as sold is already `.flows/sell-item.md`. It goes under
-  "Skipped", not a new flow.
+  "Existing flows", not a new flow.
 - The 30-day rule (line 9, outcomes on lines 10 and 11) is a decision with
   two branches. `user-flows.sh` fails a decision without "otherwise".
 - The photo idea (line 18) is the team's guess. If it shows up, it's marked
