@@ -147,6 +147,30 @@ for w in $(changed_files | grep -E "^$(esc "$WIRES")/.*\.html$" || true); do
   echo "  OK  $w"
 done
 
+echo "== Existing UI lines are real"
+while IFS= read -r line; do
+  [ -n "$line" ] || continue
+  loc="$(printf '%s\n' "$line" | sed -nE 's/^ *- *`?([^`: ]+):([0-9]+):.*/\1 \2/p')"
+  if [ -z "$loc" ]; then
+    say_fail "existing UI line must be \"- <file>:<line>: <name>: <use>\": ${line:0:50}"
+    continue
+  fi
+  set -- $loc
+  if [ ! -f "$1" ]; then
+    say_fail "existing UI points to $1, which doesn't exist"
+  elif [ "$2" -gt "$(wc -l < "$1")" ]; then
+    say_fail "existing UI points to $1 line $2, past the end of the file"
+  fi
+done <<< "$(items 'Existing UI:')"
+echo "Done."
+
+echo "== Ask first"
+while IFS= read -r line; do
+  [ -n "$line" ] || continue
+  say_fail "\"Ask first\" repeats a question: ${line:0:50}. List only screens or changes you didn't design."
+done <<< "$(items 'Ask first:' | grep -E '^ *- *Q[0-9]+' || true)"
+echo "Done."
+
 echo "== Needs your answer"
 while IFS= read -r line; do
   [ -n "$line" ] || continue
