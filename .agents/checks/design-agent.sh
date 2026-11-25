@@ -72,6 +72,17 @@ dups="$(ls "$SCREENS" 2>/dev/null | sed -nE 's/^(S[0-9]+)-.*\.md$/\1/p' | sort |
 for d in $dups; do say_fail "two specs use $d: $(ls "$SCREENS/$d-"*.md | tr '\n' ' ')"; done
 [ -z "$dups" ] && echo "No duplicates."
 
+echo "== New screens take the next free ids"
+old_max="$(git ls-files "$SCREENS" | sed -nE 's|.*/S([0-9]+)-.*\.md$|\1|p' | sort -n | tail -1)"
+old_max="${old_max:-0}"
+new_ids="$(git ls-files --others --exclude-standard "$SCREENS" | sed -nE 's|.*/S([0-9]+)-.*\.md$|\1|p' | sort -n)"
+want=$((old_max + 1))
+for n in $new_ids; do
+  [ "$n" -eq "$want" ] || say_fail "new screen S$n should be S$want: new screens take the next free ids after S$old_max, in order"
+  want=$((want + 1))
+done
+echo "Done."
+
 echo "== Specs"
 specs="$(changed_files | grep -E "^$(esc "$SCREENS")/S[0-9]+-.*\.md$" || true)"
 written="$(section 'Screens written:')"
@@ -81,6 +92,8 @@ for spec in $specs; do
   for h in Purpose "Reached from" Content Actions States Copy Accessibility "Open questions"; do
     grep -qx "## $h" "$spec" || say_fail "$spec is missing the heading \"## $h\""
   done
+  extra="$(grep -E '^## ' "$spec" | grep -vxE '## (Purpose|Reached from|Content|Actions|States|Copy|Accessibility|Open questions)' || true)"
+  [ -z "$extra" ] || say_fail "$spec has a heading the spec format doesn't: $(echo "$extra" | head -1). Add to the existing sections instead."
   states="$(awk '/^## States/ {f=1; next} /^## / {f=0} f' "$spec")"
   for st in Empty Loading Error Success; do
     line="$(printf '%s\n' "$states" | grep -E "^- $st:" | head -1)"
@@ -166,6 +179,14 @@ for w in $(changed_files | grep -E "^$(esc "$WIRES")/.*\.html$" || true); do
   if grep -nEi '<input[^>]*checked' "$w" >/dev/null; then
     say_fail "$w line $(grep -nEi '<input[^>]*checked' "$w" | head -1 | cut -d: -f1) has a pre-checked box. Leave it unchecked and ask under \"Needs your answer\"."
   fi
+  wid="$(basename "$w" .html)"
+  wspec="$(spec_for "$wid")"
+  if [ -n "$wspec" ]; then
+    wact="$(awk '/^## Actions/ {f=1; next} /^## / {f=0} f' "$wspec" | grep -E '^- ' || true)"
+    for t in $(grep -oE 'href="S[0-9]+\.html"' "$w" | sed -E 's/href="(S[0-9]+)\.html"/\1/' | sort -u); do
+      printf '%s\n' "$wact" | grep -qE -- "-> $t([^0-9]|$)" || say_fail "$w links to $t.html, but $wspec has no action -> $t. Add the action under \"## Actions\"."
+    done
+  fi
   for href in $(grep -oE 'href="[^"#]+' "$w" | sed 's/^href="//'); do
     case "$href" in mailto:*|tel:*|http:*|https:*|//*) continue ;; esac
     [ -e "$(dirname "$w")/$href" ] || say_fail "$w links to $href, which doesn't exist"
@@ -203,8 +224,16 @@ while IFS= read -r line; do
   echo "$line" | grep -Eq '^ *- *Q[0-9]+ *\|.*\| *gap:.*\| *proposed:' \
     || say_fail "needs-your-answer line must be \"- Q<n> | <where> | gap: ... | proposed: ...\": ${line:0:60}"
 done <<< "$(items 'Needs your answer:')"
-if grep -qE '^Exit: *missing' "$report" && [ -z "$(items 'Needs your answer:')" ]; then
-  say_fail "Exit is missing, but \"Needs your answer\" doesn't ask about it"
+if grep -qE '^Exit: *missing' "$report" && ! items 'Needs your answer:' | grep -qi 'exit'; then
+  say_fail "Exit is missing, but no \"Needs your answer\" line asks about the exit"
+fi
+acct_file="$(grep -E '^- Test accounts:' AGENTS.md 2>/dev/null | head -1 | sed -nE 's/.*`([^`]+)`.*/\1/p')"
+if [ -n "$acct_file" ] && [ -f "$acct_file" ]; then
+  while IFS= read -r line; do
+    [ -n "$line" ] || continue
+    a="$(printf '%s\n' "$line" | sed -E 's/^ *- *`?([^`:]+)`?:.*/\1/')"
+    grep -qF -- "\`$a\`" "$acct_file" && say_fail "\"Test accounts needed\" lists $a, which already exists in $acct_file. List only new accounts."
+  done <<< "$(items 'Test accounts needed:')"
 fi
 echo "Done."
 
