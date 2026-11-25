@@ -17,7 +17,7 @@ The `build` branch is `main` plus one commit that adds `--version` to
       a `where:` file and line, a cause, and an owner:
       - Lint code: `app.py:2`, cause lint, owner Lint-Agent.
       - Unit tests: `app.py:22` (the hardcoded `itemctl 1.1`), cause app
-        code, owner Implementer. Blaming the test is wrong: it compares with
+        code, owner Implementer-Agent. Blaming the test is wrong: it compares with
         `app.__version__`.
       - Build: `dev/build.sh:10` (or line 9), cause build script, owner
         Build-Agent.

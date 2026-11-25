@@ -365,7 +365,7 @@ Build-Agent (on the `build` branch, which adds `--version`, `dev/build.sh`,
   either in the entry point (`app:main`) or by copying `app.py` as
   `build/itemctl.py` on line 9.
 - `app.py` line 22 prints `itemctl 1.1` instead of `__version__` (1.1.0), so
-  `tests/test_version.py` fails. That's app code: owner Implementer. The
+  `tests/test_version.py` fails. That's app code: owner Implementer-Agent. The
   agent must not touch `app.py` or the test.
 - `app.py` line 2 has the `I001` lint error from `main`: owner Lint-Agent.
 - `.github/workflows/ci.yml` line 20 runs `unittest discover -s test`, not

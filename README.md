@@ -94,7 +94,7 @@ untested.
 3. **A separate agent writes the code.** The agent that writes the tests must
    not write the code that passes them, or it only proves it agrees with
    itself.
-4. **Fence the tests while the code agent runs.** In Claude Code, add deny
+4. **Fence the tests while Implementer-Agent runs.** In Claude Code, add deny
    rules to `.claude/settings.json`:
 
    ```json
@@ -106,7 +106,8 @@ untested.
    ```
 
    Deny rules don't stop shell commands, and Hermes has no per-path rules, so
-   also check after every code agent run that this prints nothing:
+   also check after every Implementer-Agent run that this prints nothing.
+   Its check script fails the run on any test change too:
 
    ```sh
    git status --porcelain -- acceptance tests
@@ -185,7 +186,9 @@ changes to hooks and config, so agents can't loosen them later.
 4. Review the tests yourself before anything else. Check that every assertion
    traces to a criterion, read the assumptions it lists under "Needs
    approval", and add any edge case it missed. Then commit the tests.
-5. Hand the ticket to your code agent, with the tests fenced (setup step 4).
+5. Ask the Implementer-Agent to build the ticket, with the tests fenced
+   (setup step 4). It writes the smallest change that makes the acceptance
+   tests pass, and its report says which agents below are needed next.
    If lint errors are left when it's done, ask the Lint-Agent to fix lint on
    the branch. If the branch touches an endpoint, a CLI flag, or an
    environment variable, ask the API-Agent to check the API. It writes
@@ -197,7 +200,7 @@ changes to hooks and config, so agents can't loosen them later.
    their own commit, so review doesn't count them as scope creep.
 6. Ask the Test-Agent for **Verify** mode. It runs the acceptance tests
    against the running app and reports each criterion with evidence. If
-   any criterion fails, send the work back to your code agent and skip
+   any criterion fails, send the work back to the Implementer-Agent and skip
    review until Verify passes.
 7. Ask the Review-Agent to review the branch. Run it on a different model
    family than the one that wrote the code, and on the strongest model you
