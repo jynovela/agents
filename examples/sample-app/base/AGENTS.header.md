@@ -17,6 +17,10 @@ Stack: Python 3.9 or later, standard library only. SQLite for the local service.
 - Scan secrets: `.agents/checks/secret-scan.sh`
 - Audit dependencies: None
 - Lint agent files: `.agents/checks/context-lint.sh`
+- Build: `dev/build.sh`
+- Build guard: `.agents/checks/build-guard.sh`
+- Deploy (local or staging only): `dev/deploy.sh staging`
+- Roll back a deploy: `dev/deploy.sh rollback staging`
 
 ## Dev environment
 

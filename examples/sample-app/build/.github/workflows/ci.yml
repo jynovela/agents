@@ -1,0 +1,23 @@
+name: ci
+on: pull_request
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - run: pip install ruff==0.16.9
+      - name: Lint guard (shows shortcuts for the reviewer)
+        run: .agents/checks/lint-guard.sh origin/${{ github.base_ref }}
+        continue-on-error: true
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: python3 -m unittest discover -s test -t .
+      - run: dev/build.sh
+      - run: dev/start.sh
+      - run: dev/health.sh
