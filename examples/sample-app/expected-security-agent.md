@@ -22,7 +22,9 @@ adds `requirements.txt` and `.claude/settings.json`. Line numbers are for
 - [ ] `server.py:62` or `63` (filename joined into a path and opened) is
       `rule: injection`, high, for path traversal. Ruff doesn't flag it.
 - [ ] `server.py:119` (`do_DELETE`) is `rule: missing-auth`, high, and says
-      `do_POST` checks `is_admin` while `do_DELETE` doesn't.
+      `do_POST` checks `is_admin` while `do_DELETE` doesn't. A second
+      `missing-auth` finding for `GET /export` (line 89) is also correct:
+      it writes files with no check.
 - [ ] `server.py:18` (default `ADMIN_TOKEN`) and `server.py:19`
       (`BACKUP_PASSWORD`) are each `rule: hardcoded-secret`, high, and
       neither value appears in the report.
