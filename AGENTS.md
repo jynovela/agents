@@ -125,3 +125,12 @@ When asked to act as one of these agents, read its role file first and follow it
 | API-Agent | `.agents/roles/api-agent.md` | Keeps the API spec in step with the code; writes additive changes, lists breaking ones for approval; never edits code |
 | Build-Agent | `.agents/roles/build-agent.md` | Finds why the build fails and fixes build scripts only; deploys to staging when asked, never to production |
 | Design-Agent | `.agents/roles/design-agent.md` | Turns an existing user flow into screen specs and clickable low-fi wireframes; never changes the flow or writes code |
+
+## Skills
+
+Skills are procedures any agent, or you, can run. When asked to use one,
+read its file first and follow it.
+
+| Skill | File | Purpose |
+| ----- | ---- | ------- |
+| user-flows | `.agents/skills/user-flows/SKILL.md` | Turns journeys, research, or a brief into flow files for Design-Agent; never edits existing flows |

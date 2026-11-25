@@ -10,6 +10,7 @@ Generic agent roles and guardrails to copy into a project and tailor.
 | `CLAUDE.md` | Claude Code | `@AGENTS.md`, so Claude Code loads the same file |
 | `.agents/roles/<name>.md` | Any agent, via the role list in `AGENTS.md` | The full role definition. This is the source of truth. |
 | `.claude/agents/<name>.md` | Claude Code (as a subagent) | A thin wrapper that points to the role file |
+| `.agents/skills/<name>/SKILL.md` | Hermes, and Claude Code through the `.claude/skills/<name>` link | A procedure any agent can run, like writing user flows |
 | `.agents/tools/*.sh` | The agent | Helper scripts a role runs so a small model doesn't do fiddly text work by hand |
 | `.agents/checks/<name>.sh` | The agent, and you after a run | Checks in code that back up the written rules (changed files, secrets). `lib.sh` holds the checks every role shares. `lint-guard.sh`, `context-lint.sh`, `secret-scan.sh`, and `spec-diff.sh` serve every agent: see `setup/lint.md`, `setup/security.md`, and `setup/api.md`. |
 | `setup/` | You, once per project | Setup guides, plus files they tell you to copy, such as the Ruff config and git hooks |
@@ -25,7 +26,7 @@ them, so the two can't drift apart.
 
 ## Use in a project
 
-1. Copy `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/agents/`, and
+1. Copy `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/agents/`, `.claude/skills/`, and
    `.markdownlint-cli2.yaml` into the project root.
 2. Fill in every `<!-- TAILOR: ... -->` comment: the project overview, stack,
    commands, and each role's verify commands.

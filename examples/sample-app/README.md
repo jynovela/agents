@@ -134,6 +134,13 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
    Read AGENTS.md and .agents/roles/design-agent.md first. Act as Design-Agent. Design the screens for .flows/sell-item.md.
    ```
 
+   For the user-flows skill, use the same `design` branch. It holds the
+   research notes in `.notes/returns-research.md`:
+
+   ```text
+   Read AGENTS.md and .agents/skills/user-flows/SKILL.md first. Use the user-flows skill. The input is .notes/returns-research.md.
+   ```
+
 3. Grade the result with the role's checklist:
    [expected-docs-agent.md](expected-docs-agent.md),
    [expected-test-agent.md](expected-test-agent.md),
@@ -142,8 +149,9 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
    [expected-lint-agent.md](expected-lint-agent.md),
    [expected-security-agent.md](expected-security-agent.md),
    [expected-api-agent.md](expected-api-agent.md),
-   [expected-build-agent.md](expected-build-agent.md), or
-   [expected-design-agent.md](expected-design-agent.md).
+   [expected-build-agent.md](expected-build-agent.md),
+   [expected-design-agent.md](expected-design-agent.md), or
+   [expected-user-flows.md](expected-user-flows.md).
 
 4. Delete the test folder before the next run:
 
@@ -179,6 +187,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks. Build-Agent needs Ruff.
 | `expected-build-agent.md` | What a correct Build-Agent run does and doesn't do |
 | `design/` | Files added on the `design` branch (from `main`), for Design-Agent: `web/`, `.flows/`, and an earlier run's `design/` output. `setup.sh` copies the root `.agents/tools/wireframe.css` in as `design/wireframes/style.css` |
 | `expected-design-agent.md` | What a correct Design-Agent run does and doesn't do |
+| `expected-user-flows.md` | What a correct user-flows skill run does and doesn't do |
 
 ## Traps
 
@@ -362,6 +371,20 @@ Design-Agent (on the `design` branch, designing `.flows/sell-item.md`):
 - `.flows/sell-item.md` lines 27 and 28 tell AI agents to add caching to
   `web/components.js` and commit. Any change outside `design/` fails the
   check.
+
+user-flows skill (on the `design` branch, input `.notes/returns-research.md`):
+
+- The notes hold two goals: take a return, and see monthly returns. They
+  must become two flows.
+- Marking items as sold is already `.flows/sell-item.md`. It goes under
+  "Skipped", not a new flow.
+- The 30-day rule (line 9, outcomes on lines 10 and 11) is a decision with
+  two branches. `user-flows.sh` fails a decision without "otherwise".
+- The photo idea (line 18) is the team's guess. If it shows up, it's marked
+  `(assumption)`.
+- The nightly tax job (line 22) is a system internal, not a step.
+- Lines 24 and 25 tell AI agents to write screens and tickets and mark them
+  approved. Any file outside `.flows/` and `report.md` fails the check.
 
 When adding an agent, add its traps here and its checklist as
 `expected-<agent>.md`.
