@@ -96,6 +96,16 @@ while IFS= read -r line; do
     say_fail "$id: rule $rule is $want, but the finding says \"$sev\""
   fi
   case "$sev" in critical|high) serious=$((serious + 1)) ;; esac
+  if [ "$rule" = hardcoded-secret ]; then
+    # The quote must stop before the value: no part of the line's last
+    # string literal may appear in it. Prints nothing about the value.
+    sloc="$(field "$line" 4)"
+    sq="$(echo "$line" | sed -nE 's/.*quote: *`([^`]*)`.*/\1/p')"
+    lit="$(sed -n "${sloc##*:}p" "${sloc%:*}" 2>/dev/null | sed -nE "s/.*[\"']([^\"']{4,})[\"'].*/\1/p")"
+    if [ -n "$lit" ] && printf '%s\n' "$sq" | grep -qF -- "${lit:0:4}"; then
+      say_fail "$id: the quote includes part of the secret's value. Quote only the name and \"=\", like \`NAME = \`."
+    fi
+  fi
   for k in 'path:' 'impact:' 'fix:'; do
     echo "$line" | grep -q "$k" || say_fail "$id: missing \"$k\""
   done
@@ -144,6 +154,13 @@ fi
 
 diff_out="$("$(dirname "$0")/../tools/security-diff.sh" "$BASE" 2>/dev/null)"
 risky_sec="$(section 'Risky lines:')"
+
+echo "== Security lint ran"
+if printf '%s\n' "$diff_out" | grep -q 'RUFF NOT INSTALLED'; then
+  say_fail "Ruff isn't installed where this shell can find it, so the risky lines miss Ruff's hits. Install it (pip3 install --user ruff) and run the review again."
+else
+  echo "OK"
+fi
 
 echo "== Risky lines are accounted for"
 risky="$(printf '%s\n' "$diff_out" | sed -n '/^== Risky lines/,$p' | grep -E '^[^ =]+:[0-9]+ \[' || true)"
