@@ -126,7 +126,11 @@ changes to hooks and config, so agents can't loosen them later.
    approval", and add any edge case it missed. Then commit the tests.
 4. Hand the ticket to your code agent, with the tests fenced (setup step 4).
    If lint errors are left when it's done, ask the Lint-Agent to fix lint on
-   the branch.
+   the branch. If the branch touches an endpoint, a CLI flag, or an
+   environment variable, ask the API-Agent to check the API. It writes
+   additive changes into the spec and lists breaking ones. Approve a breaking
+   change by committing its line to `.api/approved.md`, or send the work
+   back.
 5. Ask the Test-Agent for **Verify** mode. It runs the acceptance tests
    against the running app and reports each criterion with evidence. If
    any criterion fails, send the work back to your code agent and skip
@@ -165,7 +169,7 @@ loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 | Test-Agent | Ready |
 | Planner-Agent | Ready |
 | Lint-Agent | Ready |
-| API-Agent | Planned |
+| API-Agent | Testing |
 | Build-Agent | Planned |
 | Security-Agent | Testing |
 | Review-Agent | Ready |
