@@ -9,7 +9,8 @@
 #   .agents/tools/build-steps.sh ci       Print each step command that no CI
 #                                         workflow runs, as CI_MISSING lines.
 #
-# Logs go to logs/build/<n>.log. Exit code 0 means every step passed.
+# Logs go to logs/build/<n>.log. Exit code 0 means every step passed. The
+# last line is STEPS_DONE <n> or CI_CHECK_DONE; without it, the helper broke.
 
 set -uo pipefail
 . "$(dirname "$0")/../checks/lib.sh"
@@ -70,6 +71,8 @@ if [ "$mode" = run ]; then
   if [ "$was_running" -eq 0 ] && [ -n "$STOP" ]; then
     bash -c "$STOP" >/dev/null 2>&1 || true
   fi
+  # The check script needs this line to know the helper ran to the end.
+  echo "STEPS_DONE $n"
   exit "$status"
 fi
 
@@ -82,6 +85,7 @@ $(sed -n 's/^[[:space:]]*-\{0,1\}[[:space:]]*run:[[:space:]]*//p' "$f")"
 done
 if [ -z "$(echo "$ci_runs" | tr -d '[:space:]')" ]; then
   echo "NO_CI_WORKFLOW"
+  echo "CI_CHECK_DONE"
   exit 0
 fi
 
@@ -99,5 +103,9 @@ while IFS='|' read -r name cmd; do
     fi
   done
 done <<< "$STEPS"
-[ "$missing" -eq 0 ] && echo "CI runs every step."
+if [ "$missing" -eq 0 ]; then
+  echo "CI runs every step."
+fi
+# The check script needs this line to know the helper ran to the end.
+echo "CI_CHECK_DONE"
 exit 0
