@@ -91,6 +91,12 @@ untested.
    isn't additive until you approve it in `.api/approved.md`, Spectral style
    rules, and API guidelines. Fill in "API spec is", "Lint API spec", and
    "Spec diff" in `AGENTS.md`.
+8. **Staging, and a production only you can deploy.** Follow
+   [setup/build.md](setup/build.md): a local, staging, and production
+   environment, a deploy script with no production target, a build guard,
+   one CI workflow that runs the `AGENTS.md` commands, and a Claude Code hook
+   that blocks production commands. Most important: keep production
+   credentials off the machine agents run on.
 
 ### Let Claude do the setup
 
@@ -107,6 +113,10 @@ Set up linting. Read setup/lint.md and do its steps in order. Ask me before you 
 
 ```text
 Set up secret scanning. Read setup/security.md and do its steps in order. Ask me before you install anything, and don't commit. End with what you did, what failed, and what I still need to do.
+```
+
+```text
+Set up builds and staging. Read setup/build.md and do its steps in order. Ask me before you install anything, create an account, or change a hosting setting, and don't commit. End with what you did, what failed, and what I still need to do.
 ```
 
 Claude stops to ask where a choice is yours, and it never commits. Commit

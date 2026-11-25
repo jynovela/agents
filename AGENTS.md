@@ -9,7 +9,7 @@ Stack: Markdown only.
 
 ## Commands
 
-<!-- TAILOR: Replace with the project's real commands. Agents run these to check their work. For code lint, e.g. "Lint code: `ruff check . && ruff format --check .`" and "Fix lint: `ruff check --fix . && ruff format .`". Write "None" for anything the project doesn't have. See setup/lint.md in the agents repo. -->
+<!-- TAILOR: Replace with the project's real commands. Agents run these to check their work. For code lint, e.g. "Lint code: `ruff check . && ruff format --check .`" and "Fix lint: `ruff check --fix . && ruff format .`". Write "None" for anything the project doesn't have. See setup/lint.md in the agents repo, and setup/build.md for Build and Deploy. -->
 
 - Lint docs: `npx markdownlint-cli2 "**/*.md"`
 - Lint code: None
@@ -21,6 +21,10 @@ Stack: Markdown only.
 - API spec is: None
 - Lint API spec: None
 - Spec diff: None
+- Build: None
+- Build guard: `.agents/checks/build-guard.sh`
+- Deploy (local or staging only): None
+- Roll back a deploy: None
 
 ## Dev environment
 
@@ -70,6 +74,11 @@ Every agent follows these rules, in every role, before any role-specific rule.
    changed code, run "Lint code" and "Lint guard" before you finish, when
    **Commands** lists them, and fix what they report in the files you
    changed.
+6. **Never deploy to production.** Deploy only with the "Deploy" command, to
+   the targets it allows. Never run a command that changes production, use
+   production credentials, or push to the production branch. If you changed
+   build files, run "Build guard" before you finish, when **Commands** lists
+   it.
 
 ## Sources of truth
 
