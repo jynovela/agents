@@ -2,13 +2,17 @@
 # Pre-commit hook: scan the staged files for secrets, lint them, and catch lint
 # shortcuts before they reach a commit. Install it from the repo root with:
 #   mkdir -p .githooks && cp setup/githooks/pre-commit .githooks/ && git config core.hooksPath .githooks
-# See setup/lint.md and setup/security.md.
+# See setup/lint.md, setup/security.md, and setup/api.md.
 set -uo pipefail
 
 # <!-- TAILOR: your linter. Each command gets the staged files that match PATTERN. -->
 LINT='ruff check --output-format concise'
 FORMAT_CHECK='ruff format --check'
 PATTERN='\.py$'
+
+# <!-- TAILOR: API spec checks from setup/api.md. Leave both empty if the project has no API spec. -->
+SPEC_LINT=''
+SPEC_DIFF=''
 
 status=0
 
@@ -24,6 +28,20 @@ if [ -n "$staged" ]; then
   $LINT $staged || status=1
   # shellcheck disable=SC2086
   $FORMAT_CHECK $staged || status=1
+fi
+
+if [ -n "$SPEC_LINT" ]; then
+  $SPEC_LINT >/dev/null 2>&1 || {
+    $SPEC_LINT 2>&1 | grep -E ' error ' | head -20
+    echo "FAIL: API spec lint found errors."
+    status=1
+  }
+fi
+if [ -n "$SPEC_DIFF" ]; then
+  $SPEC_DIFF >/dev/null || {
+    $SPEC_DIFF | grep -E '^(FAIL|NEEDS APPROVAL)'
+    status=1
+  }
 fi
 
 .agents/checks/lint-guard.sh >/dev/null || {

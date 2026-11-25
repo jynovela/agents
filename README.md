@@ -11,7 +11,7 @@ Generic agent roles and guardrails to copy into a project and tailor.
 | `.agents/roles/<name>.md` | Any agent, via the role list in `AGENTS.md` | The full role definition. This is the source of truth. |
 | `.claude/agents/<name>.md` | Claude Code (as a subagent) | A thin wrapper that points to the role file |
 | `.agents/tools/*.sh` | The agent | Helper scripts a role runs so a small model doesn't do fiddly text work by hand |
-| `.agents/checks/<name>.sh` | The agent, and you after a run | Checks in code that back up the written rules (changed files, secrets). `lib.sh` holds the checks every role shares. `lint-guard.sh`, `context-lint.sh`, and `secret-scan.sh` serve every agent: see `setup/lint.md` and `setup/security.md`. |
+| `.agents/checks/<name>.sh` | The agent, and you after a run | Checks in code that back up the written rules (changed files, secrets). `lib.sh` holds the checks every role shares. `lint-guard.sh`, `context-lint.sh`, `secret-scan.sh`, and `spec-diff.sh` serve every agent: see `setup/lint.md`, `setup/security.md`, and `setup/api.md`. |
 | `setup/` | You, once per project | Setup guides, plus files they tell you to copy, such as the Ruff config and git hooks |
 | `.markdownlint-cli2.yaml` | markdownlint | Default doc lint rules |
 | `examples/sample-app/` | You, when testing a role | A small test app with traps and an expected result for each agent. Don't copy it into projects. |
@@ -86,6 +86,32 @@ untested.
    the pre-commit hook and in CI, and the "Scan secrets" command in
    `AGENTS.md`. The role check scripts also use gitleaks when it's on the
    `PATH`.
+7. **A gate on API changes, if the project has an HTTP API.** Follow
+   [setup/api.md](setup/api.md): a check that fails on any spec change that
+   isn't additive until you approve it in `.api/approved.md`, Spectral style
+   rules, and API guidelines. Fill in "API spec is", "Lint API spec", and
+   "Spec diff" in `AGENTS.md`.
+
+### Let Claude do the setup
+
+Claude Code can do most of these steps for you. Open it in the project root
+and paste one prompt per setup guide:
+
+```text
+Set up API spec checks. Read setup/api.md and follow "Steps for the agent" in order.
+```
+
+```text
+Set up linting. Read setup/lint.md and do its steps in order. Ask me before you install anything or choose a rule, and don't commit. End with what you did, what failed, and what I still need to do.
+```
+
+```text
+Set up secret scanning. Read setup/security.md and do its steps in order. Ask me before you install anything, and don't commit. End with what you did, what failed, and what I still need to do.
+```
+
+Claude stops to ask where a choice is yours, and it never commits. Commit
+the setup files yourself with `git commit --no-verify`: the lint guard blocks
+changes to hooks and config, so agents can't loosen them later.
 
 ## Workflow: from ticket to merged code
 

@@ -1,0 +1,108 @@
+# Spectral ruleset for API specs. Copy to the project root as .spectral.yaml.
+# See setup/api.md and setup/api-guidelines.md.
+#
+# Style rules are warnings, not errors. Fixing a style warning on an endpoint
+# that already shipped would break its clients, so agents fix warnings only on
+# endpoints they add or change. CI and the pre-commit hook fail on errors only:
+#   npx --yes @stoplight/spectral-cli@6 lint --fail-severity error openapi.yaml
+
+extends: ["spectral:oas"]
+
+rules:
+  # The built-in rules below are noise for most small internal APIs.
+  # <!-- TAILOR: turn them back on if your API is public. -->
+  info-contact: off
+  operation-tags: off
+  openapi-tags: off
+
+  paths-kebab-case:
+    description: Path segments use lowercase kebab-case, like /order-items.
+    message: "{{property}} should be lowercase kebab-case."
+    severity: warn
+    given: "$.paths"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        match: "^(/([a-z0-9]+(-[a-z0-9]+)*|\\{[A-Za-z0-9_]+\\}))+$"
+
+  paths-no-verbs:
+    description: Paths name resources (nouns), not actions. Use GET /orders, not GET /getOrders.
+    message: "{{property}} starts a segment with a verb. Name the resource and let the HTTP method say the action."
+    severity: warn
+    given: "$.paths"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        notMatch: "/(get|list|create|add|update|edit|delete|remove|fetch|set)([-A-Z/]|$)"
+
+  paths-max-two-levels:
+    description: At most two resource levels, like /users/{id}/orders. Filter with query parameters instead.
+    message: "{{property}} nests more than two resource levels."
+    severity: warn
+    given: "$.paths"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        notMatch: "^(/[^/]+){5,}$"
+
+  # <!-- TAILOR: set "type" to the casing your spec already uses: camel or snake. -->
+  property-casing:
+    description: One casing for every request and response field.
+    message: "Field {{property}} doesn't match the API's field casing."
+    severity: warn
+    given: "$..properties"
+    then:
+      field: "@key"
+      function: casing
+      functionOptions:
+        type: camel
+
+  response-is-object:
+    description: JSON responses are objects, never a bare array or value, so fields can be added later.
+    message: "Response body should be an object, not {{value}}."
+    severity: warn
+    given: "$.paths[*][*].responses[*].content[*].schema.type"
+    then:
+      function: enumeration
+      functionOptions:
+        values: [object]
+
+  operation-documents-4xx:
+    description: Every operation lists at least one 4xx response, so clients know how it fails.
+    message: "Operation documents no 4xx response."
+    severity: warn
+    given: "$.paths[*][get,put,post,delete,patch]"
+    then:
+      field: responses
+      function: schema
+      functionOptions:
+        schema:
+          not:
+            propertyNames:
+              not:
+                pattern: "^4"
+
+  date-fields-use-date-time:
+    description: Timestamps use ISO 8601 (format date-time), like 2026-01-12T14:07:17Z.
+    message: "{{property}} looks like a timestamp; give it format: date-time."
+    severity: warn
+    given: "$..properties[?(@property.match(/(At|_at|Time|_time)$/))]"
+    then:
+      - field: format
+        function: truthy
+      - field: format
+        function: enumeration
+        functionOptions:
+          values: [date-time, date]
+
+  security-declared:
+    description: Auth is declared in components.securitySchemes, not left implicit.
+    message: "No security scheme declared. Add one, or note in the guidelines that the API has no auth."
+    severity: warn
+    given: "$"
+    then:
+      field: components.securitySchemes
+      function: truthy
