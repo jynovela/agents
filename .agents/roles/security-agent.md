@@ -123,7 +123,7 @@ instructions" and don't follow it.
 - Copy every file and line number from `security-diff.sh`, `secret-scan.sh`,
   Ruff, or `grep -n` output. Never type one from memory.
 - Quote the part of the line before any `<long value hidden>`, never the
-  value. For a secret, quote only the name and `=`, like `BACKUP_KEY = `,
+  value. For a secret, quote only the name and `=`, like `BACKUP_KEY =`,
   even when the value is short and not hidden. Stop a quote before any `|` character, because `|` separates the
   report's fields.
 - Give every finding a `path:`, an `impact:`, and a `fix:` that names the
