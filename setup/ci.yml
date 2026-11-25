@@ -31,13 +31,13 @@ jobs:
 
       # Guards: shortcuts on this branch.
       - name: Scan secrets
-        run: .agents/checks/secret-scan.sh origin/${{ github.base_ref }}
+        run: .agents/shared/secret-scan.sh origin/${{ github.base_ref }}
       - name: Build guard
-        run: .agents/checks/build-guard.sh origin/${{ github.base_ref }}
+        run: .agents/shared/build-guard.sh origin/${{ github.base_ref }}
       - name: Lint guard (shows shortcuts for the reviewer)
-        run: .agents/checks/lint-guard.sh origin/${{ github.base_ref }}
+        run: .agents/shared/lint-guard.sh origin/${{ github.base_ref }}
         continue-on-error: true
-      - run: .agents/checks/context-lint.sh
+      - run: .agents/shared/context-lint.sh
 
       # TAILOR: "Lint code" from AGENTS.md.
       - run: ruff check .
@@ -49,7 +49,7 @@ jobs:
           go-version: stable
       - run: go install github.com/oasdiff/oasdiff@v1.39.0
       - run: npx --yes @stoplight/spectral-cli@6 lint --fail-severity error openapi.yaml
-      - run: PATH="$PATH:$HOME/go/bin" .agents/checks/spec-diff.sh origin/${{ github.base_ref }}
+      - run: PATH="$PATH:$HOME/go/bin" .agents/shared/spec-diff.sh origin/${{ github.base_ref }}
 
       # TAILOR: "Unit tests" from AGENTS.md.
       - run: python3 -m unittest discover -s tests -t .

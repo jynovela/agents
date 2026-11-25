@@ -9,9 +9,9 @@ with the same scanner and the same config.
 | Piece | File to copy | What it does |
 | ----- | ------------ | ------------ |
 | Scanner config | `setup/gitleaks.toml` | gitleaks' built-in rules, plus your own token formats and fixture paths |
-| Secret scan | `.agents/checks/secret-scan.sh` | Runs gitleaks and prints `file:line rule` for each finding, never the value |
+| Secret scan | `.agents/shared/secret-scan.sh` | Runs gitleaks and prints `file:line rule` for each finding, never the value |
 | Pre-commit hook | `setup/githooks/pre-commit` | Scans staged files before each commit, then lints them |
-| Lint guard | `.agents/checks/lint-guard.sh` | Fails when an agent adds a `gitleaks:allow` comment or edits the scanner config |
+| Lint guard | `.agents/shared/lint-guard.sh` | Fails when an agent adds a `gitleaks:allow` comment or edits the scanner config |
 
 The scanner is [gitleaks](https://github.com/gitleaks/gitleaks). It runs
 offline, needs no account, and ships as one binary. Tested with v8.30.
@@ -57,13 +57,13 @@ move it under a fixture path.
 ## 3. Fill in the command in AGENTS.md
 
 ```markdown
-- Scan secrets: `.agents/checks/secret-scan.sh`
+- Scan secrets: `.agents/shared/secret-scan.sh`
 ```
 
 The shared guardrails tell every agent to run it before finishing, and to
 stop and report any finding by file and line. With no argument it scans
 uncommitted changes, including new files. With a base branch, such as
-`.agents/checks/secret-scan.sh main`, it also scans every commit on the
+`.agents/shared/secret-scan.sh main`, it also scans every commit on the
 branch, so a secret that was added and then deleted still shows up.
 
 ## 4. Install the pre-commit hook
@@ -100,7 +100,7 @@ jobs:
           curl -sSfL -o gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz
           tar -xzf gitleaks.tar.gz gitleaks
           sudo mv gitleaks /usr/local/bin/
-      - run: .agents/checks/secret-scan.sh origin/${{ github.base_ref }}
+      - run: .agents/shared/secret-scan.sh origin/${{ github.base_ref }}
 ```
 
 Pin the gitleaks version, so a new release with new rules doesn't fail every
@@ -145,4 +145,4 @@ If it's a false positive, a person decides how to allow it: a fixture path in
 gitleaks matches known token formats and long random-looking strings. It
 misses short passwords, secrets split across lines, and secrets built at run
 time. It also can't tell whether a key is live. The Security-Agent
-(`.agents/roles/security-agent.md`) reviews what it misses on each branch.
+(`.agents/skills/security-agent/SKILL.md`) reviews what it misses on each branch.

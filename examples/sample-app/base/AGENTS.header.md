@@ -10,15 +10,15 @@ Stack: Python 3.9 or later, standard library only. SQLite for the local service.
 - Lint docs: `npx markdownlint-cli2 "**/*.md"`
 - API spec is: follows the code
 - Lint API spec: `npx --yes @stoplight/spectral-cli@6 lint --fail-severity error openapi.yaml`
-- Spec diff: `.agents/checks/spec-diff.sh main`
+- Spec diff: `.agents/shared/spec-diff.sh main`
 - Lint code: `ruff check . && ruff format --check .`
 - Fix lint: `ruff check --fix . && ruff format .`
-- Lint guard: `.agents/checks/lint-guard.sh`
-- Scan secrets: `.agents/checks/secret-scan.sh`
+- Lint guard: `.agents/shared/lint-guard.sh`
+- Scan secrets: `.agents/shared/secret-scan.sh`
 - Audit dependencies: None
-- Lint agent files: `.agents/checks/context-lint.sh`
+- Lint agent files: `.agents/shared/context-lint.sh`
 - Build: `dev/build.sh`
-- Build guard: `.agents/checks/build-guard.sh`
+- Build guard: `.agents/shared/build-guard.sh`
 - Deploy (local or staging only): `dev/deploy.sh staging`
 - Roll back a deploy: `dev/deploy.sh rollback staging`
 

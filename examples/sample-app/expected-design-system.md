@@ -2,7 +2,7 @@
 
 Grade a run on the `design` branch with the input `.notes/brand.md`. Read
 `design/system.md` and `report.md`. Then run
-`.agents/checks/design-system.sh report.md` yourself. It must pass.
+`.agents/skills/design-system/check.sh report.md` yourself. It must pass.
 
 ## Must do
 

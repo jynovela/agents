@@ -14,15 +14,15 @@ Stack: Markdown only.
 - Lint docs: `npx markdownlint-cli2 "**/*.md"`
 - Lint code: None
 - Fix lint: None
-- Lint guard: `.agents/checks/lint-guard.sh`
-- Scan secrets: `.agents/checks/secret-scan.sh`
+- Lint guard: `.agents/shared/lint-guard.sh`
+- Scan secrets: `.agents/shared/secret-scan.sh`
 - Audit dependencies: None
-- Lint agent files: `.agents/checks/context-lint.sh`
+- Lint agent files: `.agents/shared/context-lint.sh`
 - API spec is: None
 - Lint API spec: None
 - Spec diff: None
 - Build: None
-- Build guard: `.agents/checks/build-guard.sh`
+- Build guard: `.agents/shared/build-guard.sh`
 - Deploy (local or staging only): None
 - Roll back a deploy: None
 
@@ -120,15 +120,15 @@ When asked to act as one of these agents, read its role file first and follow it
 | Agent | Role file | Purpose |
 | ----- | --------- | ------- |
 | Docs-Agent | `.agents/skills/docs-agent/SKILL.md` | Keeps Markdown docs in sync with the code and flags API spec drift |
-| Test-Agent | `.agents/roles/test-agent.md` | Turns ticket acceptance criteria into tests against the running app, then verifies code with real results |
-| Planner-Agent | `.agents/roles/planner-agent.md` | Turns a brief into tickets with testable acceptance criteria, in Linear Backlog or local drafts, then stops |
-| Review-Agent | `.agents/roles/review-agent.md` | Reviews a branch against its ticket for correctness, scope, and design, and gives a verdict; never edits code |
-| Lint-Agent | `.agents/roles/lint-agent.md` | Makes lint pass on a branch's changed files without changing behavior; lists what it can't safely fix |
-| Security-Agent | `.agents/roles/security-agent.md` | Reviews a branch for security problems after the scanners run, and gives a result; never edits code |
-| API-Agent | `.agents/roles/api-agent.md` | Keeps the API spec in step with the code; writes additive changes, lists breaking ones for approval; never edits code |
-| Build-Agent | `.agents/roles/build-agent.md` | Finds why the build fails and fixes build scripts only; deploys to staging when asked, never to production |
-| Design-Agent | `.agents/roles/design-agent.md` | Turns an existing user flow into screen specs and clickable low-fi wireframes; never changes the flow or writes code |
-| Implementer-Agent | `.agents/roles/implementer-agent.md` | Writes the smallest code change that makes one ticket's acceptance tests pass, with evidence from its own runs; never edits tests, spec, CI, or docs |
+| Test-Agent | `.agents/skills/test-agent/SKILL.md` | Turns ticket acceptance criteria into tests against the running app, then verifies code with real results |
+| Planner-Agent | `.agents/skills/planner-agent/SKILL.md` | Turns a brief into tickets with testable acceptance criteria, in Linear Backlog or local drafts, then stops |
+| Review-Agent | `.agents/skills/review-agent/SKILL.md` | Reviews a branch against its ticket for correctness, scope, and design, and gives a verdict; never edits code |
+| Lint-Agent | `.agents/skills/lint-agent/SKILL.md` | Makes lint pass on a branch's changed files without changing behavior; lists what it can't safely fix |
+| Security-Agent | `.agents/skills/security-agent/SKILL.md` | Reviews a branch for security problems after the scanners run, and gives a result; never edits code |
+| API-Agent | `.agents/skills/api-agent/SKILL.md` | Keeps the API spec in step with the code; writes additive changes, lists breaking ones for approval; never edits code |
+| Build-Agent | `.agents/skills/build-agent/SKILL.md` | Finds why the build fails and fixes build scripts only; deploys to staging when asked, never to production |
+| Design-Agent | `.agents/skills/design-agent/SKILL.md` | Turns an existing user flow into screen specs and clickable low-fi wireframes; never changes the flow or writes code |
+| Implementer-Agent | `.agents/skills/implementer-agent/SKILL.md` | Writes the smallest code change that makes one ticket's acceptance tests pass, with evidence from its own runs; never edits tests, spec, CI, or docs |
 
 ## Skills
 

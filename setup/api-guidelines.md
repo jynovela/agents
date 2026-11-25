@@ -13,7 +13,7 @@ that uses it. List the mismatch instead.
 - Add, don't change. New endpoints, new optional fields, and new optional
   parameters are safe. Removing, renaming, retyping, or making something
   required is a breaking change and needs a person's approval in
-  `.api/approved.md`. `.agents/checks/spec-diff.sh` enforces this.
+  `.api/approved.md`. `.agents/shared/spec-diff.sh` enforces this.
 - Clients must ignore response fields they don't know, so adding a field is
   never breaking.
 - To remove something, mark it `deprecated: true` first and say what replaces

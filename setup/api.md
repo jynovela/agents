@@ -7,12 +7,12 @@ purely additive fails until a person approves it in a file they commit.
 
 | Piece | File to copy | What it does |
 | ----- | ------------ | ------------ |
-| Spec diff | `.agents/checks/spec-diff.sh` | Compares the spec with the base branch and fails on any change that isn't additive, unless `.api/approved.md` lists it |
+| Spec diff | `.agents/shared/spec-diff.sh` | Compares the spec with the base branch and fails on any change that isn't additive, unless `.api/approved.md` lists it |
 | Approvals | `.api/approved.md` (you create it) | One line per breaking change a person approved |
 | Style rules | `setup/spectral.yaml` | Spectral ruleset: path naming, field casing, error responses, timestamps |
 | Guidelines | `setup/api-guidelines.md` | The same rules in prose, plus the ones a linter can't check |
 | Pre-commit hook | `setup/githooks/pre-commit` | Runs spec lint and the spec diff before each commit |
-| Lint guard | `.agents/checks/lint-guard.sh` | Fails when an agent edits `.spectral.yaml` or `.api/approved.md` |
+| Lint guard | `.agents/shared/lint-guard.sh` | Fails when an agent edits `.spectral.yaml` or `.api/approved.md` |
 
 The diff tool is [oasdiff](https://github.com/oasdiff/oasdiff). Spec lint is
 [Spectral](https://github.com/stoplightio/spectral). Tested with oasdiff
@@ -94,12 +94,12 @@ don't edit the spec except for the test in step 9, which you undo. Keep a list o
    ```markdown
    - API spec is: follows the code
    - Lint API spec: `npx --yes @stoplight/spectral-cli@6 lint --fail-severity error openapi.yaml`
-   - Spec diff: `.agents/checks/spec-diff.sh main`
+   - Spec diff: `.agents/shared/spec-diff.sh main`
    ```
 
    Use the answer from step 2 on the first line. For `generated from code`,
    write `generated from code by <command>`. If there's more than one spec
-   file, set `SPECS` at the top of `.agents/checks/spec-diff.sh` to all of
+   file, set `SPECS` at the top of `.agents/shared/spec-diff.sh` to all of
    them, separated by spaces.
 
 8. **Turn on the pre-commit hook steps.** If `.githooks/pre-commit` exists,
@@ -112,7 +112,7 @@ don't edit the spec except for the test in step 9, which you undo. Keep a list o
       each one with its line for the person. Don't fix them. Count the
       warnings, and don't fix them either: they're on endpoints that already
       shipped.
-   2. Run `.agents/checks/spec-diff.sh main`. It should pass.
+   2. Run `.agents/shared/spec-diff.sh main`. It should pass.
    3. Prove it catches a breaking change. In the spec, rename one response
       field (for example `name:` to `title:`), run the spec diff again, and
       check that it prints `NEEDS APPROVAL` and fails. Then undo it with
@@ -172,7 +172,7 @@ diff means an unapproved breaking change.
           go-version: stable
       - run: go install github.com/oasdiff/oasdiff@v1.39.0
       - run: npx --yes @stoplight/spectral-cli@6 lint --fail-severity error openapi.yaml
-      - run: PATH="$PATH:$HOME/go/bin" .agents/checks/spec-diff.sh origin/${{ github.base_ref }}
+      - run: PATH="$PATH:$HOME/go/bin" .agents/shared/spec-diff.sh origin/${{ github.base_ref }}
 ```
 
 The CI steps are untested; the local commands above are tested.

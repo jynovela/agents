@@ -16,14 +16,10 @@ fi
 mkdir -p "$target"
 cp -R "$here/base/." "$target/"
 
-# Agent files come from the repo root, so the test always uses the current roles.
-# -L copies what a link points at: this repo links some agent files to agents/
-# and shared/, and those links would point at nothing in the test folder.
-cp -RL "$root/.agents" "$target/"
-cp -R "$root/.claude" "$root/.markdownlint-cli2.yaml" "$target/"
-# Agents that have moved to agents/<name>/ are installed the way a project
-# installs them.
-"$root/install.sh" "$target" docs-agent >/dev/null
+# Agent files are installed from the repo root the way a project installs
+# them, so the test always uses the current agents.
+cp "$root/.markdownlint-cli2.yaml" "$target/"
+"$root/install.sh" "$target" all >/dev/null
 cp "$root/CLAUDE.md" "$target/"
 {
   cat "$target/AGENTS.header.md"
@@ -110,7 +106,7 @@ git checkout -q feature
 git checkout -q main
 git checkout -q -b design
 cp -R "$here/design/." "$target/"
-cp "$root/.agents/tools/wireframe.css" design/wireframes/style.css
+cp "$root/agents/design-agent/tools/wireframe.css" design/wireframes/style.css
 git add -A
 git -c user.name=sample -c user.email=sample@example.invalid commit -q \
   -m "Web view, edit-item screens, and the sell-item flow"
@@ -119,25 +115,25 @@ git checkout -q feature
 echo "Ready: $target (branch 'feature', base 'main')"
 echo "Next: open that folder in your agent and say one of:"
 echo "  Act as Docs-Agent. Update the docs for this branch against main."
-echo "  Read AGENTS.md and .agents/roles/test-agent.md first. Act as Test-Agent in Verify mode. The ticket is .tickets/ITEM-12.md, not your tracker. Verify ITEM-12 on this branch against main."
+echo "  Read AGENTS.md and .agents/skills/test-agent/SKILL.md first. Act as Test-Agent in Verify mode. The ticket is .tickets/ITEM-12.md, not your tracker. Verify ITEM-12 on this branch against main."
 echo "For Test-Agent Write mode, first run: git -C \"$target\" checkout -q main"
-echo "  Read AGENTS.md and .agents/roles/test-agent.md first. Act as Test-Agent in Write mode. The ticket is .tickets/ITEM-12.md, not your tracker. Write acceptance tests for ITEM-12."
+echo "  Read AGENTS.md and .agents/skills/test-agent/SKILL.md first. Act as Test-Agent in Write mode. The ticket is .tickets/ITEM-12.md, not your tracker. Write acceptance tests for ITEM-12."
 echo "For Planner-Agent, stay on 'feature' and say:"
-echo "  Read AGENTS.md and .agents/roles/planner-agent.md first. Act as Planner-Agent. The brief is .briefs/export.md. This is local mode: write drafts only and don't use Linear."
+echo "  Read AGENTS.md and .agents/skills/planner-agent/SKILL.md first. Act as Planner-Agent. The brief is .briefs/export.md. This is local mode: write drafts only and don't use Linear."
 echo "For Review-Agent, first run: git -C \"$target\" checkout -q review"
-echo "  Read AGENTS.md and .agents/roles/review-agent.md first. Act as Review-Agent. The ticket is .tickets/ITEM-12.md, not your tracker. Review this branch against main."
+echo "  Read AGENTS.md and .agents/skills/review-agent/SKILL.md first. Act as Review-Agent. The ticket is .tickets/ITEM-12.md, not your tracker. Review this branch against main."
 echo "For Lint-Agent, first run: git -C \"$target\" checkout -q lint"
-echo "  Read AGENTS.md and .agents/roles/lint-agent.md first. Act as Lint-Agent. Fix lint on this branch against main."
+echo "  Read AGENTS.md and .agents/skills/lint-agent/SKILL.md first. Act as Lint-Agent. Fix lint on this branch against main."
 echo "For Security-Agent, first run: git -C \"$target\" checkout -q security"
-echo "  Read AGENTS.md and .agents/roles/security-agent.md first. Act as Security-Agent. Review this branch against main."
+echo "  Read AGENTS.md and .agents/skills/security-agent/SKILL.md first. Act as Security-Agent. Review this branch against main."
 echo "For API-Agent, first run: git -C \"$target\" checkout -q api"
-echo "  Read AGENTS.md and .agents/roles/api-agent.md first. Act as API-Agent. Check the API on this branch against main."
+echo "  Read AGENTS.md and .agents/skills/api-agent/SKILL.md first. Act as API-Agent. Check the API on this branch against main."
 echo "For API-Agent Design mode, first run: git -C \"$target\" checkout -q api-design"
-echo "  Read AGENTS.md and .agents/roles/api-agent.md first. Act as API-Agent in Design mode. The ticket is .tickets/ITEM-14.md, not your tracker. Design the spec change for ITEM-14 against main."
+echo "  Read AGENTS.md and .agents/skills/api-agent/SKILL.md first. Act as API-Agent in Design mode. The ticket is .tickets/ITEM-14.md, not your tracker. Design the spec change for ITEM-14 against main."
 echo "For Build-Agent, first run: git -C \"$target\" checkout -q build"
-echo "  Read AGENTS.md and .agents/roles/build-agent.md first. Act as Build-Agent. Make the build pass on this branch, and deploy to staging if every step passes."
+echo "  Read AGENTS.md and .agents/skills/build-agent/SKILL.md first. Act as Build-Agent. Make the build pass on this branch, and deploy to staging if every step passes."
 echo "For Design-Agent, first run: git -C \"$target\" checkout -q design"
-echo "  Read AGENTS.md and .agents/roles/design-agent.md first. Act as Design-Agent. Design the screens for .flows/sell-item.md."
+echo "  Read AGENTS.md and .agents/skills/design-agent/SKILL.md first. Act as Design-Agent. Design the screens for .flows/sell-item.md."
 echo "For the user-flows skill, also on 'design':"
 echo "  Read AGENTS.md and .agents/skills/user-flows/SKILL.md first. Use the user-flows skill. The input is .notes/returns-research.md."
 echo "For the design-system skill, also on 'design':"

@@ -17,8 +17,8 @@ SPEC_DIFF=''
 status=0
 
 # Secrets first. Needs gitleaks; without it the commit is blocked.
-.agents/checks/secret-scan.sh --staged >/dev/null || {
-  .agents/checks/secret-scan.sh --staged | grep '^FAIL'
+.agents/shared/secret-scan.sh --staged >/dev/null || {
+  .agents/shared/secret-scan.sh --staged | grep '^FAIL'
   status=1
 }
 
@@ -44,18 +44,18 @@ if [ -n "$SPEC_DIFF" ]; then
   }
 fi
 
-.agents/checks/lint-guard.sh >/dev/null || {
-  .agents/checks/lint-guard.sh | grep '^FAIL'
+.agents/shared/lint-guard.sh >/dev/null || {
+  .agents/shared/lint-guard.sh | grep '^FAIL'
   status=1
 }
 
-.agents/checks/build-guard.sh >/dev/null || {
-  .agents/checks/build-guard.sh | grep '^FAIL'
+.agents/shared/build-guard.sh >/dev/null || {
+  .agents/shared/build-guard.sh | grep '^FAIL'
   status=1
 }
 
-.agents/checks/context-lint.sh >/dev/null || {
-  .agents/checks/context-lint.sh | grep '^FAIL'
+.agents/shared/context-lint.sh >/dev/null || {
+  .agents/shared/context-lint.sh | grep '^FAIL'
   status=1
 }
 

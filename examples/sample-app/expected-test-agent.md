@@ -3,7 +3,7 @@
 Grade a run against this list. Check the files with `git status` and
 `git diff` in the run folder, and read the agent's report. Then save the
 report as `report.md` in the run folder (with `pbpaste > report.md` on a Mac)
-if the agent didn't, and run `.agents/checks/test-agent.sh report.md`
+if the agent didn't, and run `.agents/skills/test-agent/check.sh report.md`
 yourself. It must pass.
 
 ## Write mode (on `main`)

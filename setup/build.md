@@ -9,7 +9,7 @@ person takes.
 | Piece | File to copy | What it does |
 | ----- | ------------ | ------------ |
 | Deploy wrapper | `setup/deploy.sh` to `dev/deploy.sh` | The only way agents deploy. Refuses any target not on the allowed list, logs every attempt to `logs/deploy.log`, and rolls back with one command |
-| Build guard | `.agents/checks/build-guard.sh` | Fails when a change makes a failing step pass (`continue-on-error`, `\|\| true`), removes a CI step or check, or adds a production deploy command |
+| Build guard | `.agents/shared/build-guard.sh` | Fails when a change makes a failing step pass (`continue-on-error`, `\|\| true`), removes a CI step or check, or adds a production deploy command |
 | CI workflow | `setup/ci.yml` to `.github/workflows/ci.yml` | Runs the same commands as `AGENTS.md`, in the same order, on every pull request |
 | Production gate | `setup/claude-prod-gate.sh` to `.claude/hooks/prod-gate.sh` | Claude Code hook that blocks production deploy commands before they run |
 
@@ -126,7 +126,7 @@ A rollback you have never run doesn't count as one.
 
 ```markdown
 - Build: `dev/build.sh`
-- Build guard: `.agents/checks/build-guard.sh`
+- Build guard: `.agents/shared/build-guard.sh`
 - Deploy (local or staging only): `dev/deploy.sh staging`
 - Roll back a deploy: `dev/deploy.sh rollback staging`
 ```

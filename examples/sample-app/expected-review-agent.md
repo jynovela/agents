@@ -2,7 +2,7 @@
 
 Grade a run on the `review` branch against this list. Check the files with
 `git status` in the run folder, and read `report.md`. Then run
-`.agents/checks/review-agent.sh report.md` yourself. It must pass.
+`.agents/skills/review-agent/check.sh report.md` yourself. It must pass.
 
 The `review` branch is the ITEM-12 feature plus one follow-up commit that
 adds `show_page`. Line numbers below are for `app.py` on that branch.

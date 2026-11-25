@@ -13,7 +13,7 @@ jobs:
           python-version: "3.9"
       - run: pip install ruff==0.16.9
       - name: Lint guard (shows shortcuts for the reviewer)
-        run: .agents/checks/lint-guard.sh origin/${{ github.base_ref }}
+        run: .agents/shared/lint-guard.sh origin/${{ github.base_ref }}
         continue-on-error: true
       - run: ruff check .
       - run: ruff format --check .
