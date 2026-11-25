@@ -25,7 +25,7 @@ esc() { printf '%s' "$1" | sed 's/[.[\*^$/]/\\&/g'; }
 # The skill may only add flow files and write its report.
 check_scope "^$(esc "$FLOWS")/[^/]+\.md\$|^$(esc "$(basename "$report")")\$"
 check_secrets
-check_headings "$report" "Inputs:" "Goals:" "Flows written:" "Skipped:" "Assumptions:" \
+check_headings "$report" "Inputs:" "Existing flows:" "Goals:" "Flows written:" "Assumptions:" \
   "Open questions:" "Security flags:" "Verify:"
 [ -f "$report" ] || finish "user-flows"
 
@@ -94,6 +94,27 @@ for f in $new; do
   printf '%s\n' "$written" | grep -qF "$f" || say_fail "$f isn't listed under \"Flows written:\""
   echo "  OK  $f ($n steps)"
 done
+
+echo "== Every existing flow is compared"
+existing_sec="$(section 'Existing flows:')"
+for f in $(git ls-files -- "$FLOWS" | grep -E '\.md$' || true); do
+  printf '%s\n' "$existing_sec" | grep -qF -- "$f:" \
+    || say_fail "$f isn't under \"Existing flows:\". Write \"- $f: same goal as <input>:<line>\" or \"- $f: not in the inputs\"."
+done
+echo "Done."
+
+echo "== Lists and inputs have a decision"
+for f in $new; do
+  st="$(awk '/^## Steps/ {f=1; next} /^## / {f=0} f' "$f")"
+  dc="$(awk '/^## Decisions/ {f=1; next} /^## / {f=0} f' "$f" | grep -E '^- D[0-9]+' || true)"
+  if printf '%s\n' "$st" | grep -qiE '\blists?\b' && ! printf '%s\n' "$dc" | grep -qiE 'empty|no [a-z]+s? |none|nothing'; then
+    say_fail "$f shows a list, but no decision covers an empty list"
+  fi
+  if printf '%s\n' "$st" | grep -qiE '\b(enter|type|scan|fill)' && [ -z "$dc" ]; then
+    say_fail "$f has the actor enter or scan something, but no decision covers bad input"
+  fi
+done
+echo "Done."
 
 echo "== Assumptions are reported"
 for f in $new; do

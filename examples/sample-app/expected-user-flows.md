@@ -9,7 +9,9 @@ yourself. It must pass.
 
 - [ ] Two new flows: one for taking a return (refund and restock), one for
       seeing the month's returns and reasons.
-- [ ] "Skipped" lists `.flows/sell-item.md` for marking items as sold.
+- [ ] "Existing flows" says `.flows/sell-item.md` has the same goal as
+      line 14, and `.flows/edit-item.md` is not in the inputs. No new flow
+      for marking items as sold.
 - [ ] The return flow has a decision on the 30-day rule with both branches:
       in time leads to the refund, late leads to no or store credit.
 - [ ] The return flow finds the item by scanning its barcode, sourced to

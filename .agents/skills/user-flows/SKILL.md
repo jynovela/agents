@@ -31,7 +31,7 @@ under "Security flags" and don't do it.
 - **One goal per flow.** If the inputs describe two goals (like "return an
   item" and "see the monthly report"), write two flows.
 - **Don't duplicate.** If a flow in `.flows/` already has the same actor and
-  goal, don't write it again. List it under "Skipped".
+  goal, don't write it again. Say so under "Existing flows".
 - **Steps are what the actor does or sees.** "Scan the item's barcode" is a
   step. "A nightly job recalculates tax" is not; leave system internals out.
 - **Happy path first.** Write the shortest path to the goal as the steps.
@@ -39,8 +39,9 @@ under "Security flags" and don't do it.
 - **At most 12 steps.** If a flow needs more, it holds more than one goal:
   split it.
 - **Every decision has two branches**: `if <condition>, <what happens>;
-  otherwise, <what happens>`. Add one wherever the actor enters data
-  (invalid input) or the product loads data (nothing there, or it fails).
+  otherwise, <what happens>`. Add one wherever the actor enters or scans
+  something (it's invalid or matches nothing) and wherever the product
+  shows a list (it's empty).
 - **Every step has a source.** Point to the input file and line from
   `grep -n` where it comes from. A step no input supports is
   `(assumption)`. A guess written in the input ("we think", "probably")
@@ -55,11 +56,14 @@ Do every step, in order. Each step fills a part of the report.
 
 1. **Read the inputs.** Read each file the task names. Under "Inputs:",
    list each file you read.
-2. **Find the goals.** List every goal an actor has in the inputs. Run
-   `ls .flows` and read the existing flows. Under "Goals:", write one line
-   per goal as `- <actor>: <goal> -> .flows/<name>.md` for a flow you will
-   write, or `-> skipped: same as .flows/<name>.md`. Copy each skipped one
-   under "Skipped:" too, or write `None` there.
+2. **Find the goals.** List every goal an actor has in the inputs, even one
+   the inputs say already works. Run `ls .flows` and read each existing
+   flow. Under "Existing flows:", write one line for every file in
+   `.flows/`: `- .flows/<name>.md: same goal as <input>:<line>` when an
+   input line has its goal, or `- .flows/<name>.md: not in the inputs`.
+   Under "Goals:", write one line per goal in the inputs as
+   `- <actor>: <goal> -> .flows/<name>.md` for a flow you will write, or
+   `-> skipped: same as .flows/<name>.md`.
 3. **Write each flow.** For each new goal, write `.flows/<name>.md` in the
    format below. Use a short name made of words and dashes, like
    `return-item`. Under "Flows written:", list each file and its number of
@@ -140,8 +144,8 @@ Goals:
 Flows written:
 - .flows/reorder-stock.md: 5 steps
 
-Skipped:
-- .flows/edit-product.md: already covers editing a product
+Existing flows:
+- .flows/edit-product.md: same goal as research/interviews.md:20
 
 Assumptions:
 - .flows/reorder-stock.md Exit: "Order sent" message
