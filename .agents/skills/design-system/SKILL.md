@@ -60,7 +60,11 @@ Do every step, in order. Each step fills a part of the report.
    list each one as `- <file>:<line>: <what it is>`. Write `None` only
    after you ran these.
 3. **Write the system.** Write `design/system.md` in the format below. Fill
-   every section. Every component in the required list gets a row.
+   every section. Every component in the required list gets a row. Under
+   the table, write the `Components page:` line: the path from
+   "Components page" in the **Dev environment** section of `AGENTS.md`, or
+   `/dev/components`, preview only (proposed) when it says `None`. That
+   page shows every component in every state (see `setup/demo-data.md`).
 4. **Check contrast.** Under "## Color", list every text and background
    pair as a `Contrast:` line. Run the check script. For each pair it
    fails, pick a darker text or lighter background and record the change
@@ -133,6 +137,8 @@ Platforms: Mobile web first, then desktop web
 | --------- | --- | -------- | ------ | ---- |
 | Button | Actions | primary, secondary | default, focus, disabled, loading | ui/button.js:3 |
 | Text input | Short text | none | default, focus, disabled, error | new |
+
+Components page: `/dev/components`, preview only (proposed)
 
 ## Forms
 

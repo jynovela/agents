@@ -34,6 +34,9 @@ Stack: Python 3.9 or later, standard library only. SQLite for the local service.
 - Trigger a job: None
 - Unit tests: `python3 -m unittest discover -s tests -t .`
 - Acceptance tests (need the app running): `python3 -m unittest discover -s acceptance -t .`
+- Test accounts: `docs/test-accounts.md`
+- Simulate switch: `?simulate=slow|error`, web view only, never in production
+- Components page: None
 
 ## Tickets
 

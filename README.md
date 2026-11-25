@@ -99,6 +99,12 @@ untested.
    that blocks production commands. Most important: keep production
    credentials off the machine agents run on.
 
+9. **A way to see every screen state live, if the project has a UI.** Follow
+   [setup/demo-data.md](setup/demo-data.md): test accounts that each show
+   one state, a preview-only switch that fakes slow or failing requests, and
+   a hidden page with every shared component. Fill in "Test accounts",
+   "Simulate switch", and "Components page" in `AGENTS.md`.
+
 ### Let Claude do the setup
 
 Claude Code can do most of these steps for you. Open it in the project root
@@ -114,6 +120,10 @@ Set up linting. Read setup/lint.md and do its steps in order. Ask me before you 
 
 ```text
 Set up secret scanning. Read setup/security.md and do its steps in order. Ask me before you install anything, and don't commit. End with what you did, what failed, and what I still need to do.
+```
+
+```text
+Set up test accounts and the components page. Read setup/demo-data.md and follow "Steps for the agent" in order. Ask me before you change hosting settings or any database other than local, and don't commit.
 ```
 
 ```text

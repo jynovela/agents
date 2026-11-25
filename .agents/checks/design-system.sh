@@ -58,6 +58,7 @@ IFS='|' read -r -a names <<< "$COMPONENTS"
 for c in "${names[@]}"; do
   printf '%s\n' "$comp" | grep -qiE "^\| *$c *\|" || say_fail "Components table has no row for \"$c\""
 done
+printf '%s\n' "$comp" | grep -qE '^Components page: *[^ ]' || say_fail "\"## Components\" needs a line \"Components page: <path>\""
 echo "Done."
 
 echo "== Contrast"
