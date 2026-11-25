@@ -27,8 +27,17 @@ run designed for edit-item (`S1` Item list, `S2` Item detail).
       plus.
 - [ ] "Existing UI" lists `S1`, `S2`, and the components it uses, with line
       numbers that match `grep -n`.
-- [ ] F6 shows a placeholder for the record retention notice that says the
-      text comes from legal. No invented legal text.
+- [ ] The last step's action is `-> system: see Q<n>` (the exit question),
+      not a screen the agent chose.
+- [ ] F6 shows a `[Legal: ...]` placeholder for the record retention
+      notice that says the text comes from legal. No invented legal text
+      around it.
+- [ ] The confirm screen's Loading and Error states can happen (the sale
+      is saved), using `?simulate=slow` and `?simulate=error`.
+- [ ] "Test accounts needed" lists only accounts (users and their data),
+      not typed values like a price of 0.
+- [ ] "Ask first" lists the currency note and doesn't repeat "Needs your
+      answer" items. "Security flags" has no dark pattern.
 - [ ] Every new spec has all four states, with real content, and one
       primary action.
 - [ ] `design/wireframes/sell-item.html` lists the flow's screens in step

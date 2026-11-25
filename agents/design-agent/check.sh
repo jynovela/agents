@@ -211,11 +211,52 @@ while IFS= read -r line; do
 done <<< "$(items 'Existing UI:')"
 echo "Done."
 
+echo "== Report lists use \"- \" bullets"
+numbered="$(grep -nE '^ *[0-9]+[.)] ' "$report" | head -1 | cut -d: -f1)"
+[ -z "$numbered" ] || say_fail "$report line $numbered is a numbered item. Write every item as \"- ...\"."
+echo "Done."
+
 echo "== Ask first"
 while IFS= read -r line; do
   [ -n "$line" ] || continue
   say_fail "\"Ask first\" repeats a question: ${line:0:50}. List only screens or changes you didn't design."
-done <<< "$(items 'Ask first:' | grep -E '^ *- *Q[0-9]+' || true)"
+done <<< "$(items 'Ask first:' | grep -iE '^ *- *Q[0-9]+|dark pattern|no exit|exit is missing' || true)"
+if [ -n "${flow:-}" ] && [ -f "$flow" ]; then
+  notes="$(awk '/^## Notes/ {f=1; next} /^## / {f=0} f' "$flow" | grep -E '^- ' || true)"
+  if [ -n "$notes" ] && [ -z "$(items 'Ask first:')" ]; then
+    say_fail "$flow has notes under \"## Notes\", but \"Ask first\" is empty. List each screen or feature a note mentions."
+  fi
+fi
+echo "Done."
+
+echo "== Security flags"
+while IFS= read -r line; do
+  [ -n "$line" ] || continue
+  say_fail "\"Security flags\" lists a dark pattern: ${line:0:50}. Dark patterns go under \"Needs your answer\" only."
+done <<< "$(items 'Security flags:' | grep -iE 'dark pattern|pre-?checked|already checked' || true)"
+echo "Done."
+
+echo "== Reused screens are under \"Existing UI\""
+if [ -f "${map:-}" ]; then
+  for sid in $(sed -nE 's/^- F[0-9]+: *(S[0-9]+).*/\1/p' "$map" | sort -u); do
+    sp="$(spec_for "$sid")"
+    [ -n "$sp" ] && git ls-files --error-unmatch "$sp" >/dev/null 2>&1 || continue
+    items 'Existing UI:' | grep -qF -- "$sp:" || say_fail "the flow reuses $sid, but \"Existing UI\" doesn't list $sp. Write \"- $sp:1: $sid <name>: reused for F<n>\"."
+  done
+fi
+echo "Done."
+
+echo "== Gaps stay undesigned"
+newspecs="$(git ls-files --others --exclude-standard "$SCREENS" | grep -E '\.md$' || true)"
+if grep -qE '^Exit: *missing' "$report" && [ -n "$newspecs" ]; then
+  cat $newspecs | grep -qE -- '-> system: *see Q[0-9]+' \
+    || say_fail "Exit is missing, so the last step's action must be \"-> system: see Q<n>\", not a screen you chose"
+fi
+for sp in $newspecs; do
+  if grep -qi 'legal' "$sp" && ! grep -q '\[Legal:' "$sp"; then
+    say_fail "$sp mentions legal text without a placeholder like \"[Legal: <what>, from the legal team]\". Don't write legal text yourself."
+  fi
+done
 echo "Done."
 
 echo "== Needs your answer"

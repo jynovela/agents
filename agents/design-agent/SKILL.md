@@ -76,12 +76,17 @@ wireframe has a pre-checked box.
   its file and line from `grep -n`. Never type a line number from memory.
 - Give every screen exactly one primary action.
 - Fill all four states: empty, loading, error, success. Write
-  `Not applicable:` and the reason only when a state can't happen.
+  `Not applicable:` and the reason only when a state can't happen. A
+  screen whose primary action saves something can always be slow or fail,
+  so its Loading and Error states can happen.
 - In a new spec, end each state that can happen with how to see it live:
   `Shown by: <test account>`, `Shown by: <simulate value>`, or
   `Shown by: new: <the account it needs>`. Take accounts from the file that
   "Test accounts" in the **Dev environment** section names, and simulate
-  values from "Simulate switch". When either says `None`, use `new:`.
+  values from "Simulate switch". When either says `None`, use `new:`. An
+  account is a user and their data, like "owner with an item that has 2 in
+  stock". A value the user types, like a price of 0, is not an account:
+  show it with any account that reaches the screen.
 - Give every input a visible label and an error message that says how to
   fix it. Keep tap targets at least 44 px. Keep the keyboard order the same
   as the reading order.
@@ -130,8 +135,8 @@ Do every step, in order. Each step fills a part of the report.
    `cat design/system.md` (it may not exist). Search the UI code folder
    that the **Design** section names, such as
    `grep -n "function \|class \|export " <folder>/*`. Under "Existing UI:",
-   list each screen spec and each component that fits this flow, as
-   `- <file>:<line>: <name>: <how you use it>`. Write `None` only after you
+   list each screen spec you reuse and each component that fits this flow,
+   as `- <file>:<line>: <name>: <how you use it>`. Write `None` only after you
    ran these.
 4. **Map steps to screens.** Decide which screen each flow step uses.
    Reuse existing screens. Give a new screen the next free `S<n>` (one
