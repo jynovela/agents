@@ -18,6 +18,10 @@ NOT_EDITABLE='^dev/deploy\.sh$'
 # <!-- TAILOR: the deploy targets dev/deploy.sh allows. -->
 ALLOWED='local staging'
 
+# <!-- TAILOR: steps whose owner is always the same, as "Step name|Owner",
+# one per line. Keep in sync with step 2 of the role's procedure. -->
+STEP_OWNERS='Lint code|Lint-Agent'
+
 report="${1:-}"
 if [ -z "$report" ]; then
   echo "Usage: .agents/checks/build-agent.sh report.md"
@@ -54,25 +58,39 @@ fi
 
 check_secrets
 
+# Runs a guard and fails on each FAIL line it prints. A guard that crashes
+# prints no FAIL line, so it also fails unless its last line says it finished.
+run_guard() {
+  local name="$1" out last fails
+  shift
+  out="$("$@" 2>&1)"
+  last="$(echo "$out" | tail -1)"
+  fails="$(echo "$out" | grep '^FAIL: ' | sed 's/^FAIL: //' | grep -v "^$report[: ]" || true)"
+  if [ -n "$fails" ]; then
+    while IFS= read -r l; do say_fail "$l"; done <<< "$fails"
+  elif echo "$last" | grep -q "^$name checks: "; then
+    echo "Passed."
+  else
+    say_fail "$name didn't finish. Its last line: $last"
+  fi
+}
+
 echo "== Build guard on the agent's changes"
-guard="$("$here/build-guard.sh" 2>&1 | grep '^FAIL: ' | sed 's/^FAIL: //' || true)"
-if [ -z "$guard" ]; then
-  echo "Passed."
-else
-  while IFS= read -r l; do say_fail "$l"; done <<< "$guard"
-fi
+run_guard build-guard "$here/build-guard.sh"
 
 echo "== Lint guard on the agent's changes"
-guard="$("$here/lint-guard.sh" 2>&1 | grep '^FAIL: ' | sed 's/^FAIL: //' | grep -v "^$report[: ]" || true)"
-if [ -z "$guard" ]; then
-  echo "Passed."
-else
-  while IFS= read -r l; do say_fail "$l"; done <<< "$guard"
-fi
+run_guard lint-guard "$here/lint-guard.sh"
 
 echo "== Steps, rerun by this check"
-steps="$("$here/../tools/build-steps.sh" run 2>/dev/null | grep '^STEP ' || true)"
+out="$("$here/../tools/build-steps.sh" run 2>&1)"
+code=$?
+steps="$(echo "$out" | grep '^STEP ' || true)"
 echo "$steps"
+done_n="$(echo "$out" | sed -n 's/^STEPS_DONE \([0-9][0-9]*\)$/\1/p')"
+got_n="$(echo "$steps" | grep -c '^STEP ' || true)"
+if [ "$code" -gt 1 ] || [ -z "$done_n" ] || [ "$done_n" -eq 0 ] || [ "$got_n" -ne "$done_n" ]; then
+  say_fail "build-steps.sh run didn't finish (exit $code). Its last line: $(echo "$out" | tail -1)"
+fi
 after="$(section "Steps after:")"
 failing="$(section "Failing steps:")"
 red=""
@@ -88,8 +106,13 @@ while IFS= read -r l; do
   fi
   if [ "$state" = FAIL ]; then
     red="$red $name,"
-    if ! echo "$failing" | grep -F -- "- $name |" | grep -q 'owner:'; then
+    line="$(echo "$failing" | grep -F -- "- $name |" | head -1)"
+    if ! echo "$line" | grep -q 'owner:'; then
       say_fail "$name fails, but \"Failing steps\" has no \"- $name | ... | owner: ...\" line"
+    fi
+    want="$(echo "$STEP_OWNERS" | grep -F -- "$name|" | head -1 | cut -d'|' -f2)"
+    if [ -n "$want" ] && ! echo "$line" | grep -qF -- "owner: $want"; then
+      say_fail "$name always belongs to $want. Write \"owner: $want\" on its \"Failing steps\" line."
     fi
   fi
 done <<< "$steps"
@@ -119,7 +142,11 @@ done
 
 echo "== CI gaps are under \"Needs approval\""
 approval="$(section "Needs approval:")"
-gaps="$("$here/../tools/build-steps.sh" ci 2>/dev/null | grep '^CI_MISSING ' || true)"
+out="$("$here/../tools/build-steps.sh" ci 2>&1)"
+if ! echo "$out" | tail -1 | grep -q '^CI_CHECK_DONE$'; then
+  say_fail "build-steps.sh ci didn't finish. Its last line: $(echo "$out" | tail -1)"
+fi
+gaps="$(echo "$out" | grep '^CI_MISSING ' || true)"
 if [ -z "$gaps" ]; then
   echo "None."
 else

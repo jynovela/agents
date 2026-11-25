@@ -112,6 +112,9 @@ Do every step, in order. Each step fills a part of the report.
    line the error points to. Under "Failing steps:", write one line per
    failing step:
    `- <step> | log: <log file>:<line> | where: <file>:<line> | cause: <build script, app code, test, lint, spec, CI, environment> | owner: <owner from the table>`.
+   Some steps always have the same cause, wherever the error points: a
+   failing lint step is cause `lint`, owner Lint-Agent, and a failing spec
+   step is cause `spec`, owner API-Agent.
 3. For each failing step whose cause is a build script in scope, fix the
    cause in that script. List each fix under "Fixed:" as
    `- <file>:<line> | <old text> -> <new text> | fixes: <step>`. If no step
