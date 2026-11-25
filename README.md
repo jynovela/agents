@@ -8,7 +8,10 @@ Generic agent roles and guardrails to copy into a project and tailor.
 | ---- | ------- | ------------- |
 | `AGENTS.md` | Hermes, Codex, Cursor, and most tools | Project basics, shared guardrails, sources of truth, role list |
 | `CLAUDE.md` | Claude Code | `@AGENTS.md`, so Claude Code loads the same file |
-| `.agents/roles/<name>.md` | Any agent, via the role list in `AGENTS.md` | The full role definition. This is the source of truth. |
+| `agents/<name>/` | You, and `install.sh` | One folder per agent with everything it owns: `SKILL.md` (the instructions, and the source of truth), `check.sh`, and `claude.md` (the Claude Code wrapper). Docs-Agent lives here now. The other agents move in next. |
+| `shared/` | Every check script | `lib.sh`, the helpers the check scripts share |
+| `install.sh` | You | Copies agents from `agents/` into a project: `./install.sh <project-dir> docs-agent` |
+| `.agents/roles/<name>.md` | Any agent, via the role list in `AGENTS.md` | The full role definition of an agent that hasn't moved to `agents/` yet |
 | `.claude/agents/<name>.md` | Claude Code (as a subagent) | A thin wrapper that points to the role file |
 | `.agents/skills/<name>/SKILL.md` | Hermes, and Claude Code through the `.claude/skills/<name>` link | A procedure any agent can run, like writing user flows |
 | `.agents/tools/*.sh` | The agent | Helper scripts a role runs so a small model doesn't do fiddly text work by hand |
@@ -28,6 +31,12 @@ them, so the two can't drift apart.
 
 1. Copy `AGENTS.md`, `CLAUDE.md`, `.agents/`, `.claude/agents/`, `.claude/skills/`, and
    `.markdownlint-cli2.yaml` into the project root.
+   Then install the agents that live in `agents/`. From this repo, run
+   `./install.sh <project-dir> docs-agent`. It writes
+   `.agents/skills/docs-agent/`, `.agents/shared/lib.sh`, and
+   `.claude/agents/docs-agent.md` in the project. The `.agents/` and
+   `.claude/` folders in this repo hold links for those agents, so copying
+   alone leaves them broken.
 2. Fill in every `<!-- TAILOR: ... -->` comment: the project overview, stack,
    commands, and each role's verify commands.
 3. Remove roles you don't use from the table in `AGENTS.md`.

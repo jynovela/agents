@@ -17,7 +17,13 @@ mkdir -p "$target"
 cp -R "$here/base/." "$target/"
 
 # Agent files come from the repo root, so the test always uses the current roles.
-cp -R "$root/.agents" "$root/.claude" "$root/.markdownlint-cli2.yaml" "$target/"
+# -L copies what a link points at: this repo links some agent files to agents/
+# and shared/, and those links would point at nothing in the test folder.
+cp -RL "$root/.agents" "$target/"
+cp -R "$root/.claude" "$root/.markdownlint-cli2.yaml" "$target/"
+# Agents that have moved to agents/<name>/ are installed the way a project
+# installs them.
+"$root/install.sh" "$target" docs-agent >/dev/null
 cp "$root/CLAUDE.md" "$target/"
 {
   cat "$target/AGENTS.header.md"

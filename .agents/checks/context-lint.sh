@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Lints the files that instruct agents: every AGENTS.md, CLAUDE.md, role files,
-# and Claude Code wrappers. Agents treat these files as true, so a dead file
+# agent and skill folders, and Claude Code wrappers. Agents treat these files as true, so a dead file
 # reference or a leftover TODO turns into wrong behavior.
 #
 # Usage: .agents/checks/context-lint.sh
@@ -15,13 +15,15 @@ MAX_AGENTS=250
 MAX_ROLE=400
 
 # <!-- TAILOR: folders whose file references must exist. A reference is a path
-# in backticks, like `.agents/roles/docs-agent.md`. Paths elsewhere are often
+# in backticks, like `.agents/skills/docs-agent/SKILL.md`. Paths elsewhere are often
 # examples, so they aren't checked. A bare folder like `docs/` isn't checked
 # either. Add your source folders, like src/. -->
 REF_DIRS='^(\.agents|\.claude|docs|setup)/'
 
 files="$( { git ls-files 'AGENTS.md' '*/AGENTS.md' 'CLAUDE.md' '*/CLAUDE.md' \
-            '.agents/roles/*.md' '.claude/agents/*.md'; } | sort -u )"
+            '.agents/roles/*.md' '.claude/agents/*.md' \
+            'agents/*/SKILL.md' 'agents/*/claude.md' \
+            '.agents/skills/*/SKILL.md'; } | sort -u )"
 
 echo "== Files checked"
 if [ -z "$files" ]; then
@@ -77,7 +79,7 @@ done
 echo "== Frontmatter"
 hits=0
 for f in $files; do
-  case "$f" in .agents/roles/*|.claude/agents/*) ;; *) continue ;; esac
+  case "$f" in .agents/roles/*|.claude/agents/*|agents/*|.agents/skills/*) ;; *) continue ;; esac
   head -1 "$f" | grep -qx -- '---' || { say_fail "$f has no frontmatter."; hits=$((hits + 1)); continue; }
   for key in name description; do
     if ! sed -n '2,/^---$/p' "$f" | grep -q "^$key: ."; then

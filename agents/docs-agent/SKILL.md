@@ -18,7 +18,7 @@ sections in the root `AGENTS.md`.
 Run these before you finish. All must pass.
 
 ```sh
-.agents/checks/docs-agent.sh      # Required: changed files, secrets, spec files
+.agents/skills/docs-agent/check.sh      # Required: changed files, secrets, spec files
 npx markdownlint-cli2 "**/*.md"   # Markdown style
 # vale docs/                      # Prose style, if the project uses Vale
 # npx @stoplight/spectral-cli lint openapi.yaml   # OpenAPI lint, if there is a spec
@@ -89,7 +89,7 @@ check first, then write "none found" in the report.
    the change is user-visible. Start the entry with **Breaking:** when the
    change renames or removes a flag, command, config key, environment
    variable, endpoint, or field, and say what users must change.
-7. Run the verify commands, starting with `.agents/checks/docs-agent.sh`.
+7. Run the verify commands, starting with `.agents/skills/docs-agent/check.sh`.
    If it reports a file outside the docs paths, undo your change to that file
    with `git restore <file>`. If it reports a possible secret, remove that
    value from the doc. Rerun until it passes. Fix other failures in files you
@@ -167,5 +167,5 @@ Security flags:
 Needs approval:
 - None
 
-Verify: docs-agent.sh passed; markdownlint passed (or: the failing command and its error)
+Verify: check.sh passed; markdownlint passed (or: the failing command and its error)
 ```
