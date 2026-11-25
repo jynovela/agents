@@ -29,6 +29,33 @@ AGENT_TEXT='([^A-Za-z]|^)(AI|LLM|[Aa]gents?|[Aa]ssistants?|[Cc]laude|[Cc]opilot|
 HARNESS='(^|/)(AGENTS\.md|CLAUDE\.md|\.claude/|\.agents/|\.githooks/|\.husky/|\.github/|\.gitlab-ci\.yml|\.mcp\.json|\.cursor/|\.vscode/|skills/|\.gitleaks\.toml|\.gitleaksignore|\.pre-commit-config\.yaml)'
 DEPS='(^|/)(requirements[^/]*\.txt|pyproject\.toml|Pipfile(\.lock)?|poetry\.lock|uv\.lock|setup\.py|setup\.cfg|package(-lock)?\.json|yarn\.lock|pnpm-lock\.yaml|go\.(mod|sum)|Cargo\.(toml|lock)|Gemfile(\.lock)?)$'
 
+# <!-- TAILOR: well-known package names. A new dependency one or two letters
+# off one of these, but not equal to it, gets a typo-of:<name> tag. -->
+POPULAR='requests urllib3 numpy pandas django flask fastapi pydantic sqlalchemy boto3 botocore pyyaml cryptography jinja2 pillow setuptools click rich pytest httpx aiohttp celery redis psycopg2 scipy matplotlib python-dateutil express react lodash axios chalk commander dotenv'
+
+# Prints "typo-of:<name>" when $1 (a package name) is within two edits of a
+# popular name without matching it.
+typo_of() {
+  python3 - "$1" "$POPULAR" <<'PY' 2>/dev/null
+import sys
+name = sys.argv[1].lower()
+def dist(a, b):
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        cur = [i]
+        for j, cb in enumerate(b, 1):
+            cur.append(min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca != cb)))
+        prev = cur
+    return prev[-1]
+popular = sys.argv[2].split()
+if len(name) >= 4 and name not in popular:
+    for p in popular:
+        if dist(name, p) <= 2:
+            print("typo-of:" + p)
+            break
+PY
+}
+
 hide() { sed -E 's/[A-Za-z0-9_+\/=-]{24,}/<long value hidden>/g'; }
 
 if ! git rev-parse --verify -q "$base" >/dev/null; then
@@ -113,7 +140,12 @@ out="$(echo "$lines" | while IFS= read -r l; do
     echo "$text" | grep -Eq "$SECRET" && tags="$tags,secret"
     echo "$text" | grep -Eq "$AGENT_TEXT" && tags="$tags,agent-text"
     echo "$file" | grep -Eq "$HARNESS" && tags="$tags,harness"
-    echo "$file" | grep -Eq "$DEPS" && tags="$tags,dependency"
+    if echo "$file" | grep -Eq "$DEPS"; then
+      tags="$tags,dependency"
+      pkg="$(echo "$text" | sed -nE 's/^[[:space:]"]*([A-Za-z0-9_.-]+).*/\1/p')"
+      t="$( [ -n "$pkg" ] && typo_of "$pkg" )"
+      [ -n "$t" ] && tags="$tags,$t"
+    fi
   fi
   for s in $(printf '%s\n' "$scanned" | awk -v k="$loc" '$1 == k {print $2}'); do
     tags="$tags,$s"
