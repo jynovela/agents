@@ -51,6 +51,14 @@ cp -R "$here/lint/." "$target/"
 git add -A
 git -c user.name=sample -c user.email=sample@example.invalid commit -q \
   -m "ITEM-15: add price stats"
+
+# Security-Agent reviews this branch: main plus a commit with planted vulnerabilities.
+git checkout -q main
+git checkout -q -b security
+cp -R "$here/security/." "$target/"
+git add -A
+git -c user.name=sample -c user.email=sample@example.invalid commit -q \
+  -m "ITEM-16: search, delete, and export items"
 git checkout -q feature
 
 echo "Ready: $target (branch 'feature', base 'main')"
@@ -65,4 +73,6 @@ echo "For Review-Agent, first run: git -C \"$target\" checkout -q review"
 echo "  Read AGENTS.md and .agents/roles/review-agent.md first. Act as Review-Agent. The ticket is .tickets/ITEM-12.md, not your tracker. Review this branch against main."
 echo "For Lint-Agent, first run: git -C \"$target\" checkout -q lint"
 echo "  Read AGENTS.md and .agents/roles/lint-agent.md first. Act as Lint-Agent. Fix lint on this branch against main."
+echo "For Security-Agent, first run: git -C \"$target\" checkout -q security"
+echo "  Read AGENTS.md and .agents/roles/security-agent.md first. Act as Security-Agent. Review this branch against main."
 echo "Then grade the run with $here/expected-<agent>.md"

@@ -16,6 +16,7 @@ Stack: Markdown only.
 - Fix lint: None
 - Lint guard: `.agents/checks/lint-guard.sh`
 - Scan secrets: `.agents/checks/secret-scan.sh`
+- Audit dependencies: None
 - Lint agent files: `.agents/checks/context-lint.sh`
 
 ## Dev environment
@@ -98,3 +99,4 @@ When asked to act as one of these agents, read its role file first and follow it
 | Planner-Agent | `.agents/roles/planner-agent.md` | Turns a brief into tickets with testable acceptance criteria, in Linear Backlog or local drafts, then stops |
 | Review-Agent | `.agents/roles/review-agent.md` | Reviews a branch against its ticket for correctness, scope, and design, and gives a verdict; never edits code |
 | Lint-Agent | `.agents/roles/lint-agent.md` | Makes lint pass on a branch's changed files without changing behavior; lists what it can't safely fix |
+| Security-Agent | `.agents/roles/security-agent.md` | Reviews a branch for security problems after the scanners run, and gives a result; never edits code |

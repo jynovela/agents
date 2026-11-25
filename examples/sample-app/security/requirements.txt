@@ -1,0 +1,4 @@
+# Runtime dependencies for exports and the admin API.
+python-dateutil==2.9.0
+reqeusts==2.32.3
+rich
