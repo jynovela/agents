@@ -65,7 +65,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks.
    ```
 
    For Lint-Agent, switch to the `lint` branch first. It's `main` plus a
-   commit with lint errors. Install Ruff once (`pip3 install --user ruff`):
+   commit with lint errors. Install Ruff once (`brew install ruff`):
 
    ```sh
    git -C /tmp/itemctl-test checkout -q lint

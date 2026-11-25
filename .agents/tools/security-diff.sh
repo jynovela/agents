@@ -91,7 +91,7 @@ if [ -z "$pyfiles" ]; then
 elif [ -n "$RUFF" ]; then
   echo "Ran: $RUFF check --select S. Its hits are tagged ruff:<code> below."
 else
-  echo "RUFF NOT INSTALLED: Ruff's hits are missing from the risky lines. Install it with: pip3 install --user ruff"
+  echo "RUFF NOT INSTALLED: Ruff's hits are missing from the risky lines. Install it with: brew install ruff (or pipx install ruff)"
 fi
 
 echo

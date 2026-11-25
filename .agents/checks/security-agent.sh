@@ -157,7 +157,7 @@ risky_sec="$(section 'Risky lines:')"
 
 echo "== Security lint ran"
 if printf '%s\n' "$diff_out" | grep -q 'RUFF NOT INSTALLED'; then
-  say_fail "Ruff isn't installed where this shell can find it, so the risky lines miss Ruff's hits. Install it (pip3 install --user ruff) and run the review again."
+  say_fail "Ruff isn't installed where this shell can find it, so the risky lines miss Ruff's hits. Install it (brew install ruff, or pipx install ruff) and run the review again."
 else
   echo "OK"
 fi
