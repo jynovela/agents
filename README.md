@@ -11,7 +11,7 @@ Generic agent roles and guardrails to copy into a project and tailor.
 | `.agents/roles/<name>.md` | Any agent, via the role list in `AGENTS.md` | The full role definition. This is the source of truth. |
 | `.claude/agents/<name>.md` | Claude Code (as a subagent) | A thin wrapper that points to the role file |
 | `.agents/tools/*.sh` | The agent | Helper scripts a role runs so a small model doesn't do fiddly text work by hand |
-| `.agents/checks/<name>.sh` | The agent, and you after a run | Checks in code that back up the written rules (changed files, secrets). `lib.sh` holds the checks every role shares. `lint-guard.sh` and `context-lint.sh` serve every agent: see `setup/lint.md`. |
+| `.agents/checks/<name>.sh` | The agent, and you after a run | Checks in code that back up the written rules (changed files, secrets). `lib.sh` holds the checks every role shares. `lint-guard.sh`, `context-lint.sh`, and `secret-scan.sh` serve every agent: see `setup/lint.md` and `setup/security.md`. |
 | `setup/` | You, once per project | Setup guides, plus files they tell you to copy, such as the Ruff config and git hooks |
 | `.markdownlint-cli2.yaml` | markdownlint | Default doc lint rules |
 | `examples/sample-app/` | You, when testing a role | A small test app with traps and an expected result for each agent. Don't copy it into projects. |
@@ -81,8 +81,11 @@ untested.
    Claude Code hook that lints each edited file, and CI. Fill in "Lint code"
    and "Fix lint" in `AGENTS.md`. Most style and safety rules belong there,
    not in prose.
-6. **Optional: install gitleaks.** The check scripts use it when it's on the
-   `PATH`, on top of their built-in pattern check.
+6. **Secret scanning that agents can't skip.** Follow
+   [setup/security.md](setup/security.md): gitleaks with a config, a scan in
+   the pre-commit hook and in CI, and the "Scan secrets" command in
+   `AGENTS.md`. The role check scripts also use gitleaks when it's on the
+   `PATH`.
 
 ## Workflow: from ticket to merged code
 

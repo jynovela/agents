@@ -1,0 +1,27 @@
+# gitleaks config. Copy it to the project root as .gitleaks.toml.
+# See setup/security.md. Only a human changes this file: the lint guard fails
+# any agent change to it.
+
+title = "project secrets"
+
+# Keep the built-in rules: they cover common cloud, Git host, payment, and chat
+# tokens, private keys, and generic "api_key = ..." assignments.
+[extend]
+useDefault = true
+
+# <!-- TAILOR: add a rule for each token format your company issues, so the
+# scanner knows them. Delete this example if you have none. -->
+[[rules]]
+id = "example-internal-token"
+description = "Internal service token"
+regex = '''\bexco_[A-Za-z0-9]{32}\b'''
+keywords = ["exco_"]
+
+# <!-- TAILOR: paths that hold only fake values on purpose, such as test
+# fixtures. Keep this list short and specific: every path here is a place a
+# real secret can hide. -->
+[[allowlists]]
+description = "Fake values in test fixtures"
+paths = [
+  '''^tests/fixtures/''',
+]
