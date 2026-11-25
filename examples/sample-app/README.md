@@ -115,6 +115,7 @@ needs Ruff. Security-Agent needs Ruff and gitleaks.
 | `lint/` | Files added on the `lint` branch (from `main`), for Lint-Agent |
 | `security/` | Files changed on the `security` branch (from `main`), for Security-Agent |
 | `base/ruff.toml` | The app's Ruff config, tailored from `setup/ruff.toml` |
+| `base/.spectral.yaml`, `base/.api/approved.md` | The app's spec lint rules and its (empty) list of approved breaking API changes, from `setup/api.md` |
 | `setup.sh` | Builds the test repo from `base/`, `change/`, and the root agent files |
 | `expected-docs-agent.md` | What a correct Docs-Agent run does and doesn't do |
 | `expected-test-agent.md` | What a correct Test-Agent run does and doesn't do |

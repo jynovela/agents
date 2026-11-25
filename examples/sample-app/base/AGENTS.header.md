@@ -8,7 +8,9 @@ Stack: Python 3.9 or later, standard library only. SQLite for the local service.
 ## Commands
 
 - Lint docs: `npx markdownlint-cli2 "**/*.md"`
-- Lint API spec: `npx @stoplight/spectral-cli lint openapi.yaml`
+- API spec is: follows the code
+- Lint API spec: `npx --yes @stoplight/spectral-cli@6 lint --fail-severity error openapi.yaml`
+- Spec diff: `.agents/checks/spec-diff.sh main`
 - Lint code: `ruff check . && ruff format --check .`
 - Fix lint: `ruff check --fix . && ruff format .`
 - Lint guard: `.agents/checks/lint-guard.sh`
