@@ -1,32 +1,55 @@
 # Agents
 
-Generic agent roles and guardrails to copy into a project and tailor.
+A set of AI agents you install into a software project so it gets built
+test-first. You approve what "done" means for a ticket. The agents write
+the tests from that, write the code that passes them, update the docs,
+review the change, and check it for security problems. You try the result
+on staging and release it yourself.
 
-## Layout
+What you gain:
 
-| Path | Read by | What it holds |
-| ---- | ------- | ------------- |
-| `agents/<name>/` | You, and `install.sh` | One folder per agent with everything it owns: `SKILL.md` (the instructions, and the source of truth), `agent.yaml` (what it needs from the project), `check.sh`, `tools/` (helper scripts, so a small model doesn't do fiddly text work by hand), and `claude.md` (the Claude Code wrapper) |
-| `skills/<name>/` | You, and `install.sh` | The same shape for a skill: a procedure any agent, or you, can run. It has no wrapper. |
-| `shared/` | Every agent | `lib.sh`, the helpers every check script uses, and the checks that serve all agents: `lint-guard.sh`, `context-lint.sh`, `secret-scan.sh`, `spec-diff.sh`, `build-guard.sh`, and `doctor.sh`, which lists what each installed agent still needs. See `setup/lint.md`, `setup/security.md`, `setup/api.md`, and `setup/build.md`. |
-| `INSTALL.md` | Claude Code, from the one-prompt setup | The steps to install the agents in a project and set it up for them |
-| `install.sh` | You | Copies agents and skills into a project and lists them in its `AGENTS.md` |
-| `tests/install-alone.sh` | You and CI, when changing this repo | Proves every agent installs and runs on its own |
-| `AGENTS.md` | Hermes, Codex, Cursor, and most tools | Project basics, shared guardrails, sources of truth, agent list |
-| `CLAUDE.md` | Claude Code | `@AGENTS.md`, so Claude Code loads the same file |
-| `setup/` | You, once per project | Setup guides, plus files they tell you to copy, such as the Ruff config and git hooks. Installed in a project as `.agents/setup/`. |
-| `.markdownlint-cli2.yaml` | markdownlint | Default doc lint rules |
-| `examples/sample-app/` | You, when testing an agent | A small test app with traps and an expected result for each agent. Don't copy it into projects. |
-| `.agents/`, `.claude/` | Tools opened in this repo | Links to `agents/`, `skills/`, and `shared/`, so this repo looks like a project with everything installed. Don't copy them. |
+- **Code that is proven against your criteria.** Every acceptance criterion
+  becomes a test that fails before the code exists and passes after. A
+  different agent writes the code than the one that wrote the tests, so the
+  code can't grade itself.
+- **Two check-ins for you, not twenty.** You approve the acceptance criteria
+  at the start, and you test on staging at the end. The steps in between
+  are the agents' work.
+- **Rules that hold with cheap models.** Each agent has one job, a short
+  list of files it may change, and a check script that fails the run when
+  it breaks a rule: a leaked secret, a skipped test, an edit outside its
+  scope. The rules don't depend on the model obeying them.
+- **Your choice of model per agent.** The agents are plain Markdown files
+  and shell scripts. Run them all in Claude Code, or run most of them on a
+  local open-weight model and keep a strong model for review.
+- **No agent can release.** Agents deploy to local and staging only.
+  Production is yours.
 
-Written rules aren't enough on their own, especially with smaller models. Any
-rule that code can check (which files changed, whether a secret leaked) also
-gets a check script that fails the run.
+Each agent also works alone. Install only Docs-Agent to keep docs in step
+with code, or only Security-Agent to review branches.
 
-Each rule lives in one file. Wrappers point to `SKILL.md` instead of copying
-it, so the two can't drift apart.
+## What you need
 
-## Use in a project
+<details>
+<summary>Tools and accounts</summary>
+
+| You need | For | Notes |
+| -------- | --- | ----- |
+| A project in a git repository | Everything | The agents are installed into it. An empty repository is fine. |
+| [Claude Code](https://claude.com/claude-code) | Running the agents, and the one-prompt install | Or another agent tool that reads `AGENTS.md`, such as Hermes with a local model. Claude Code is the simplest start. |
+| [Linear](https://linear.app), connected to your agent tool through its MCP server | Tickets and acceptance criteria | Optional. Without it, tickets are Markdown files in the project. |
+| Node.js | The doc lint (`npx markdownlint-cli2`) and the API spec lint | |
+| [gitleaks](https://github.com/gitleaks/gitleaks) | Secret scanning | The setup installs it with your approval. |
+| [oasdiff](https://github.com/oasdiff/oasdiff) | The gate on API changes | Only if the project has an HTTP API. |
+| A linter for your language | Lint-Agent and the lint hook | The guide uses Ruff for Python. |
+| A staging environment | Trying a change before release | Can wait until you have something to deploy. |
+
+You don't need all of it on day one. After the install, one command lists
+which agents are ready and what each of the others is missing.
+
+</details>
+
+## Install
 
 ### With Claude Code, in one prompt
 
@@ -44,6 +67,9 @@ name them in the prompt: "... to set up docs-agent and test-agent in this
 project."
 
 ### By hand
+
+<details>
+<summary>Install with the script, step by step</summary>
 
 1. Clone this repo. From it, install everything into your project:
 
@@ -85,87 +111,175 @@ project."
    `READY` means the agent has every `AGENTS.md` line and tool it needs.
    `NOT READY` lists what to set or install, and the setup guide to read.
    An agent that isn't ready doesn't stop the others from working.
-4. Do the setup the agents need. [setup/README.md](setup/README.md) lists
-   it: a dev environment agents can drive, access to tickets, linting and
-   secret scanning that agents can't skip, a gate on API changes, staging,
-   and demo data. In the project the same file is `.agents/setup/README.md`.
+
+</details>
+
+## Set up
+
+<details>
+<summary>Setup steps</summary>
+
+The install copies the agents. The setup gives them what they need to check
+their own work: commands they can run, tickets they can read, and hooks
+they can't skip. The one-prompt install does most of it. By hand:
+
+1. In the project's `AGENTS.md`, fill in every `<!-- TAILOR: ... -->`
+   comment: the project overview, the stack, and the commands. Do the same
+   in the `SKILL.md` of each agent you installed.
+2. Work through [setup/README.md](setup/README.md). In the project the same
+   file is `.agents/setup/README.md`. It covers:
+
+   | Setup | Why |
+   | ----- | --- |
+   | A dev environment agents can drive | Tests run against the real app, not mocks |
+   | Access to tickets | Agents read the acceptance criteria you approved |
+   | Fenced tests | The agent writing code can't edit the tests it must pass |
+   | Linting and secret scanning in a git hook and CI | Agents can't skip them |
+   | A gate on API changes | A breaking change needs your approval |
+   | Staging, and a production only you can deploy | You try changes safely, and no agent can release |
+   | Demo data, if the project has a UI | Every screen state can be seen live |
+
+3. Run `.agents/shared/doctor.sh` again until the agents you want say
+   `READY`.
+4. Commit the setup yourself with `git commit --no-verify`. The lint guard
+   blocks changes to hooks and config, so agents can't loosen them later.
 5. In a monorepo, add a short `AGENTS.md` in a package folder for rules that
    apply only there. Hermes and Codex merge nested files from the repo root
    down to the working folder.
 
-## Workflow: from ticket to merged code
+</details>
 
-1. Ask the Planner-Agent to plan a brief. It writes tickets with acceptance
-   criteria to Linear Backlog (or local drafts) and stops. Read them, fix
-   what you disagree with, and move the ones you want to To-do yourself. Or
-   write the ticket and its criteria by hand.
-2. If the ticket changes an endpoint, ask the API-Agent for **Design** mode
-   first. It writes the additive parts of the ticket into the spec and lists
-   breaking ones for approval. Review the spec diff and commit it, along with
-   any approval lines you add to `.api/approved.md`. Tests and code are then
-   written against that spec.
-3. Ask the Test-Agent for **Write** mode. It writes one acceptance test per
-   criterion, and each must fail because the feature isn't built yet.
-4. Review the tests yourself before anything else. Check that every assertion
-   traces to a criterion, read the assumptions it lists under "Needs
-   approval", and add any edge case it missed. Then commit the tests.
-5. Hand the ticket to your code agent, with the tests fenced (step 4 in `setup/README.md`).
-   If lint errors are left when it's done, ask the Lint-Agent to fix lint on
-   the branch. If the branch touches an endpoint, a CLI flag, or an
-   environment variable, ask the API-Agent to check the API. It writes
-   additive changes into the spec and lists breaking ones. Approve a breaking
-   change by committing its line to `.api/approved.md`, or send the work
-   back.
-   If the build fails, ask the Build-Agent why. It fixes build
-   scripts and names the owner of every other cause. Commit its fixes as
-   their own commit, so review doesn't count them as scope creep.
-6. Ask the Test-Agent for **Verify** mode. It runs the acceptance tests
-   against the running app and reports each criterion with evidence. If
-   any criterion fails, send the work back to your code agent and skip
-   review until Verify passes.
-7. Ask the Review-Agent to review the branch. Run it on a different model
-   family than the one that wrote the code, and on the strongest model you
-   have: it's the last check before merge. In testing, a dense 31B model
-   scored steadily, while a small mixture-of-experts model (about 3B active)
-   missed different things on every run. It checks each criterion, scope,
-   and design, and gives a verdict. It never edits code.
-8. Ask the Security-Agent to review the branch. It runs the secret scanner
-   and security lint, checks what they miss, and gives a result of BLOCK,
-   REVIEW, or PASS. It never edits code. In testing, a small model (about 3B
-   active) scored 13, 11, and 13 of 14 against a frontier model's 13, because
-   the scanners and check script do most of the work. Its misses were
-   judgment calls like path traversal, so for risky changes (auth, file
-   handling, new endpoints) run it on your strongest model too.
-9. Read the verdict, the security result, and the findings, then merge or
-   send the work back.
-10. Test on staging before it goes live. Ask the Build-Agent to deploy to
-   staging (or let your host build the preview), and click through the
-   change. Then release to production yourself. No agent can.
+## Workflow
 
-### Claude Code
+<details>
+<summary>The two tracks, step by step</summary>
+
+There are two tracks. Planning turns an idea into tickets. Doing turns one
+ticket into tested code on staging. Today you start each agent yourself, in
+this order. A runner that does the Doing track from one command is the next
+thing being built.
+
+### Planning: from an idea to tickets
+
+1. *Optional, for a project with a UI.* Run the `user-flows` skill on your
+   research or brief, the `design-system` skill once per project, and then
+   Design-Agent. You get flow files, screen specs, and clickable low-fi
+   wireframes.
+2. Ask Planner-Agent to plan a brief. It writes tickets with acceptance
+   criteria to Linear Backlog, or to local drafts, and stops.
+3. **Your check-in: approve the acceptance criteria.** Read the tickets, fix
+   what you disagree with, and move the ones you want to To-do. Everything
+   after this is tested against those criteria, so this is where your
+   attention pays most.
+
+### Doing: from one ticket to staging
+
+1. If the ticket changes an endpoint, ask API-Agent for **Design** mode. It
+   writes the additive parts into the API spec and lists breaking ones for
+   your approval in `.api/approved.md`.
+2. Ask Test-Agent for **Write** mode. It writes one acceptance test per
+   criterion. Each must fail, because the feature isn't built yet.
+3. Ask Implementer-Agent to build the ticket. It writes the smallest code
+   change that makes the tests pass and can't edit the tests.
+4. Ask Test-Agent for **Verify** mode. It runs the tests against the
+   running app and reports each criterion with evidence. If one fails, the
+   work goes back to step 3.
+5. Ask Docs-Agent to update the docs for the branch.
+6. Ask Review-Agent and Security-Agent to review the branch. Neither edits
+   code. Review gives a verdict against the ticket. Security runs the
+   scanners, checks what they miss, and answers BLOCK, REVIEW, or PASS. If
+   either rejects, the work goes back to step 3.
+7. Ask Build-Agent to deploy to staging, or let your host build a preview.
+8. **Your check-in: test on staging.** If it does what you wanted, merge
+   and release to production yourself. No agent can.
+
+Three agents are on call and not steps. Call Lint-Agent when lint errors
+are left on a branch, Build-Agent when the build fails, and API-Agent's
+check mode when a branch touched an endpoint, a CLI flag, or an environment
+variable.
+
+### Which model for which agent
+
+Run Review-Agent on a different model family than the one that wrote the
+code, and on the strongest model you have. In testing, a dense 31B model
+scored steadily, while a small mixture-of-experts model (about 3B active)
+missed different things on every run. Security-Agent held up on the small
+model (13, 11, and 13 of 14, against a frontier model's 13), because the
+scanners and its check script do most of the work. Its misses were judgment
+calls like path traversal, so for risky changes (auth, file handling, new
+endpoints) run it on your strongest model too.
+
+### Start an agent in Claude Code
 
 Ask for a role by name, for example "use the docs-agent to update the docs for
 this branch". The `tools` list in a wrapper limits which tools the subagent
 gets. To limit which shell commands it can run, add permission rules in
 `.claude/settings.json`.
 
-### Hermes
+### Start an agent in Hermes
 
 Hermes loads `AGENTS.md` automatically. Ask for the agent by name, for
 example "act as Docs-Agent". The agent list in `AGENTS.md` tells the model
 which `SKILL.md` to read. Don't add a `.hermes.md` file: Hermes
 loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 
+</details>
+
+## Layout
+
+<details>
+<summary>What each folder holds</summary>
+
+What is in this repo, for when you want to read or change an agent.
+
+| Path | Read by | What it holds |
+| ---- | ------- | ------------- |
+| `agents/<name>/` | You, and `install.sh` | One folder per agent with everything it owns: `SKILL.md` (the instructions, and the source of truth), `agent.yaml` (what it needs from the project), `check.sh`, `tools/` (helper scripts, so a small model doesn't do fiddly text work by hand), and `claude.md` (the Claude Code wrapper) |
+| `skills/<name>/` | You, and `install.sh` | The same shape for a skill: a procedure any agent, or you, can run. It has no wrapper. |
+| `shared/` | Every agent | `lib.sh`, the helpers every check script uses, and the checks that serve all agents: `lint-guard.sh`, `context-lint.sh`, `secret-scan.sh`, `spec-diff.sh`, `build-guard.sh`, and `doctor.sh`, which lists what each installed agent still needs. See `setup/lint.md`, `setup/security.md`, `setup/api.md`, and `setup/build.md`. |
+| `INSTALL.md` | Claude Code, from the one-prompt setup | The steps to install the agents in a project and set it up for them |
+| `install.sh` | You | Copies agents and skills into a project and lists them in its `AGENTS.md` |
+| `tests/install-alone.sh` | You and CI, when changing this repo | Proves every agent installs and runs on its own |
+| `AGENTS.md` | Hermes, Codex, Cursor, and most tools | Project basics, shared guardrails, sources of truth, agent list |
+| `CLAUDE.md` | Claude Code | `@AGENTS.md`, so Claude Code loads the same file |
+| `setup/` | You, once per project | Setup guides, plus files they tell you to copy, such as the Ruff config and git hooks. Installed in a project as `.agents/setup/`. |
+| `.markdownlint-cli2.yaml` | markdownlint | Default doc lint rules |
+| `examples/sample-app/` | You, when testing an agent | A small test app with traps and an expected result for each agent. Don't copy it into projects. |
+| `.agents/`, `.claude/` | Tools opened in this repo | Links to `agents/`, `skills/`, and `shared/`, so this repo looks like a project with everything installed. Don't copy them. |
+
+Written rules aren't enough on their own, especially with smaller models. Any
+rule that code can check (which files changed, whether a secret leaked) also
+gets a check script that fails the run.
+
+Each rule lives in one file. Wrappers point to `SKILL.md` instead of copying
+it, so the two can't drift apart.
+
+</details>
+
 ## Roles
 
-| Role | Status |
-| ---- | ------ |
-| Docs-Agent | Ready |
-| Test-Agent | Ready |
-| Planner-Agent | Ready |
-| Lint-Agent | Ready |
-| API-Agent | Ready |
-| Build-Agent | Ready |
-| Security-Agent | Ready |
-| Review-Agent | Ready |
-| Implementer-Agent | Built, not yet tested on a small model |
+<details>
+<summary>Every agent and skill, with its status</summary>
+
+| Agent | What it does | Status |
+| ----- | ------------ | ------ |
+| Planner-Agent | Turns a brief into tickets with testable acceptance criteria, then stops | Ready |
+| Design-Agent | Turns a user flow into screen specs and clickable low-fi wireframes | In testing |
+| API-Agent | Keeps the API spec in step with the code. Lists breaking changes for your approval | Ready |
+| Test-Agent | Turns acceptance criteria into tests against the running app, then verifies the code with real results | Ready |
+| Implementer-Agent | Writes the smallest code change that makes one ticket's tests pass | Built, not yet tested on a small model |
+| Docs-Agent | Keeps Markdown docs in step with the code and flags API spec drift | Ready |
+| Review-Agent | Reviews a branch against its ticket and gives a verdict. Never edits code | Ready |
+| Security-Agent | Reviews a branch for security problems after the scanners run. Never edits code | Ready |
+| Lint-Agent | Makes lint pass on a branch's changed files without changing behavior | Ready |
+| Build-Agent | Finds why the build fails and fixes build scripts only. Deploys to staging, never to production | Ready |
+
+| Skill | What it does | Status |
+| ----- | ------------ | ------ |
+| `user-flows` | Turns journeys, research, or a brief into flow files for Design-Agent | In testing |
+| `design-system` | Sets up the project's design system once | In testing |
+
+"Ready" means the agent passed its checklist in `examples/sample-app/` on a
+small local model as well as on Claude.
+
+</details>
