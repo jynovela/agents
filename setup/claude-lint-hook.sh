@@ -2,7 +2,7 @@
 # Claude Code PostToolUse hook: formats and lints each file right after Claude
 # edits it, and sends what's left back to Claude so it fixes it in the same turn.
 # Copy to .claude/hooks/lint-file.sh and register it in .claude/settings.json.
-# See setup/lint.md.
+# See .agents/setup/lint.md.
 set -uo pipefail
 
 # The hook gets the tool call as JSON on stdin. Pull out the edited file.

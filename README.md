@@ -9,11 +9,12 @@ Generic agent roles and guardrails to copy into a project and tailor.
 | `agents/<name>/` | You, and `install.sh` | One folder per agent with everything it owns: `SKILL.md` (the instructions, and the source of truth), `agent.yaml` (what it needs from the project), `check.sh`, `tools/` (helper scripts, so a small model doesn't do fiddly text work by hand), and `claude.md` (the Claude Code wrapper) |
 | `skills/<name>/` | You, and `install.sh` | The same shape for a skill: a procedure any agent, or you, can run. It has no wrapper. |
 | `shared/` | Every agent | `lib.sh`, the helpers every check script uses, and the checks that serve all agents: `lint-guard.sh`, `context-lint.sh`, `secret-scan.sh`, `spec-diff.sh`, `build-guard.sh`, and `doctor.sh`, which lists what each installed agent still needs. See `setup/lint.md`, `setup/security.md`, `setup/api.md`, and `setup/build.md`. |
+| `INSTALL.md` | Claude Code, from the one-prompt setup | The steps to install the agents in a project and set it up for them |
 | `install.sh` | You | Copies agents and skills into a project and lists them in its `AGENTS.md` |
 | `tests/install-alone.sh` | You and CI, when changing this repo | Proves every agent installs and runs on its own |
 | `AGENTS.md` | Hermes, Codex, Cursor, and most tools | Project basics, shared guardrails, sources of truth, agent list |
 | `CLAUDE.md` | Claude Code | `@AGENTS.md`, so Claude Code loads the same file |
-| `setup/` | You, once per project | Setup guides, plus files they tell you to copy, such as the Ruff config and git hooks |
+| `setup/` | You, once per project | Setup guides, plus files they tell you to copy, such as the Ruff config and git hooks. Installed in a project as `.agents/setup/`. |
 | `.markdownlint-cli2.yaml` | markdownlint | Default doc lint rules |
 | `examples/sample-app/` | You, when testing an agent | A small test app with traps and an expected result for each agent. Don't copy it into projects. |
 | `.agents/`, `.claude/` | Tools opened in this repo | Links to `agents/`, `skills/`, and `shared/`, so this repo looks like a project with everything installed. Don't copy them. |
@@ -27,7 +28,24 @@ it, so the two can't drift apart.
 
 ## Use in a project
 
-1. Clone this repo next to your project. From this repo, install everything:
+### With Claude Code, in one prompt
+
+Open Claude Code in your project's root folder and paste:
+
+```text
+Clone https://github.com/jynovela/agents to ~/agents if it isn't there yet, or update it with git pull if it is. Then read ~/agents/INSTALL.md and follow it to set up the agents in this project.
+```
+
+Claude installs the agents, fills in `AGENTS.md` from what your project
+already has, and works through the setup guides. It asks before it installs
+a tool or where a choice is yours, and it never commits. It ends with a list
+of which agents are ready and what is left for you. To install only some,
+name them in the prompt: "... to set up docs-agent and test-agent in this
+project."
+
+### By hand
+
+1. Clone this repo. From it, install everything into your project:
 
    ```sh
    ./install.sh <project-dir> all
@@ -45,6 +63,7 @@ it, so the two can't drift apart.
    | ---- | ------------- |
    | `.agents/skills/<name>/` | `SKILL.md`, `agent.yaml`, `check.sh`, and `tools/` for each agent or skill |
    | `.agents/shared/` | `lib.sh`, `doctor.sh`, and the shared checks |
+   | `.agents/setup/` | The setup guides and the files they tell you to copy |
    | `.claude/agents/<name>.md` | The Claude Code wrapper for each agent |
    | `.claude/skills/<name>` | A link to each skill, so Claude Code finds it |
    | `AGENTS.md` | Created from this repo's copy when the project has none. In an existing one, only the tables of installed agents change: the part between the `agents:start` and `agents:end` comments. |
@@ -66,108 +85,13 @@ it, so the two can't drift apart.
    `READY` means the agent has every `AGENTS.md` line and tool it needs.
    `NOT READY` lists what to set or install, and the setup guide to read.
    An agent that isn't ready doesn't stop the others from working.
-4. In a monorepo, add a short `AGENTS.md` in a package folder for rules that
+4. Do the setup the agents need. [setup/README.md](setup/README.md) lists
+   it: a dev environment agents can drive, access to tickets, linting and
+   secret scanning that agents can't skip, a gate on API changes, staging,
+   and demo data. In the project the same file is `.agents/setup/README.md`.
+5. In a monorepo, add a short `AGENTS.md` in a package folder for rules that
    apply only there. Hermes and Codex merge nested files from the repo root
    down to the working folder.
-
-## Set up before using the agents
-
-Agents can only check what they can run. Do these once per project, or the
-Test-Agent falls back to unit tests and its report says the criteria are
-untested.
-
-1. **A dev environment agents can drive.** Fill in the "Dev environment"
-   section of `AGENTS.md` with exact commands: start the app (returning once
-   it's healthy), stop it, a health check, the base URL, reset test data, a
-   read-only database query, tail the logs, trigger jobs, and the unit and
-   acceptance test commands. Use a throwaway local database with seed data,
-   never a shared or production one. Write logs to a file agents can tail.
-   [examples/sample-app/base/dev/](examples/sample-app/base/dev/) shows small
-   scripts for each command.
-2. **Access to tickets.** Agents take acceptance criteria from your
-   tracker. For Linear, connect the Linear MCP server in Claude Code or
-   Hermes, and set the "Tickets" lines in `AGENTS.md`. Test-Agent only reads
-   tickets. Planner-Agent also creates them, so name the exact Linear team it
-   writes to, and the folders or repos it should read. Write criteria as
-   actions anyone can check: "after Y, the X row has status `sent`", "doing A
-   writes B to the log", "an offset past the end prints nothing".
-3. **A separate agent writes the code.** The agent that writes the tests must
-   not write the code that passes them, or it only proves it agrees with
-   itself.
-4. **Fence the tests while the code agent runs.** In Claude Code, add deny
-   rules to `.claude/settings.json`:
-
-   ```json
-   {
-     "permissions": {
-       "deny": ["Edit(/acceptance/**)", "Edit(/tests/**)"]
-     }
-   }
-   ```
-
-   Deny rules don't stop shell commands, and Hermes has no per-path rules, so
-   also check after every code agent run that this prints nothing:
-
-   ```sh
-   git status --porcelain -- acceptance tests
-   ```
-
-5. **Linting that agents can't skip.** Follow
-   [setup/lint.md](setup/lint.md): a linter config, a pre-commit hook, a
-   Claude Code hook that lints each edited file, and CI. Fill in "Lint code"
-   and "Fix lint" in `AGENTS.md`. Most style and safety rules belong there,
-   not in prose.
-6. **Secret scanning that agents can't skip.** Follow
-   [setup/security.md](setup/security.md): gitleaks with a config, a scan in
-   the pre-commit hook and in CI, and the "Scan secrets" command in
-   `AGENTS.md`. The role check scripts also use gitleaks when it's on the
-   `PATH`.
-7. **A gate on API changes, if the project has an HTTP API.** Follow
-   [setup/api.md](setup/api.md): a check that fails on any spec change that
-   isn't additive until you approve it in `.api/approved.md`, Spectral style
-   rules, and API guidelines. Fill in "API spec is", "Lint API spec", and
-   "Spec diff" in `AGENTS.md`.
-8. **Staging, and a production only you can deploy.** Follow
-   [setup/build.md](setup/build.md): a local, staging, and production
-   environment, a deploy script with no production target, a build guard,
-   one CI workflow that runs the `AGENTS.md` commands, and a Claude Code hook
-   that blocks production commands. Most important: keep production
-   credentials off the machine agents run on.
-
-9. **A way to see every screen state live, if the project has a UI.** Follow
-   [setup/demo-data.md](setup/demo-data.md): test accounts that each show
-   one state, a preview-only switch that fakes slow or failing requests, and
-   a hidden page with every shared component. Fill in "Test accounts",
-   "Simulate switch", and "Components page" in `AGENTS.md`.
-
-### Let Claude do the setup
-
-Claude Code can do most of these steps for you. Open it in the project root
-and paste one prompt per setup guide:
-
-```text
-Set up API spec checks. Read setup/api.md and follow "Steps for the agent" in order.
-```
-
-```text
-Set up linting. Read setup/lint.md and do its steps in order. Ask me before you install anything or choose a rule, and don't commit. End with what you did, what failed, and what I still need to do.
-```
-
-```text
-Set up secret scanning. Read setup/security.md and do its steps in order. Ask me before you install anything, and don't commit. End with what you did, what failed, and what I still need to do.
-```
-
-```text
-Set up test accounts and the components page. Read setup/demo-data.md and follow "Steps for the agent" in order. Ask me before you change hosting settings or any database other than local, and don't commit.
-```
-
-```text
-Set up builds and staging. Read setup/build.md and do its steps in order. Ask me before you install anything, create an account, or change a hosting setting, and don't commit. End with what you did, what failed, and what I still need to do.
-```
-
-Claude stops to ask where a choice is yours, and it never commits. Commit
-the setup files yourself with `git commit --no-verify`: the lint guard blocks
-changes to hooks and config, so agents can't loosen them later.
 
 ## Workflow: from ticket to merged code
 
@@ -185,7 +109,7 @@ changes to hooks and config, so agents can't loosen them later.
 4. Review the tests yourself before anything else. Check that every assertion
    traces to a criterion, read the assumptions it lists under "Needs
    approval", and add any edge case it missed. Then commit the tests.
-5. Hand the ticket to your code agent, with the tests fenced (setup step 4).
+5. Hand the ticket to your code agent, with the tests fenced (step 4 in `setup/README.md`).
    If lint errors are left when it's done, ask the Lint-Agent to fix lint on
    the branch. If the branch touches an endpoint, a CLI flag, or an
    environment variable, ask the API-Agent to check the API. It writes

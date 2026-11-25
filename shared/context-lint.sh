@@ -20,7 +20,8 @@ MAX_ROLE=400
 # either. Add your source folders, like src/. -->
 REF_DIRS='^(\.agents|\.claude|docs|setup)/'
 
-files="$( { git ls-files 'AGENTS.md' '*/AGENTS.md' 'CLAUDE.md' '*/CLAUDE.md' \
+# Tracked files and new ones git doesn't track yet, so a fresh install is checked too.
+files="$( { git ls-files --cached --others --exclude-standard 'AGENTS.md' '*/AGENTS.md' 'CLAUDE.md' '*/CLAUDE.md' \
             '.claude/agents/*.md' '.agents/skills/*/SKILL.md' \
             'agents/*/SKILL.md' 'agents/*/claude.md' 'skills/*/SKILL.md'; } | sort -u )"
 

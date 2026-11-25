@@ -202,7 +202,7 @@ The Dev environment section has no command to trigger a job.
   spec is not an assumption.
 - When a spec state says `Shown by: new: <account>`, write one Task per new
   test account: add it to the test accounts file and the seed script (see
-  `setup/demo-data.md`). List the Task under the Story's "Depends on".
+  `.agents/setup/demo-data.md`). List the Task under the Story's "Depends on".
 - When the brief says something exists and the code shows it doesn't, list
   it under "Needs approval" and "Open questions". Don't write a ticket to
   build it unless a goal needs it.

@@ -9,6 +9,7 @@
 # It writes, inside the project:
 #   .agents/skills/<name>/      SKILL.md, agent.yaml, check.sh, and tools/ when there are any
 #   .agents/shared/             lib.sh, doctor.sh, and the checks every agent shares
+#   .agents/setup/              the setup guides and the files they tell you to copy
 #   .claude/agents/<name>.md    the Claude Code wrapper, for an agent
 #   .claude/skills/<name>       a link to .agents/skills/<name>, for a skill
 #   AGENTS.md                   created from this repo's AGENTS.md when the project has
@@ -76,6 +77,9 @@ rm -rf "$target/.agents/shared"
 mkdir -p "$target/.agents/shared"
 cp "$here"/shared/*.sh "$target/.agents/shared/"
 chmod +x "$target"/.agents/shared/*.sh
+
+rm -rf "$target/.agents/setup"
+cp -R "$here/setup" "$target/.agents/setup"
 
 for name in "$@"; do
   src="$(source_of "$name")"

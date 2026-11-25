@@ -3,4 +3,4 @@ title: Build-Agent
 purpose: "Finds why the build fails and fixes build scripts only; deploys to staging when asked, never to production"
 needs_commands: Build, Build guard
 needs_tools:
-setup: setup/build.md
+setup: .agents/setup/build.md

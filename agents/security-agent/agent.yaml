@@ -3,4 +3,4 @@ title: Security-Agent
 purpose: "Reviews a branch for security problems after the scanners run, and gives a result; never edits code"
 needs_commands: Scan secrets
 needs_tools: gitleaks
-setup: setup/security.md
+setup: .agents/setup/security.md
