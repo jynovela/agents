@@ -99,6 +99,17 @@ git -c user.name=sample -c user.email=sample@example.invalid commit -q \
   -m "ITEM-14: ticket for search and fetch one item"
 git checkout -q feature
 
+# Design-Agent designs screens on this branch: main plus a small web view,
+# two flows, and the screens an earlier run designed for one of them.
+git checkout -q main
+git checkout -q -b design
+cp -R "$here/design/." "$target/"
+cp "$root/.agents/tools/wireframe.css" design/wireframes/style.css
+git add -A
+git -c user.name=sample -c user.email=sample@example.invalid commit -q \
+  -m "Web view, edit-item screens, and the sell-item flow"
+git checkout -q feature
+
 echo "Ready: $target (branch 'feature', base 'main')"
 echo "Next: open that folder in your agent and say one of:"
 echo "  Act as Docs-Agent. Update the docs for this branch against main."
@@ -119,4 +130,6 @@ echo "For API-Agent Design mode, first run: git -C \"$target\" checkout -q api-d
 echo "  Read AGENTS.md and .agents/roles/api-agent.md first. Act as API-Agent in Design mode. The ticket is .tickets/ITEM-14.md, not your tracker. Design the spec change for ITEM-14 against main."
 echo "For Build-Agent, first run: git -C \"$target\" checkout -q build"
 echo "  Read AGENTS.md and .agents/roles/build-agent.md first. Act as Build-Agent. Make the build pass on this branch, and deploy to staging if every step passes."
+echo "For Design-Agent, first run: git -C \"$target\" checkout -q design"
+echo "  Read AGENTS.md and .agents/roles/design-agent.md first. Act as Design-Agent. Design the screens for .flows/sell-item.md."
 echo "Then grade the run with $here/expected-<agent>.md"

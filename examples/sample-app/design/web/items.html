@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Items</title>
+</head>
+<body>
+<h1>Items</h1>
+<div id="list"></div>
+<script type="module">
+import { ItemList, EmptyState } from "./components.js";
+const items = await (await fetch("/items")).json();
+document.getElementById("list").innerHTML = items.items.length
+  ? ItemList(items.items)
+  : EmptyState("No items yet", "Add an item", "/items/new");
+</script>
+</body>
+</html>
