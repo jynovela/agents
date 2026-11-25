@@ -17,7 +17,8 @@ adds `.api/approved.md` and `.tickets/ITEM-14.md`. Line numbers are for
 - [ ] `openapi.yaml` changes the `limit` default to 20 (approved), and the
       report marks it `spec updated (approved)`.
 - [ ] `openapi.yaml` gains `GET /items/{id}` with a 200 response holding
-      `item` and a 404 response.
+      `item` (fields `id` and `title`, as the code returns) and a 404
+      response.
 - [ ] `openapi.yaml` still says `name` under `GET /items`, not `title`.
 - [ ] "Needs approval" has the `name` to `title` rename (`server.py:36` or
       `server.py:-32`) with a proposed spec edit and

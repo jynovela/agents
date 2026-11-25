@@ -189,7 +189,7 @@ loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 | Test-Agent | Ready |
 | Planner-Agent | Ready |
 | Lint-Agent | Ready |
-| API-Agent | Testing |
+| API-Agent | Ready |
 | Build-Agent | Testing |
 | Security-Agent | Ready |
 | Review-Agent | Ready |
