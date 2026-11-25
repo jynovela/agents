@@ -195,6 +195,11 @@ The Dev environment section has no command to trigger a job.
   Never count lines by reading.
 - Check the code before saying something exists. Plans, roadmaps, specs, and
   old tickets are context only: never describe them as built.
+- When `design/screens/` has a spec for a screen a Story touches, name the
+  spec file in "Context", like `design/screens/S3-sale-form.md`. Use its
+  copy as the exact text in criteria, and write a criterion for each of its
+  states the Story covers, such as the error or empty state. Copy from the
+  spec is not an assumption.
 - When the brief says something exists and the code shows it doesn't, list
   it under "Needs approval" and "Open questions". Don't write a ticket to
   build it unless a goal needs it.
@@ -251,6 +256,8 @@ Do every step, in order. Each step fills a part of the report.
    --limit and --offset`. Write what doesn't exist too, like `no export
    command (grep -n "export" app.py found nothing)`. Also note the Dev
    environment commands that criteria can use, and any that are "None".
+   If `design/flows/` has a flow map for a goal, list its screens too, like
+   `design/flows/sell-item.md: F4 uses S3 Sale form`.
 5. Split the goals into tickets. Use a Spike for anything you can't plan
    without research, a Task for groundwork that stories need, and a Story for
    each user-facing slice. Write each ticket as `.tickets/drafts/DRAFT-<n>.md`
