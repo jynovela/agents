@@ -31,7 +31,7 @@ untested.
 3. **A separate agent writes the code.** The agent that writes the tests must
    not write the code that passes them, or it only proves it agrees with
    itself.
-4. **Fence the tests while the code agent runs.** In Claude Code, add deny
+4. **Fence the tests while Implementer-Agent runs.** In Claude Code, add deny
    rules to `.claude/settings.json`:
 
    ```json
@@ -43,7 +43,8 @@ untested.
    ```
 
    Deny rules don't stop shell commands, and Hermes has no per-path rules, so
-   also check after every code agent run that this prints nothing:
+   also check after every Implementer-Agent run that this prints nothing.
+   Its check script fails the run on any test change too:
 
    ```sh
    git status --porcelain -- acceptance tests

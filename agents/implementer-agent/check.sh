@@ -26,7 +26,7 @@ FENCED="$FENCED"'|^openapi\.ya?ml$|^\.api/|^\.spectral\.ya?ml$'
 FENCED="$FENCED"'|^\.github/|^\.gitlab-ci\.yml$|^\.githooks/|^dev/|^scripts/|^setup/|(^|/)(Makefile|Dockerfile)$'
 FENCED="$FENCED"'|^seed\.sql$|(^|/)(ruff\.toml|\.ruff\.toml|pyproject\.toml|setup\.cfg|\.flake8|\.markdownlint[^/]*|\.eslintrc[^/]*|\.pre-commit-config\.yaml|\.gitleaks\.toml)$'
 FENCED="$FENCED"'|(^|/)(requirements[^/]*\.txt|package(-lock)?\.json|poetry\.lock|go\.(mod|sum))$'
-FENCED="$FENCED"'|^\.agents/|^\.claude/|^\.hermes|(^|/)(AGENTS|CLAUDE)\.md$|(^|/)\.env'
+FENCED="$FENCED"'|^\.agents/|^agents/|^skills/|^shared/|^\.claude/|^\.hermes|(^|/)(AGENTS|CLAUDE)\.md$|(^|/)\.env'
 FENCED="$FENCED"'|\.md$|^docs/|(^|/)CHANGELOG'
 
 # <!-- TAILOR: the health check from the Dev environment section, and the
@@ -150,6 +150,9 @@ check_run() {
   if ! echo "$1" | tail -1 | grep -q '^RUN_DONE$'; then
     say_fail "implementer-run.sh raw didn't finish in $2. Its last line: $(echo "$1" | tail -1)"
   fi
+  if echo "$1" | grep -q '^STOP_FAILED'; then
+    say_fail "the app kept running after the stop command in $2"
+  fi
   if echo "$1" | grep -q '^START_FAILED'; then
     say_fail "the app did not start in $2"
   fi
@@ -158,7 +161,7 @@ result_of() { echo "$1" | grep -E "^ACCEPT_RESULT (PASS|FAIL) $2\$" | awk '{prin
 
 was_up=0
 if [ -n "$DEV_HEALTH" ] && eval "$DEV_HEALTH" >/dev/null 2>&1; then was_up=1; fi
-[ -n "$DEV_STOP" ] && eval "$DEV_STOP" >/dev/null 2>&1
+"$helper" stop >/dev/null 2>&1
 if [ -n "$DEV_HEALTH" ] && eval "$DEV_HEALTH" >/dev/null 2>&1; then
   say_fail "something else is still serving the app's port after $DEV_STOP. Stop it and rerun."
 fi
@@ -169,7 +172,7 @@ wt="$(mktemp -d)"
 if git worktree add -q --detach "$wt" HEAD >/dev/null 2>&1; then
   before="$(cd "$wt" && "$helper" raw 2>&1)"
   check_run "$before" "$wt"
-  (cd "$wt" && [ -n "$DEV_STOP" ] && eval "$DEV_STOP" >/dev/null 2>&1)
+  (cd "$wt" && "$helper" stop >/dev/null 2>&1)
   git worktree remove --force "$wt" >/dev/null 2>&1
 else
   say_fail "could not check out HEAD in a temporary worktree"
@@ -184,7 +187,7 @@ echo "$after" | grep -E '^(ACCEPT_RESULT|UNIT_SUMMARY)' | sed 's/^/  /'
 if [ "$was_up" -eq 1 ]; then
   [ -n "$DEV_START" ] && eval "$DEV_START" >/dev/null 2>&1
 else
-  [ -n "$DEV_STOP" ] && eval "$DEV_STOP" >/dev/null 2>&1
+  "$helper" stop >/dev/null 2>&1
 fi
 now_hash="$("$helper" hash)"
 
