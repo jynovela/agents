@@ -63,6 +63,14 @@ for dir in "$root"/agents/*/ "$root"/skills/*/; do
   echo "ok: $name"
 done
 
+# Every agent has a Hermes SOUL.md that points at its own role file.
+for dir in "$root"/agents/*/; do
+  name="$(basename "$dir")"
+  grep -qF "\`.agents/skills/$name/SKILL.md\`" "$dir/hermes/SOUL.md" 2>/dev/null ||
+    say_fail "$name: hermes/SOUL.md is missing or doesn't point at .agents/skills/$name/SKILL.md"
+done
+echo "ok: hermes profiles"
+
 new_project "$tmp/all"
 "$root/install.sh" "$tmp/all" all >/dev/null 2>&1 || say_fail "install.sh all failed"
 if [ "$(block_of "$tmp/all/AGENTS.md")" != "$(block_of "$root/AGENTS.md")" ]; then
