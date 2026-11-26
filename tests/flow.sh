@@ -69,9 +69,9 @@ out="$(t start ITEM-1 --api)";                    expect "start" "NEXT: api-agen
 out="$(agent 'Mode: design')";                    expect "after api design" "NEXT: test-agent" "$out"
 out="$(agent 'Mode: Write')";                     expect "after write" "NEXT: implementer-agent" "$out"
 out="$(agent "$IMPL_OK")";                        expect "after implement" "NEXT: lint-agent" "$out"
-out="$(agent 'lint')";                            expect "after lint" "MODE: verify" "$out"
-out="$(agent '- C1 | result: PASS | e' no)";      expect "after verify" "NEXT: docs-agent" "$out"
-out="$(agent 'docs')";                            expect "after docs" "NEXT: review-agent" "$out"
+out="$(agent 'lint')";                            expect "after lint" "NEXT: docs-agent" "$out"
+out="$(agent 'docs')";                            expect "after docs" "MODE: verify" "$out"
+out="$(agent '- C1 | result: PASS | e' no)";      expect "after verify" "NEXT: review-agent" "$out"
 out="$(agent 'Verdict: APPROVED_WITH_COMMENTS' no)"; expect "after review" "NEXT: security-agent" "$out"
 out="$(agent 'Result: REVIEW' no)";               expect "end" "DONE: ticket ITEM-1" "$out"
 expect "end flags" "Review-Agent approved with comments" "$out"
@@ -88,15 +88,19 @@ proj="$tmp/back"; new_project "$proj"
 t start ITEM-2 >/dev/null
 agent 'Mode: Write' >/dev/null
 agent "$(echo "$IMPL_OK" | sed 's/Lint-Agent: needed/Lint-Agent: not needed/')" >/dev/null
-out="$(agent '- C1 | result: FAIL | e' no)"
-expect "verify fail" "NEXT: implementer-agent" "$out"; expect "verify fail" "This is return 1" "$out"; expect "verify fail" ".runs/ITEM-2/03-test-agent-verify.md" "$out"
-agent 'Stopped: None' >/dev/null
-agent '- C1 | result: PASS | e' no >/dev/null
 agent 'docs' >/dev/null
+mkdir -p "$proj/logs/implementer"; echo old > "$proj/logs/implementer/run-1.log"
+out="$(agent '- C1 | result: FAIL | e' no)"
+expect "verify fail" "NEXT: implementer-agent" "$out"; expect "verify fail" "This is return 1" "$out"; expect "verify fail" ".runs/ITEM-2/04-test-agent-verify.md" "$out"
+[ ! -e "$proj/logs/implementer/run-1.log" ] || say_fail "send-back: earlier implementer logs were not moved"
+ls "$proj"/.runs/ITEM-2/implementer-logs-*/run-1.log >/dev/null 2>&1 || say_fail "send-back: earlier implementer logs were not kept in .runs/ITEM-2/"
+agent 'Stopped: None' >/dev/null
+agent 'docs' >/dev/null
+agent '- C1 | result: PASS | e' no >/dev/null
 out="$(agent 'Verdict: REJECTED' no)";            expect "review reject" "This is return 2" "$out"
 agent 'Stopped: None' >/dev/null
-agent '- C1 | result: PASS | e' no >/dev/null
 agent 'docs' >/dev/null
+agent '- C1 | result: PASS | e' no >/dev/null
 agent 'Verdict: APPROVED' no >/dev/null
 out="$(agent 'Result: BLOCK' no)";                expect "third return" "ASK: Security-Agent's result is BLOCK" "$out"
 out="$(t done)";                                  expect "ask holds" "ASK:" "$out"
