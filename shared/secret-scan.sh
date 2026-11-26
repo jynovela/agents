@@ -11,13 +11,13 @@
 #   because it's still in the history. Use it in CI or before a review.
 #
 # Exit code 0 means no secret found. A finding, or gitleaks missing, prints
-# FAIL and exits 1. See setup/security.md.
+# FAIL and exits 1. See .agents/setup/security.md.
 
 set -uo pipefail
 . "$(dirname "$0")/lib.sh"
 
 if ! command -v gitleaks >/dev/null 2>&1; then
-  echo "FAIL: gitleaks is not installed, so nothing was scanned. Install it: see setup/security.md."
+  echo "FAIL: gitleaks is not installed, so nothing was scanned. Install it: see .agents/setup/security.md."
   exit 1
 fi
 

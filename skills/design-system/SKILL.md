@@ -67,7 +67,7 @@ Do every step, in order. Each step fills a part of the report.
    the table, write the `Components page:` line: the path from
    "Components page" in the **Dev environment** section of `AGENTS.md`, or
    `/dev/components`, preview only (proposed) when it says `None`. That
-   page shows every component in every state (see `setup/demo-data.md`).
+   page shows every component in every state (see `.agents/setup/demo-data.md`).
 4. **Check contrast.** Under "## Color", list every text and background
    pair as a `Contrast:` line. Run the check script. For each pair it
    fails, pick a darker text or lighter background and record the change

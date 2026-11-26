@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Pre-commit hook: scan the staged files for secrets, lint them, and catch lint
 # and build shortcuts before they reach a commit. Install it from the repo root with:
-#   mkdir -p .githooks && cp setup/githooks/pre-commit .githooks/ && git config core.hooksPath .githooks
-# See setup/lint.md, setup/security.md, setup/api.md, and setup/build.md.
+#   mkdir -p .githooks && cp .agents/setup/githooks/pre-commit .githooks/ && git config core.hooksPath .githooks
+# See .agents/setup/lint.md, .agents/setup/security.md, .agents/setup/api.md, and .agents/setup/build.md.
 set -uo pipefail
 
 # <!-- TAILOR: your linter. Each command gets the staged files that match PATTERN. -->
@@ -10,7 +10,7 @@ LINT='ruff check --output-format concise'
 FORMAT_CHECK='ruff format --check'
 PATTERN='\.py$'
 
-# <!-- TAILOR: API spec checks from setup/api.md. Leave both empty if the project has no API spec. -->
+# <!-- TAILOR: API spec checks from .agents/setup/api.md. Leave both empty if the project has no API spec. -->
 SPEC_LINT=''
 SPEC_DIFF=''
 

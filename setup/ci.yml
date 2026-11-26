@@ -1,13 +1,13 @@
 # One CI workflow that runs the same commands as AGENTS.md, in the same
 # order agents run them. Copy it to .github/workflows/ci.yml and fill in the
-# TAILOR lines. See setup/build.md.
+# TAILOR lines. See .agents/setup/build.md.
 #
 # Every step blocks the merge except the lint guard, which is report-only on
-# purpose (see setup/lint.md). Never add continue-on-error to any other step:
+# purpose (see .agents/setup/lint.md). Never add continue-on-error to any other step:
 # build-guard.sh fails on it.
 #
 # There is no production deploy job here. With Vercel or a similar host,
-# production deploys when a person merges to main. See setup/build.md.
+# production deploys when a person merges to main. See .agents/setup/build.md.
 name: ci
 on: pull_request
 
@@ -43,7 +43,7 @@ jobs:
       - run: ruff check .
       - run: ruff format --check .
       # TAILOR: "Lint API spec" and "Spec diff" from AGENTS.md, if you have
-      # an API spec (see setup/api.md). Delete these four steps if not.
+      # an API spec (see .agents/setup/api.md). Delete these four steps if not.
       - uses: actions/setup-go@v5
         with:
           go-version: stable

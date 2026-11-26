@@ -9,7 +9,7 @@ Stack: Markdown only.
 
 ## Commands
 
-<!-- TAILOR: Replace with the project's real commands. Agents run these to check their work. For code lint, e.g. "Lint code: `ruff check . && ruff format --check .`" and "Fix lint: `ruff check --fix . && ruff format .`". Write "None" for anything the project doesn't have. See setup/lint.md in the agents repo, and setup/build.md for Build and Deploy. -->
+<!-- TAILOR: Replace with the project's real commands. Agents run these to check their work. For code lint, e.g. "Lint code: `ruff check . && ruff format --check .`" and "Fix lint: `ruff check --fix . && ruff format .`". Write "None" for anything the project doesn't have. See .agents/setup/lint.md, and .agents/setup/build.md for Build and Deploy. -->
 
 - Lint docs: `npx markdownlint-cli2 "**/*.md"`
 - Lint code: None
@@ -28,7 +28,7 @@ Stack: Markdown only.
 
 ## Dev environment
 
-<!-- TAILOR: Commands that let agents run the whole app locally and check real behavior. Test-Agent needs these; without them it can only write unit tests. Use a throwaway local database, never a shared or production one. Write "None" for anything the project doesn't have. See README "Set up before using the agents". For Test accounts, Simulate switch, and Components page, see setup/demo-data.md. -->
+<!-- TAILOR: Commands that let agents run the whole app locally and check real behavior. Test-Agent needs these; without them it can only write unit tests. Use a throwaway local database, never a shared or production one. Write "None" for anything the project doesn't have. See `.agents/setup/README.md`. For Test accounts, Simulate switch, and Components page, see .agents/setup/demo-data.md. -->
 
 - Start the app (returns once it's healthy): None
 - Stop the app: None

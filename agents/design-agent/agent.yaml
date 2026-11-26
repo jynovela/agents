@@ -3,4 +3,4 @@ title: Design-Agent
 purpose: "Turns an existing user flow into screen specs and clickable low-fi wireframes; never changes the flow or writes code"
 needs_commands: Flows come from, Design writes to
 needs_tools:
-setup: setup/demo-data.md
+setup: .agents/setup/demo-data.md

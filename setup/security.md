@@ -8,9 +8,9 @@ with the same scanner and the same config.
 
 | Piece | File to copy | What it does |
 | ----- | ------------ | ------------ |
-| Scanner config | `setup/gitleaks.toml` | gitleaks' built-in rules, plus your own token formats and fixture paths |
+| Scanner config | `.agents/setup/gitleaks.toml` | gitleaks' built-in rules, plus your own token formats and fixture paths |
 | Secret scan | `.agents/shared/secret-scan.sh` | Runs gitleaks and prints `file:line rule` for each finding, never the value |
-| Pre-commit hook | `setup/githooks/pre-commit` | Scans staged files before each commit, then lints them |
+| Pre-commit hook | `.agents/setup/githooks/pre-commit` | Scans staged files before each commit, then lints them |
 | Lint guard | `.agents/shared/lint-guard.sh` | Fails when an agent adds a `gitleaks:allow` comment or edits the scanner config |
 
 The scanner is [gitleaks](https://github.com/gitleaks/gitleaks). It runs
@@ -36,7 +36,7 @@ clean one.
 
 ## 2. Add the config
 
-Copy `setup/gitleaks.toml` to the project root as `.gitleaks.toml` and fill
+Copy `.agents/setup/gitleaks.toml` to the project root as `.gitleaks.toml` and fill
 in its `TAILOR` comments:
 
 - Add a rule for each token format your company issues, so the scanner knows
@@ -68,12 +68,12 @@ branch, so a secret that was added and then deleted still shows up.
 
 ## 4. Install the pre-commit hook
 
-If you followed `setup/lint.md`, the hook is already installed: copy the new
-`setup/githooks/pre-commit` over `.githooks/pre-commit`. Otherwise:
+If you followed `.agents/setup/lint.md`, the hook is already installed: copy the new
+`.agents/setup/githooks/pre-commit` over `.githooks/pre-commit`. Otherwise:
 
 ```sh
 mkdir -p .githooks
-cp setup/githooks/pre-commit .githooks/
+cp .agents/setup/githooks/pre-commit .githooks/
 git config core.hooksPath .githooks
 ```
 
