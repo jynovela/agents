@@ -20,6 +20,10 @@ fi
 FLOWS="${FLOWS_DIR:-.flows}"
 MAX_STEPS=12
 
+# Project settings. A value set in .agents/local/user-flows.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/user-flows.sh ]; then . .agents/local/user-flows.sh; fi
+
 esc() { printf '%s' "$1" | sed 's/[.[\*^$/]/\\&/g'; }
 
 # The skill may only add flow files and write its report.

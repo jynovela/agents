@@ -89,7 +89,19 @@ Do the steps in order. Every step ends with a line in your final report.
    `.agents/skills/<name>/SKILL.md` may have a `<!-- TAILOR: ... -->`
    comment. It names what to set: a block of commands under it, or values
    in that agent's `check.sh` or `tools/` scripts. Set them to match
-   `AGENTS.md`. Change nothing else in those files.
+   `AGENTS.md`.
+   - A block of commands under the comment: change it in `SKILL.md`.
+     Change nothing else in that file.
+   - Values in a script: never edit the script. An update replaces it.
+     Find the lines under each `TAILOR` comment in the script. For every
+     value that doesn't fit this project, write the whole line with the
+     new value into `.agents/local/<name>.sh`, where `<name>` is the
+     agent's folder name. Create the file if it is missing. The scripts
+     read it after their own values, and an update never changes it.
+   - The shared scripts work the same way. The settings for
+     `.agents/shared/lint-guard.sh` go in `.agents/local/lint-guard.sh`.
+   - Write only values that differ. A value you leave out keeps the
+     default, and gets better when the agents are updated.
 
 8. **Check.** Run these from the project root and fix what they report in
    files you wrote:
@@ -146,5 +158,7 @@ Read AGENTS.md and .agents/skills/docs-agent/SKILL.md first. Act as Docs-Agent. 
 ```
 
 To update the agents later, pull the agents repo and run step 4 again. It
-replaces the files under `.agents/` and `.claude/agents/`, so the commands
-you set in step 7 need setting again. It keeps your `AGENTS.md`.
+replaces the files under `.agents/` and `.claude/agents/`. It keeps your
+`AGENTS.md` and the settings in `.agents/local/`. A block of commands you
+changed inside a `SKILL.md` in step 7 is replaced: run
+`git diff .agents .claude` after the update and put those lines back.

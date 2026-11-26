@@ -49,6 +49,10 @@ API_PATTERN='add_argument\(|add_parser\(|environ|getenv\(|process\.env|url\.path
 DOCS_PATTERN="$API_PATTERN|help=|print\\(|sys\\.stderr|sys\\.exit\\(|exit\\("
 SECURITY_PATTERN='subprocess|os\.system|shell=|eval\(|exec\(|pickle|yaml\.load|execute\(|open\(|urlopen|requests\.|authorization|token|passw|secret|api_key|hmac|sql'
 
+# Project settings. A value set in .agents/local/implementer-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/implementer-agent.sh ]; then . .agents/local/implementer-agent.sh; fi
+
 # Where logs go, and files that are never part of the code change.
 LOG_DIR='logs/implementer'
 NOT_CODE="^agent-report\\.md\$|^$LOG_DIR/"

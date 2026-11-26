@@ -21,5 +21,7 @@ jobs:
         run: tests/install-alone.sh
       - name: The ticket pipeline takes every path
         run: tests/flow.sh
+      - name: Project settings survive an update
+        run: tests/local-settings.sh
       - name: Sample app builds
         run: examples/sample-app/setup.sh "$RUNNER_TEMP/itemctl-test"

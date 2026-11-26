@@ -32,6 +32,10 @@ set -uo pipefail
 SPECS="${API_SPECS:-openapi.yaml}"
 APPROVALS=".api/approved.md"
 
+# Project settings. A value set in .agents/local/spec-diff.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/spec-diff.sh ]; then . .agents/local/spec-diff.sh; fi
+
 base="${1:-main}"
 fail=0
 

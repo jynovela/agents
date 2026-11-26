@@ -18,6 +18,11 @@ fi
 
 # <!-- TAILOR: match "Design writes to" in AGENTS.md. -->
 DESIGN="${DESIGN_DIR:-design}"
+
+# Project settings. A value set in .agents/local/design-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/design-agent.sh ]; then . .agents/local/design-agent.sh; fi
+
 SCREENS="$DESIGN/screens"
 MAPS="$DESIGN/flows"
 WIRES="$DESIGN/wireframes"

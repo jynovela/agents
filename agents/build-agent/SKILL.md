@@ -44,7 +44,7 @@ approval" with the exact edit.
 
 ## Verify commands
 
-<!-- TAILOR: Set the steps in .agents/skills/build-agent/tools/build-steps.sh, and the deploy command from AGENTS.md. -->
+<!-- TAILOR: Set STEPS in .agents/local/build-agent.sh, and the deploy command from AGENTS.md. The default steps are in .agents/skills/build-agent/tools/build-steps.sh. -->
 
 ```sh
 .agents/skills/build-agent/tools/build-steps.sh run            # Runs every build step, prints PASS or FAIL and error lines

@@ -35,6 +35,10 @@ ALLOW_NEAR='lint-guard\.sh'
 # <!-- TAILOR: production deploy commands for your stack. -->
 PROD='--prod([[:space:]]|$)|vercel[[:space:]]+promote|vercel[[:space:]]+rollback|netlify[[:space:]].*--prod|deploy(\.sh)?[[:space:]]+prod(uction)?([[:space:]]|$)|supabase[[:space:]].*--project-ref[[:space:]]+\$?\{?PROD|environment:[[:space:]]*production'
 
+# Project settings. A value set in .agents/local/build-guard.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/build-guard.sh ]; then . .agents/local/build-guard.sh; fi
+
 base="${1:-}"
 if [ -n "$base" ]; then
   if ! git rev-parse --verify -q "$base" >/dev/null; then

@@ -40,6 +40,15 @@ fi
 [ -f .agents/shared/lib.sh ] || say_fail ".agents/shared/lib.sh is missing."
 command -v git >/dev/null 2>&1 || say_fail "git is not installed. Every check script uses it."
 
+for settings in .agents/local/*.sh; do
+  [ -f "$settings" ] || continue
+  if bash -n "$settings" 2>/dev/null; then
+    echo "Project settings: $settings"
+  else
+    say_fail "$settings has a syntax error, so the scripts that read it will stop."
+  fi
+done
+
 found=0
 for manifest in .agents/skills/*/agent.yaml; do
   [ -f "$manifest" ] || continue

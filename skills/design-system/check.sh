@@ -21,6 +21,10 @@ SYSTEM="${DESIGN_DIR:-design}/system.md"
 MIN_CONTRAST=4.5
 COMPONENTS="Button|Text input|Select|Checkbox|Radio|Field error|List item|Card|Navigation|Dialog|Alert|Empty state|Loading"
 
+# Project settings. A value set in .agents/local/design-system.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/design-system.sh ]; then . .agents/local/design-system.sh; fi
+
 esc() { printf '%s' "$1" | sed 's/[.[\*^$/]/\\&/g'; }
 
 # The skill may change only the system file and its report.

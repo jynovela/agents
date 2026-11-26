@@ -74,6 +74,13 @@ for name in "$@"; do
   fi
 done
 
+# An update when agents were installed here before.
+update=0
+[ -d "$target/.agents/skills" ] && update=1
+
+# .agents/local/ holds the project's own settings. It is created once and
+# never changed here, so an update keeps them.
+mkdir -p "$target/.agents/local"
 mkdir -p "$target/.agents/skills" "$target/.claude/agents" "$target/.claude/skills"
 rm -rf "$target/.agents/shared"
 mkdir -p "$target/.agents/shared"
@@ -185,6 +192,13 @@ fi
 if [ ! -f "$target/.markdownlint-cli2.yaml" ]; then
   cp "$here/.markdownlint-cli2.yaml" "$target/.markdownlint-cli2.yaml"
   echo "Created .markdownlint-cli2.yaml."
+fi
+
+if [ "$update" -eq 1 ]; then
+  echo
+  echo "This was an update. Settings in .agents/local/ were kept."
+  echo "Text you changed inside .agents/skills/ or .claude/agents/ was replaced."
+  echo "Run \"git diff .agents .claude\" to see it, and put back what you need."
 fi
 
 echo

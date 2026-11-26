@@ -13,6 +13,10 @@
 set -uo pipefail
 
 DRAFTS_DIR='.tickets/drafts'
+
+# Project settings. A value set in .agents/local/planner-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/planner-agent.sh ]; then . .agents/local/planner-agent.sh; fi
 n="${1:-}"
 report="${2:-agent-report.md}"
 

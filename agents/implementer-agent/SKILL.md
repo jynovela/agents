@@ -54,7 +54,7 @@ If a criterion needs a change in a fenced file, don't make it. Write it under
 
 ## Verify commands
 
-<!-- TAILOR: Set the test, dev, and lint commands in .agents/skills/implementer-agent/tools/implementer-run.sh, and FENCED and the DEV_ commands in .agents/skills/implementer-agent/check.sh. -->
+<!-- TAILOR: Set the test, dev, and lint commands, FENCED, and the DEV_ commands in .agents/local/implementer-agent.sh. The defaults are in .agents/skills/implementer-agent/tools/implementer-run.sh and .agents/skills/implementer-agent/check.sh. -->
 
 ```sh
 .agents/skills/implementer-agent/tools/implementer-run.sh tests       # Restarts the app, runs all tests, saves a numbered log

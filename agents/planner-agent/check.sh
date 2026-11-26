@@ -20,6 +20,10 @@ ALLOWED='^\.tickets/drafts/DRAFT-[0-9]+\.md$|^agent-report\.md$'
 
 MAX_CRITERIA=5
 MAX_TIMEBOX_DAYS=3
+
+# Project settings. A value set in .agents/local/planner-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/planner-agent.sh ]; then . .agents/local/planner-agent.sh; fi
 # Words that make a criterion untestable. Text in backticks is ignored.
 # Goals with these words need a number in a criterion, or an open question.
 VAGUE_GOAL='fast|faster|quick|quickly|slow|easy|easily|big|bigger|large|huge|many|lots|scalable|scale|efficient|efficiently|responsive'

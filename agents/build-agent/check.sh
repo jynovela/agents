@@ -22,6 +22,10 @@ ALLOWED='local staging'
 # one per line. Keep in sync with step 2 of the role's procedure. -->
 STEP_OWNERS='Lint code|Lint-Agent'
 
+# Project settings. A value set in .agents/local/build-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/build-agent.sh ]; then . .agents/local/build-agent.sh; fi
+
 report="${1:-}"
 if [ -z "$report" ]; then
   echo "Usage: .agents/skills/build-agent/check.sh agent-report.md"
