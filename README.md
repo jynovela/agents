@@ -269,7 +269,7 @@ it, so the two can't drift apart.
 | Agent | What it does | Status |
 | ----- | ------------ | ------ |
 | Planner-Agent | Turns a brief into tickets with testable acceptance criteria, then stops | Ready |
-| Design-Agent | Turns a user flow into screen specs and clickable low-fi wireframes | In testing |
+| Design-Agent | Turns a user flow into screen specs and clickable low-fi wireframes | Ready |
 | API-Agent | Keeps the API spec in step with the code. Lists breaking changes for your approval | Ready |
 | Test-Agent | Turns acceptance criteria into tests against the running app, then verifies the code with real results | Ready |
 | Implementer-Agent | Writes the smallest code change that makes one ticket's tests pass | Ready |
@@ -281,8 +281,8 @@ it, so the two can't drift apart.
 
 | Skill | What it does | Status |
 | ----- | ------------ | ------ |
-| `user-flows` | Turns journeys, research, or a brief into flow files for Design-Agent | In testing |
-| `design-system` | Sets up the project's design system once | In testing |
+| `user-flows` | Turns journeys, research, or a brief into flow files for Design-Agent | Ready |
+| `design-system` | Sets up the project's design system once | Ready |
 
 "Ready" means the agent passed its checklist in `examples/sample-app/` on a
 small local model as well as on Claude.
