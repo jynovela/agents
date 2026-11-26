@@ -51,7 +51,7 @@ SECURITY_PATTERN='subprocess|os\.system|shell=|eval\(|exec\(|pickle|yaml\.load|e
 
 # Where logs go, and files that are never part of the code change.
 LOG_DIR='logs/implementer'
-NOT_CODE="^report\\.md\$|^$LOG_DIR/"
+NOT_CODE="^agent-report\\.md\$|^$LOG_DIR/"
 
 # Files the agent changed: tracked changes against HEAD plus untracked files,
 # without the report and logs.

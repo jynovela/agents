@@ -14,7 +14,7 @@ set -uo pipefail
 
 DRAFTS_DIR='.tickets/drafts'
 n="${1:-}"
-report="${2:-report.md}"
+report="${2:-agent-report.md}"
 
 case "$n" in
   ''|*[!0-9]*) echo "Usage: $0 <draft-number> [report-file]" >&2; exit 2 ;;
