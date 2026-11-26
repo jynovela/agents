@@ -35,6 +35,13 @@ DEV_HEALTH='dev/health.sh'
 DEV_STOP='dev/stop.sh'
 DEV_START='dev/start.sh'
 
+# <!-- TAILOR: how the test runner marks a passing and a failing result line,
+# as extended regexes. The defaults fit Python unittest ("... ok", "FAIL",
+# "ERROR"). For Playwright's list reporter use PASS_LINE='✓.*\([0-9.]+m?s\) *$'
+# and FAIL_LINE='✘'. -->
+PASS_LINE='ok *$'
+FAIL_LINE='FAIL|ERROR'
+
 # Project settings. A value set in .agents/local/implementer-agent.sh replaces the one
 # in this script. install.sh never changes that file.
 if [ -f .agents/local/implementer-agent.sh ]; then . .agents/local/implementer-agent.sh; fi
@@ -255,10 +262,10 @@ while IFS= read -r line; do
     say_fail "$id quote isn't on $log line $n. That line is: ${text:0:80}"
   elif ! echo "$text" | grep -qw -- "$t"; then
     say_fail "$id cites $log line $n, which isn't the result line of $t"
-  elif [ "$ha" = PASS ] && ! echo "$text" | grep -Eq 'ok *$'; then
-    say_fail "$id says PASS, but $log line $n doesn't end in \"ok\""
-  elif [ "$ha" = FAIL ] && ! echo "$text" | grep -Eq 'FAIL|ERROR'; then
-    say_fail "$id says FAIL, but $log line $n doesn't say FAIL or ERROR"
+  elif [ "$ha" = PASS ] && ! echo "$text" | grep -Eq -- "$PASS_LINE"; then
+    say_fail "$id says PASS, but $log line $n doesn't match PASS_LINE ($PASS_LINE)"
+  elif [ "$ha" = FAIL ] && ! echo "$text" | grep -Eq -- "$FAIL_LINE"; then
+    say_fail "$id says FAIL, but $log line $n doesn't match FAIL_LINE ($FAIL_LINE)"
   else
     echo "  OK  $id $t before $b, after $a"
   fi

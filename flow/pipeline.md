@@ -25,8 +25,8 @@ coordinate and the run goes the same way every time.
 | 3 | Implementer-Agent | Always | It stopped, or a test still fails after its tries: the run stops and asks you |
 | 3a | Lint-Agent | The Implementer's report says lint is needed | |
 | 3b | API-Agent, Check mode | The Implementer's report says the API changed, and the project has a spec | |
-| 4 | Test-Agent, Verify mode | Always | A criterion fails: back to step 3 |
-| 5 | Docs-Agent | Always | |
+| 4 | Docs-Agent | Always | |
+| 5 | Test-Agent, Verify mode | Always | A criterion fails: back to step 3 |
 | 6 | Review-Agent | Always | REJECTED: back to step 3 |
 | 7 | Security-Agent | Always | BLOCK: back to step 3. REVIEW: the run goes on, and you are told to read it |
 | 8 | Build-Agent, deploy to staging | `AGENTS.md` has a "Deploy" command | |
@@ -43,6 +43,14 @@ Then the script prints `DONE`, and you test.
   A hook that refuses the commit counts as a failed check. That is how the
   next agent's check can tell its own changes from the last agent's, and it
   is why Implementer-Agent finds the tests already committed.
+- **Docs before Verify.** Implementer-Agent may not edit docs, so a
+  criterion that checks a doc can only pass once Docs-Agent has run.
+  Docs-Agent therefore runs before Test-Agent verifies.
+- **Each Implementer try starts with no run logs.** Implementer-Agent's check
+  caps its test runs by counting `logs/implementer/run-*.log`. When a ticket
+  starts, and when work goes back to Implementer-Agent, the script moves the
+  earlier logs into `.runs/<id>/implementer-logs-<time>/`, so the cap counts
+  only the coming try and the old evidence is kept.
 - **At most 2 returns.** Work goes back to Implementer-Agent at most twice
   per ticket, with the report that sent it back. A third time, the run
   stops and asks you.

@@ -134,6 +134,18 @@ flag() {
   put flags "$old$1;"
 }
 
+# Implementer-Agent's check caps its test runs by counting the logs in
+# logs/implementer/. Move earlier logs (from another ticket, or from a try
+# that was sent back) into this ticket's run folder, so the cap counts only
+# the coming try and the old evidence is kept.
+archive_implementer_logs() {
+  local logs="logs/implementer" dest
+  ls "$logs"/run-*.log >/dev/null 2>&1 || return 0
+  dest=".runs/$id/implementer-logs-$(date +%Y%m%dT%H%M%S)"
+  mkdir -p "$dest"
+  mv "$logs"/run-*.log "$dest"/
+}
+
 # --- start ---------------------------------------------------------------------
 cmd="${1:-}"
 [ "$#" -gt 0 ] && shift
@@ -185,7 +197,7 @@ if [ "$cmd" = "start" ]; then
   echo "$id" > .runs/current
   state=".runs/$id/state"
   : > "$state"
-  queue="test-agent:write implementer-agent test-agent:verify docs-agent review-agent security-agent"
+  queue="test-agent:write implementer-agent docs-agent test-agent:verify review-agent security-agent"
   [ "$api" -eq 1 ] && queue="api-agent:design $queue"
   if [ -f "$skills/build-agent/SKILL.md" ] && command_set "Deploy"; then
     queue="$queue build-agent:deploy"
@@ -198,6 +210,7 @@ if [ "$cmd" = "start" ]; then
   put count 0
   put flags ""
   put ask ""
+  archive_implementer_logs
   echo "Started ticket $id on branch $branch."
   print_next
   exit 0
@@ -330,7 +343,8 @@ if [ -n "$send_back" ]; then
   if [ "$returns" -gt "$MAX_RETURNS" ]; then
     put ask "$send_back, and the work has already gone back to Implementer-Agent $MAX_RETURNS times on ticket $id. Read $saved."
   else
-    rest="implementer-agent test-agent:verify docs-agent review-agent security-agent"
+    rest="implementer-agent docs-agent test-agent:verify review-agent security-agent"
+    archive_implementer_logs
     case " $(get queue) " in *" build-agent:deploy "*) rest="$rest build-agent:deploy" ;; esac
   fi
 fi
