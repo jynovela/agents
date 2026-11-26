@@ -9,9 +9,9 @@ purely additive fails until a person approves it in a file they commit.
 | ----- | ------------ | ------------ |
 | Spec diff | `.agents/shared/spec-diff.sh` | Compares the spec with the base branch and fails on any change that isn't additive, unless `.api/approved.md` lists it |
 | Approvals | `.api/approved.md` (you create it) | One line per breaking change a person approved |
-| Style rules | `setup/spectral.yaml` | Spectral ruleset: path naming, field casing, error responses, timestamps |
-| Guidelines | `setup/api-guidelines.md` | The same rules in prose, plus the ones a linter can't check |
-| Pre-commit hook | `setup/githooks/pre-commit` | Runs spec lint and the spec diff before each commit |
+| Style rules | `.agents/setup/spectral.yaml` | Spectral ruleset: path naming, field casing, error responses, timestamps |
+| Guidelines | `.agents/setup/api-guidelines.md` | The same rules in prose, plus the ones a linter can't check |
+| Pre-commit hook | `.agents/setup/githooks/pre-commit` | Runs spec lint and the spec diff before each commit |
 | Lint guard | `.agents/shared/lint-guard.sh` | Fails when an agent edits `.spectral.yaml` or `.api/approved.md` |
 
 The diff tool is [oasdiff](https://github.com/oasdiff/oasdiff). Spec lint is
@@ -23,7 +23,7 @@ The diff tool is [oasdiff](https://github.com/oasdiff/oasdiff). Spec lint is
 In Claude Code, from the project root, say:
 
 ```text
-Set up API spec checks. Read setup/api.md and follow "Steps for the agent" in order.
+Set up API spec checks. Read .agents/setup/api.md and follow "Steps for the agent" in order.
 ```
 
 The steps below are written for an agent to follow. Each one ends with
@@ -63,14 +63,14 @@ don't edit the spec except for the test in step 9, which you undo. Keep a list o
      Homebrew's folder on the `PATH`; if `oasdiff` is installed but not
      found there, tell the person.
 
-4. **Add the style rules.** Copy `setup/spectral.yaml` to `.spectral.yaml`
+4. **Add the style rules.** Copy `.agents/setup/spectral.yaml` to `.spectral.yaml`
    in the project root. Find the field casing the spec already uses:
    `grep -nE '^ +[a-z]+_[a-z_]+:' <spec>` finds snake_case fields, and
    `grep -nE '^ +[a-z]+[A-Z][A-Za-z]*:' <spec>` finds camelCase ones. Set
    `type:` under `property-casing` to the one with more hits (`snake` or
    `camel`). If both are common, keep `camel` and tell the person.
 
-5. **Add the guidelines.** Copy `setup/api-guidelines.md` to
+5. **Add the guidelines.** Copy `.agents/setup/api-guidelines.md` to
    `docs/api-guidelines.md`. Fill in each `TAILOR` comment from what the spec
    already does: casing from step 4, the pagination parameters it uses, its
    error shape. If the spec doesn't show an answer, leave the comment and
@@ -105,7 +105,7 @@ don't edit the spec except for the test in step 9, which you undo. Keep a list o
 8. **Turn on the pre-commit hook steps.** If `.githooks/pre-commit` exists,
    set `SPEC_LINT` and `SPEC_DIFF` at its top to the same two commands as in
    step 7. If it doesn't exist, tell the person to set up the hook from
-   `setup/lint.md` first, and skip this step.
+   `.agents/setup/lint.md` first, and skip this step.
 
 9. **Run both checks and prove the gate works.**
    1. Run the "Lint API spec" command. Errors mean the spec is invalid: list

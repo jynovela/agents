@@ -3,7 +3,7 @@
 # or weaken a check, before they run. Exit code 2 blocks the command and shows
 # the message to Claude.
 # Copy to .claude/hooks/prod-gate.sh and register it in .claude/settings.json.
-# See setup/build.md.
+# See .agents/setup/build.md.
 #
 # This is a second layer. A determined or confused agent can find a command
 # this list misses. The first layer is that the agent's machine has no

@@ -24,7 +24,7 @@
 #
 # Needs oasdiff (https://github.com/oasdiff/oasdiff) and python3. Without
 # oasdiff the run fails: a gate that silently skips looks like a clean one.
-# See setup/api.md.
+# See .agents/setup/api.md.
 
 set -uo pipefail
 
@@ -59,7 +59,7 @@ for spec in $SPECS; do
   fi
   if ! command -v oasdiff >/dev/null 2>&1; then
     echo "FAIL: oasdiff isn't installed, so spec changes can't be checked."
-    echo "      Install it (brew install oasdiff), then run this again. See setup/api.md."
+    echo "      Install it (brew install oasdiff), then run this again. See .agents/setup/api.md."
     exit 1
   fi
   checked=1

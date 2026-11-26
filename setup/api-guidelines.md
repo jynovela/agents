@@ -68,4 +68,4 @@ that uses it. List the mismatch instead.
 - Auth is declared in `components.securitySchemes`. (Spectral)
 
 Rate limits, transport security, and authorization rules belong to the
-security setup (`setup/security.md`), not here.
+security setup (`.agents/setup/security.md`), not here.

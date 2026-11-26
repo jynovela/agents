@@ -91,7 +91,7 @@ for manifest in .agents/skills/*/agent.yaml; do
     not_ready=1
     echo "NOT READY: $title$problems"
     guide="$(field "$manifest" setup)"
-    [ -n "$guide" ] && echo "  See $guide in the agents repo."
+    [ -n "$guide" ] && echo "  See $guide."
   fi
 done
 

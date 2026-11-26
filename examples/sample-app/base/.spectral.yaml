@@ -1,5 +1,5 @@
 # Spectral ruleset for API specs. Copy to the project root as .spectral.yaml.
-# See setup/api.md and setup/api-guidelines.md.
+# See .agents/setup/api.md and .agents/setup/api-guidelines.md.
 #
 # Style rules are warnings, not errors. Fixing a style warning on an endpoint
 # that already shipped would break its clients, so agents fix warnings only on
