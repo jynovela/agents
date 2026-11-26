@@ -5,20 +5,11 @@ line by line. This repo is what I use now. It holds ten agents that you
 install into a project. Each has one job, and together they build a ticket
 test-first.
 
-You write a ticket and approve its acceptance criteria. One agent turns each
+The agents work from tickets, so write a ticket and approve its acceptance criteria. One agent turns each
 criterion into a test that fails. A different agent writes code until those
 tests pass, and it can't touch the tests. Others update the docs, review the
 branch, and look for security problems. Then you try the result on staging
 and release it yourself. No agent can deploy to production.
-
-Why ten agents and not one good prompt? I run most of them on a small local
-model (Qwen, about 3 billion active parameters), and small models skip
-steps. In an early test, one copied an API token into the docs while a
-written rule told it not to. So every rule that code can check now has a
-check script. A leaked secret, a skipped test, or an edit outside the
-agent's own files fails the run, whatever the model meant to do. With those
-scripts, the security agent scored 13, 11, and 13 out of 14 on the small
-model. A frontier model scored 13.
 
 You see the work twice. You approve the criteria before anything is built,
 and you test on staging at the end. The agents handle what's in between.
