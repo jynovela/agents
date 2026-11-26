@@ -283,3 +283,7 @@ it, so the two can't drift apart.
 small local model as well as on Claude.
 
 </details>
+
+## License
+
+MIT. See [LICENSE](LICENSE).
