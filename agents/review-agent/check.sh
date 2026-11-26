@@ -12,6 +12,10 @@
 set -uo pipefail
 . "$(dirname "$0")/../../shared/lib.sh"
 
+# Project settings. A value set in .agents/local/review-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/review-agent.sh ]; then . .agents/local/review-agent.sh; fi
+
 # TAILOR: the branch reviews compare against.
 BASE="${BASE:-main}"
 MAX_FINDINGS=8

@@ -33,6 +33,10 @@ DEPS='(^|/)(requirements[^/]*\.txt|pyproject\.toml|Pipfile(\.lock)?|poetry\.lock
 # off one of these, but not equal to it, gets a typo-of:<name> tag. -->
 POPULAR='requests urllib3 numpy pandas django flask fastapi pydantic sqlalchemy boto3 botocore pyyaml cryptography jinja2 pillow setuptools click rich pytest httpx aiohttp celery redis psycopg2 scipy matplotlib python-dateutil express react lodash axios chalk commander dotenv'
 
+# Project settings. A value set in .agents/local/security-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/security-agent.sh ]; then . .agents/local/security-agent.sh; fi
+
 # Prints "typo-of:<name>" when $1 (a package name) is within two edits of a
 # popular name without matching it.
 typo_of() {

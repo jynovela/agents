@@ -33,6 +33,10 @@ ENV='os\.environ|getenv\(|process\.env'
 # <!-- TAILOR: paths that never hold the public interface. -->
 SKIP='(^|/)(tests?|acceptance|docs|\.agents|\.claude|\.tickets|\.notes|\.briefs)/|\.md$'
 
+# Project settings. A value set in .agents/local/api-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/api-agent.sh ]; then . .agents/local/api-agent.sh; fi
+
 if ! git rev-parse --verify -q "$base" >/dev/null; then
   echo "Base branch \"$base\" not found. Pass the right one, like: .agents/skills/api-agent/tools/api-diff.sh develop" >&2
   exit 1

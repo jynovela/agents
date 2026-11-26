@@ -20,6 +20,10 @@ LINT='ruff check --output-format concise'
 FORMAT_CHECK='ruff format --check'
 UNIT='python3 -m unittest discover -s tests -t .'
 
+# Project settings. A value set in .agents/local/lint-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/lint-agent.sh ]; then . .agents/local/lint-agent.sh; fi
+
 # Rule codes the agent may fix by hand. Keep in sync with the table in
 # .agents/skills/lint-agent/SKILL.md.
 HAND_SAFE='ERA001|F841|E741|E501|B007'

@@ -20,6 +20,10 @@ MAX_ROLE=400
 # either. Add your source folders, like src/. -->
 REF_DIRS='^(\.agents|\.claude|docs|setup)/'
 
+# Project settings. A value set in .agents/local/context-lint.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/context-lint.sh ]; then . .agents/local/context-lint.sh; fi
+
 # Tracked files and new ones git doesn't track yet, so a fresh install is checked too.
 files="$( { git ls-files --cached --others --exclude-standard 'AGENTS.md' '*/AGENTS.md' 'CLAUDE.md' '*/CLAUDE.md' \
             '.claude/agents/*.md' '.agents/skills/*/SKILL.md' \

@@ -35,6 +35,10 @@ DEV_HEALTH='dev/health.sh'
 DEV_STOP='dev/stop.sh'
 DEV_START='dev/start.sh'
 
+# Project settings. A value set in .agents/local/implementer-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/implementer-agent.sh ]; then . .agents/local/implementer-agent.sh; fi
+
 # Added code lines that make code behave differently under test. Code that
 # knows it's being tested passes tests without doing the work.
 TEST_AWARE='unittest|pytest|test_c[0-9]|test-token|PYTEST_CURRENT_TEST|sys\.modules'

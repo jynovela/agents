@@ -17,6 +17,10 @@ base="${1:-main}"
 
 # TAILOR: added lines that often mean a change users or callers notice.
 RISKY='environ|getenv|process\.env|add_argument|addOption|\.option\(|[Hh]eaders?[ =:\[(]|Authorization|^import |^from [A-Za-z_.]+ import|require\('
+
+# Project settings. A value set in .agents/local/review-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/review-agent.sh ]; then . .agents/local/review-agent.sh; fi
 hide() { sed -E 's/[A-Za-z0-9_+\/=-]{24,}/<long value hidden>/g'; }
 
 if ! git rev-parse --verify -q "$base" >/dev/null; then

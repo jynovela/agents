@@ -88,7 +88,8 @@ project."
 
    Running it again replaces the files under `.agents/` and `.claude/` with
    this repo's version, and adds what you newly installed to the tables. It
-   never commits.
+   keeps `.agents/local/`, where the project's own settings for the check
+   scripts live. It never commits.
 2. In the project's `AGENTS.md`, fill in every `<!-- TAILOR: ... -->`
    comment: the project overview, stack, and commands. Do the same in the
    `SKILL.md` of each agent you installed.

@@ -24,6 +24,10 @@ case "$RUN_MODE" in check|design) ;; *) echo "Mode must be check or design."; ex
 # <!-- TAILOR: your spec files (same as SPECS in spec-diff.sh). -->
 SPECS="${API_SPECS:-openapi.yaml}"
 
+# Project settings. A value set in .agents/local/api-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/api-agent.sh ]; then . .agents/local/api-agent.sh; fi
+
 esc() { printf '%s' "$1" | sed 's/[.[\*^$/]/\\&/g'; }
 allowed="^$(esc "$(basename "$report")")\$"
 for s in $SPECS; do allowed="$allowed|^$(esc "$s")\$"; done

@@ -16,6 +16,10 @@ set -uo pipefail
 # <!-- TAILOR: the file types your linter checks, as an extended regex. -->
 PATTERN='\.py$'
 
+# Project settings. A value set in .agents/local/lint-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/lint-agent.sh ]; then . .agents/local/lint-agent.sh; fi
+
 if [ "$#" -eq 0 ]; then
   set -- main
 fi

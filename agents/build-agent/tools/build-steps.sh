@@ -31,6 +31,10 @@ STOP='dev/stop.sh'
 # <!-- TAILOR: where CI workflows live. -->
 CI_FILES='.github/workflows/*.yml .github/workflows/*.yaml'
 
+# Project settings. A value set in .agents/local/build-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/build-agent.sh ]; then . .agents/local/build-agent.sh; fi
+
 # Log lines worth showing for a failing step.
 ERROR_LINES='error|fail|traceback|not found|no such|denied|cannot|refused|exception|would reformat|--> |^[^ :]+:[0-9]+:[0-9]+: '
 

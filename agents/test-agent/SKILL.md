@@ -27,7 +27,7 @@ The task says which mode to use. If it doesn't, ask.
 
 ## Verify commands
 
-<!-- TAILOR: Set ALLOWED, UNIT_CMD, ACCEPT_CMD, and the DEV_ commands in .agents/skills/test-agent/check.sh. -->
+<!-- TAILOR: Set ALLOWED, UNIT_CMD, ACCEPT_CMD, and the DEV_ commands in .agents/local/test-agent.sh. The defaults are in .agents/skills/test-agent/check.sh. -->
 
 ```sh
 .agents/skills/test-agent/check.sh agent-report.md   # Required: run it last, with your report saved to agent-report.md

@@ -35,6 +35,10 @@ DEV_HEALTH='dev/health.sh'
 FAIL_PATTERN='^(FAIL|ERROR): ([A-Za-z0-9_]+)'
 RAN_PATTERN='^(test[A-Za-z0-9_]*) \('
 
+# Project settings. A value set in .agents/local/test-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/test-agent.sh ]; then . .agents/local/test-agent.sh; fi
+
 BASE="${BASE:-main}"
 
 # Patterns avoid \b and backreferences so they work with macOS grep too.

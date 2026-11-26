@@ -13,6 +13,10 @@ set -uo pipefail
 # TAILOR: files the Docs-Agent may change (extended regex on repo-relative paths).
 ALLOWED='^(docs/.*|README\.md|CHANGELOG\.md)$'
 
+# Project settings. A value set in .agents/local/docs-agent.sh replaces the one
+# in this script. install.sh never changes that file.
+if [ -f .agents/local/docs-agent.sh ]; then . .agents/local/docs-agent.sh; fi
+
 check_scope "$ALLOWED"
 check_secrets
 
