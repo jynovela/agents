@@ -1,12 +1,12 @@
 # Agents
 
 This is the way of building software with AI agents that I've settled on.
-It sits between the extremes of approving every change an agent makes and 
+It sits between the extremes of approving every change an agent makes and
 just typing "do the thing".
 
-The agents break a project down into tickets, and every piece of work 
-starts from one so you only need to check the work twice. You approve a 
-ticket's acceptance criteria before anything is built, and you test the 
+The agents break a project down into tickets, and every piece of work
+starts from one so you only need to check the work twice. You approve a
+ticket's acceptance criteria before anything is built, and you test the
 result on staging at the end. The agents handle what's in between.
 
 One agent turns each criterion into a test that fails. A different agent
