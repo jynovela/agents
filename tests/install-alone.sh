@@ -69,6 +69,11 @@ if [ "$(block_of "$tmp/all/AGENTS.md")" != "$(block_of "$root/AGENTS.md")" ]; th
   say_fail "the tables in this repo's AGENTS.md don't match the agent.yaml files. What install.sh writes:"
   block_of "$tmp/all/AGENTS.md" | diff - <(block_of "$root/AGENTS.md") | sed 's/^/  /'
 fi
+# Every file an installed agent points at must come with the install.
+lint="$(cd "$tmp/all" && .agents/shared/context-lint.sh 2>&1)" || {
+  say_fail "context-lint fails in a fresh install of everything:"
+  echo "$lint" | grep '^FAIL' | sed 's/^/  /'
+}
 echo "ok: all"
 
 if [ "$fail" -ne 0 ]; then

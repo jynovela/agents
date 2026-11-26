@@ -28,7 +28,7 @@ WEAKEN='continue-on-error:[[:space:]]*true|\|\|[[:space:]]*(true|:|exit[[:space:
 CHECKS='test|lint|ruff|eslint|check|scan|audit|guard|verify|spec'
 
 # One allowed exception: the lint guard step in CI is report-only on purpose
-# (see setup/lint.md). A continue-on-error within 3 lines after a line that
+# (see .agents/setup/lint.md). A continue-on-error within 3 lines after a line that
 # runs lint-guard.sh is fine.
 ALLOW_NEAR='lint-guard\.sh'
 

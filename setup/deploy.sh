@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The only way agents deploy. It refuses any target that isn't on the allowed
 # list, and writes every attempt to logs/deploy.log, refused ones included.
-# Copy it to dev/deploy.sh and fill in the TAILOR lines. See setup/build.md.
+# Copy it to dev/deploy.sh and fill in the TAILOR lines. See .agents/setup/build.md.
 #
 # Usage:
 #   dev/deploy.sh <target>             Deploy the current build to <target>
@@ -18,7 +18,7 @@ ALLOWED='local staging'
 # <!-- TAILOR: the command that deploys to each target, and the command that
 # rolls it back. Write "" for a target without a rollback yet, and fix that
 # before you rely on the target. With Vercel previews as staging (see
-# setup/build.md), staging deploys when you push a branch, so DEPLOY_staging
+# .agents/setup/build.md), staging deploys when you push a branch, so DEPLOY_staging
 # can push the current branch to the staging branch. Never put --prod,
 # "vercel promote", or a production project ref here. -->
 DEPLOY_local='echo "TAILOR: set DEPLOY_local in dev/deploy.sh"; exit 1'

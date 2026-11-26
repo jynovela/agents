@@ -1,5 +1,5 @@
 # gitleaks config. Copy it to the project root as .gitleaks.toml.
-# See setup/security.md. Only a human changes this file: the lint guard fails
+# See .agents/setup/security.md. Only a human changes this file: the lint guard fails
 # any agent change to it.
 
 title = "project secrets"

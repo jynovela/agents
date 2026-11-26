@@ -8,10 +8,10 @@ person takes.
 
 | Piece | File to copy | What it does |
 | ----- | ------------ | ------------ |
-| Deploy wrapper | `setup/deploy.sh` to `dev/deploy.sh` | The only way agents deploy. Refuses any target not on the allowed list, logs every attempt to `logs/deploy.log`, and rolls back with one command |
+| Deploy wrapper | `.agents/setup/deploy.sh` to `dev/deploy.sh` | The only way agents deploy. Refuses any target not on the allowed list, logs every attempt to `logs/deploy.log`, and rolls back with one command |
 | Build guard | `.agents/shared/build-guard.sh` | Fails when a change makes a failing step pass (`continue-on-error`, `\|\| true`), removes a CI step or check, or adds a production deploy command |
-| CI workflow | `setup/ci.yml` to `.github/workflows/ci.yml` | Runs the same commands as `AGENTS.md`, in the same order, on every pull request |
-| Production gate | `setup/claude-prod-gate.sh` to `.claude/hooks/prod-gate.sh` | Claude Code hook that blocks production deploy commands before they run |
+| CI workflow | `.agents/setup/ci.yml` to `.github/workflows/ci.yml` | Runs the same commands as `AGENTS.md`, in the same order, on every pull request |
+| Production gate | `.agents/setup/claude-prod-gate.sh` to `.claude/hooks/prod-gate.sh` | Claude Code hook that blocks production deploy commands before they run |
 
 ## 1. Have three environments
 
@@ -106,7 +106,7 @@ catch an agent that tries.
 ## 4. Add the deploy wrapper
 
 ```sh
-mkdir -p dev && cp setup/deploy.sh dev/deploy.sh && chmod +x dev/deploy.sh
+mkdir -p dev && cp .agents/setup/deploy.sh dev/deploy.sh && chmod +x dev/deploy.sh
 ```
 
 Fill in its `TAILOR` lines: a deploy command and a rollback command for
@@ -137,7 +137,7 @@ image. Write "None" for a command you don't have yet.
 ## 6. Add the production gate hook (Claude Code)
 
 ```sh
-mkdir -p .claude/hooks && cp setup/claude-prod-gate.sh .claude/hooks/prod-gate.sh && chmod +x .claude/hooks/prod-gate.sh
+mkdir -p .claude/hooks && cp .agents/setup/claude-prod-gate.sh .claude/hooks/prod-gate.sh && chmod +x .claude/hooks/prod-gate.sh
 ```
 
 Register it in `.claude/settings.json`. If the file already has `hooks`, add
@@ -164,7 +164,7 @@ blocks `supabase link`, so only you choose which project the CLI points at.
 ## 7. Run the same checks in CI
 
 ```sh
-mkdir -p .github/workflows && cp setup/ci.yml .github/workflows/ci.yml
+mkdir -p .github/workflows && cp .agents/setup/ci.yml .github/workflows/ci.yml
 ```
 
 Fill in its `TAILOR` lines with your `AGENTS.md` commands. This is the one
@@ -173,7 +173,7 @@ steps to it. Pin every tool version so a new release doesn't fail every
 open pull request.
 
 Every step blocks the merge except the lint guard, which is report-only on
-purpose (see `setup/lint.md`). `build-guard.sh` allows `continue-on-error` on
+purpose (see `.agents/setup/lint.md`). `build-guard.sh` allows `continue-on-error` on
 that step only.
 
 ## 8. When the build guard fails

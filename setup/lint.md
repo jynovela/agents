@@ -10,11 +10,11 @@ code. Code checks also block the shortcuts agents take to make lint pass.
 
 | Piece | File to copy | What it does |
 | ----- | ------------ | ------------ |
-| Linter config | `setup/ruff.toml` | Rules that catch common agent mistakes |
+| Linter config | `.agents/setup/ruff.toml` | Rules that catch common agent mistakes |
 | Lint guard | `.agents/shared/lint-guard.sh` | Fails on new suppression comments, lint config edits, leftover files like `app_old.py`, and `--no-verify` |
 | Context lint | `.agents/shared/context-lint.sh` | Checks `AGENTS.md`, role files, and wrappers: length, file references that no longer exist, leftover TODOs, frontmatter |
-| Pre-commit hook | `setup/githooks/pre-commit` | Runs the linter on staged files, then both checks |
-| Claude Code hook | `setup/claude-lint-hook.sh` | Lints each file right after Claude edits it |
+| Pre-commit hook | `.agents/setup/githooks/pre-commit` | Runs the linter on staged files, then both checks |
+| Claude Code hook | `.agents/setup/claude-lint-hook.sh` | Lints each file right after Claude edits it |
 
 The examples use Ruff for Python. For another stack, see "Other stacks" at
 the end.
@@ -41,7 +41,7 @@ commands below.
 
 ## 2. Add the config
 
-Copy `setup/ruff.toml` to the project root and fill in its `TAILOR`
+Copy `.agents/setup/ruff.toml` to the project root and fill in its `TAILOR`
 comments: the Python version, files that may print, and banned APIs.
 
 Each rule group in it is there for a reason:
@@ -86,7 +86,7 @@ From the repo root:
 
 ```sh
 mkdir -p .githooks
-cp setup/githooks/pre-commit .githooks/
+cp .agents/setup/githooks/pre-commit .githooks/
 git config core.hooksPath .githooks
 ```
 
@@ -109,7 +109,7 @@ adds an import one edit before the code that uses it.
 
 ```sh
 mkdir -p .claude/hooks
-cp setup/claude-lint-hook.sh .claude/hooks/lint-file.sh
+cp .agents/setup/claude-lint-hook.sh .claude/hooks/lint-file.sh
 ```
 
 Then add this to `.claude/settings.json`:
@@ -141,14 +141,14 @@ from three places instead:
 - The pre-commit hook, when it commits.
 - The role check scripts you run after each agent run.
 
-If you get a Hermes hook working, point it at `setup/claude-lint-hook.sh`.
+If you get a Hermes hook working, point it at `.agents/setup/claude-lint-hook.sh`.
 Its input format may differ.
 
 ## 7. Run the same checks in CI
 
 The hook only runs on machines where it's installed. CI runs the same checks
-on every pull request. Use the one project workflow in `setup/ci.yml` (see
-`setup/build.md`). It installs Ruff at a pinned version, runs "Lint code" and
+on every pull request. Use the one project workflow in `.agents/setup/ci.yml` (see
+`.agents/setup/build.md`). It installs Ruff at a pinned version, runs "Lint code" and
 `context-lint.sh`, and runs the lint guard. Pin the Ruff version so a new
 release doesn't fail every open pull request.
 
