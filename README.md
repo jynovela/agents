@@ -155,9 +155,19 @@ they can't skip. The one-prompt install does most of it. By hand:
 <summary>The two tracks, step by step</summary>
 
 There are two tracks. Planning turns an idea into tickets. Doing turns one
-ticket into tested code on staging. Today you start each agent yourself, in
-this order. A runner that does the Doing track from one command is the next
-thing being built.
+ticket into tested code on a branch you can try.
+
+In Claude Code, the Doing track is one request:
+
+```text
+Run ticket ITEM-12.
+```
+
+Claude then starts each agent in the order below. A script, not the model,
+decides the order: it runs each agent's check, commits each step, sends
+failed work back at most twice, and stops to ask you when it is stuck. See
+[flow/pipeline.md](flow/pipeline.md). You can also start each agent
+yourself, in the same order.
 
 ### Planning: from an idea to tickets
 
@@ -241,6 +251,7 @@ What is in this repo, for when you want to read or change an agent.
 | `agents/<name>/` | You, and `install.sh` | One folder per agent with everything it owns: `SKILL.md` (the instructions, and the source of truth), `agent.yaml` (what it needs from the project), `check.sh`, `tools/` (helper scripts, so a small model doesn't do fiddly text work by hand), `claude.md` (the Claude Code wrapper), and `hermes/SOUL.md` (the Hermes profile's identity file) |
 | `skills/<name>/` | You, and `install.sh` | The same shape for a skill: a procedure any agent, or you, can run. It has no wrapper. |
 | `shared/` | Every agent | `lib.sh`, the helpers every check script uses, and the checks that serve all agents: `lint-guard.sh`, `context-lint.sh`, `secret-scan.sh`, `spec-diff.sh`, `build-guard.sh`, and `doctor.sh`, which lists what each installed agent still needs. See `setup/lint.md`, `setup/security.md`, `setup/api.md`, and `setup/build.md`. |
+| `flow/` | The coordinator | `ticket.sh`, which runs one ticket through the agents in a fixed order, `pipeline.md`, which explains it, and the `run-ticket` skill that lets Claude Code drive it. Installed in a project as `.agents/flow/`. |
 | `HERMES.md`, `hermes/profiles.sh` | You, when using Hermes | How to give each agent its own Hermes profile, and the script that creates them |
 | `INSTALL.md` | Claude Code, from the one-prompt setup | The steps to install the agents in a project and set it up for them |
 | `install.sh` | You | Copies agents and skills into a project and lists them in its `AGENTS.md` |

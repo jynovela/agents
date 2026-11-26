@@ -23,7 +23,7 @@ set -uo pipefail
 SUPPRESS='(#[[:space:]]*noqa|#[[:space:]]*type:[[:space:]]*ignore|#[[:space:]]*nosec|#[[:space:]]*pragma:[[:space:]]*no[[:space:]]*cover|pylint:[[:space:]]*disable|#[[:space:]]*fmt:[[:space:]]*(off|skip)|#[[:space:]]*ruff:[[:space:]]*noqa|eslint-disable|@ts-ignore|@ts-expect-error|@ts-nocheck|biome-ignore|//[[:space:]]*nolint|rubocop:disable|@SuppressWarnings|markdownlint-disable|gitleaks:allow|<!--[[:space:]]*vale[[:space:]]+off)'
 
 # <!-- TAILOR: lint config files and hooks agents must not change. -->
-CONFIG='(^|/)(ruff\.toml|\.ruff\.toml|\.flake8|\.pylintrc|pylintrc|mypy\.ini|\.eslintrc(\..*)?|eslint\.config\.[a-z]+|\.prettierrc(\..*)?|biome\.jsonc?|\.markdownlint[^/]*|\.vale\.ini|\.editorconfig|\.pre-commit-config\.yaml|\.golangci\.ya?ml|\.rubocop\.yml|\.gitleaks\.toml|\.gitleaksignore|\.spectral\.ya?ml)$|^\.api/approved\.md$|^\.githooks/|^\.agents/shared/|^\.agents/skills/[^/]+/check\.sh$|^\.github/workflows/'
+CONFIG='(^|/)(ruff\.toml|\.ruff\.toml|\.flake8|\.pylintrc|pylintrc|mypy\.ini|\.eslintrc(\..*)?|eslint\.config\.[a-z]+|\.prettierrc(\..*)?|biome\.jsonc?|\.markdownlint[^/]*|\.vale\.ini|\.editorconfig|\.pre-commit-config\.yaml|\.golangci\.ya?ml|\.rubocop\.yml|\.gitleaks\.toml|\.gitleaksignore|\.spectral\.ya?ml)$|^\.api/approved\.md$|^\.githooks/|^\.agents/shared/|^\.agents/flow/|^\.agents/skills/[^/]+/check\.sh$|^\.github/workflows/'
 
 # Files that hold lint settings among other things. Only changed lines that
 # look like lint settings count.

@@ -19,5 +19,7 @@ jobs:
         run: shared/context-lint.sh
       - name: Every agent installs alone
         run: tests/install-alone.sh
+      - name: The ticket pipeline takes every path
+        run: tests/flow.sh
       - name: Sample app builds
         run: examples/sample-app/setup.sh "$RUNNER_TEMP/itemctl-test"

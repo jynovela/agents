@@ -10,6 +10,8 @@
 #   .agents/skills/<name>/      SKILL.md, agent.yaml, check.sh, and tools/ when there are any
 #   .agents/shared/             lib.sh, doctor.sh, and the checks every agent shares
 #   .agents/setup/              the setup guides and the files they tell you to copy
+#   .agents/flow/               ticket.sh, which runs one ticket through the agents in order
+#   .claude/skills/run-ticket   a link to the skill that lets Claude Code drive ticket.sh
 #   .claude/agents/<name>.md    the Claude Code wrapper, for an agent
 #   .claude/skills/<name>       a link to .agents/skills/<name>, for a skill
 #   AGENTS.md                   created from this repo's AGENTS.md when the project has
@@ -80,6 +82,10 @@ chmod +x "$target"/.agents/shared/*.sh
 
 rm -rf "$target/.agents/setup"
 cp -R "$here/setup" "$target/.agents/setup"
+rm -rf "$target/.agents/flow" "$target/.claude/skills/run-ticket"
+cp -R "$here/flow" "$target/.agents/flow"
+chmod +x "$target/.agents/flow/ticket.sh"
+ln -s "../../.agents/flow/run-ticket" "$target/.claude/skills/run-ticket"
 
 for name in "$@"; do
   src="$(source_of "$name")"
