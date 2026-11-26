@@ -119,7 +119,7 @@ for spec in $specs; do
         acct_name="$(printf '%s\n' "$shown" | awk '{print $1}' | sed 's/[.,;]$//')"
         if [ -z "$acct_file" ] || [ ! -f "$acct_file" ]; then
           say_fail "$spec: state \"$st\" names test account \"$acct_name\", but AGENTS.md lists no test accounts file; use \"new:\""
-        elif ! grep -qw -- "$acct_name" "$acct_file"; then
+        elif ! grep -qE -- "(^|[^A-Za-z0-9_.-])$(esc "$acct_name")([^A-Za-z0-9_-]|$)" "$acct_file"; then
           say_fail "$spec: test account \"$acct_name\" isn't in $acct_file; use \"new: <what it needs>\""
         fi
       fi
