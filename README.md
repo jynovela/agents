@@ -1,32 +1,31 @@
 # Agents
 
-A set of AI agents you install into a software project so it gets built
-test-first. You approve what "done" means for a ticket. The agents write
-the tests from that, write the code that passes them, update the docs,
-review the change, and check it for security problems. You try the result
-on staging and release it yourself.
+I build software with AI agents, and I got tired of checking their work
+line by line. This repo is what I use now: ten agents you install into a
+project, each with one job, that build a ticket test-first.
 
-What you gain:
+You write a ticket and approve its acceptance criteria. One agent turns each
+criterion into a test that fails. A different agent writes code until those
+tests pass, and it can't touch the tests. Others update the docs, review the
+branch, and look for security problems. Then you try the result on staging
+and release it yourself. No agent can deploy to production.
 
-- **Code that is proven against your criteria.** Every acceptance criterion
-  becomes a test that fails before the code exists and passes after. A
-  different agent writes the code than the one that wrote the tests, so the
-  code can't grade itself.
-- **Two check-ins for you, not twenty.** You approve the acceptance criteria
-  at the start, and you test on staging at the end. The steps in between
-  are the agents' work.
-- **Rules that hold with cheap models.** Each agent has one job, a short
-  list of files it may change, and a check script that fails the run when
-  it breaks a rule: a leaked secret, a skipped test, an edit outside its
-  scope. The rules don't depend on the model obeying them.
-- **Your choice of model per agent.** The agents are plain Markdown files
-  and shell scripts. Run them all in Claude Code, or run most of them on a
-  local open-weight model and keep a strong model for review.
-- **No agent can release.** Agents deploy to local and staging only.
-  Production is yours.
+Why ten agents and not one good prompt? I run most of them on a small local
+model (Qwen, about 3 billion active parameters), and small models skip
+steps. In an early test, one copied an API token into the docs while a
+written rule told it not to. So every rule that code can check now has a
+check script. A leaked secret, a skipped test, or an edit outside the
+agent's own files fails the run, whatever the model meant to do. With those
+scripts, the security agent scored 13, 11, and 13 out of 14 on the small
+model. A frontier model scored 13.
 
-Each agent also works alone. Install only Docs-Agent to keep docs in step
-with code, or only Security-Agent to review branches.
+You see the work twice. You approve the criteria before anything is built,
+and you test on staging at the end. The agents handle what's in between.
+
+You don't have to take all ten. Each agent installs alone, so you can start
+with Docs-Agent to keep docs in step with code and add the rest later. They
+are Markdown files and shell scripts. They run in Claude Code, in Hermes
+with a local model, or in any tool that reads `AGENTS.md`.
 
 ## What you need
 
@@ -44,8 +43,8 @@ with code, or only Security-Agent to review branches.
 | A linter for your language | Lint-Agent and the lint hook | The guide uses Ruff for Python. |
 | A staging environment | Trying a change before release | Can wait until you have something to deploy. |
 
-You don't need all of it on day one. After the install, one command lists
-which agents are ready and what each of the others is missing.
+You can start with less. After the install, `.agents/shared/doctor.sh`
+lists which agents are ready and what each of the others is missing.
 
 </details>
 
@@ -119,9 +118,10 @@ project."
 <details>
 <summary>Setup steps</summary>
 
-The install copies the agents. The setup gives them what they need to check
-their own work: commands they can run, tickets they can read, and hooks
-they can't skip. The one-prompt install does most of it. By hand:
+The install only copies files. Before an agent can check its own work, the
+project has to give it commands it can run, tickets it can read, and git
+hooks it can't skip. The one-prompt install does most of this for you. To
+do it by hand:
 
 1. In the project's `AGENTS.md`, fill in every `<!-- TAILOR: ... -->`
    comment: the project overview, the stack, and the commands. Do the same
@@ -163,11 +163,11 @@ In Claude Code, the Doing track is one request:
 Run ticket ITEM-12.
 ```
 
-Claude then starts each agent in the order below. A script, not the model,
-decides the order: it runs each agent's check, commits each step, sends
-failed work back at most twice, and stops to ask you when it is stuck. See
-[flow/pipeline.md](flow/pipeline.md). You can also start each agent
-yourself, in the same order.
+Claude then starts each agent in the order below. The order comes from a
+script, so a run goes the same way every time. The script runs each agent's
+check, commits each step, sends failed work back at most twice, and stops
+to ask you when it's stuck. [flow/pipeline.md](flow/pipeline.md) has the
+details. You can also start each agent yourself, in the same order.
 
 ### Planning: from an idea to tickets
 
@@ -179,8 +179,7 @@ yourself, in the same order.
    criteria to Linear Backlog, or to local drafts, and stops.
 3. **Your check-in: approve the acceptance criteria.** Read the tickets, fix
    what you disagree with, and move the ones you want to To-do. Everything
-   after this is tested against those criteria, so this is where your
-   attention pays most.
+   after this is tested against those criteria, so spend your time here.
 
 ### Doing: from one ticket to staging
 
@@ -203,21 +202,22 @@ yourself, in the same order.
 8. **Your check-in: test on staging.** If it does what you wanted, merge
    and release to production yourself. No agent can.
 
-Three agents are on call and not steps. Call Lint-Agent when lint errors
-are left on a branch, Build-Agent when the build fails, and API-Agent's
-check mode when a branch touched an endpoint, a CLI flag, or an environment
-variable.
+Three agents aren't steps. You call them when something comes up. Call
+Lint-Agent when lint errors are left on a branch, and Build-Agent when the
+build fails. Call API-Agent's check mode when a branch touched an endpoint,
+a CLI flag, or an environment variable.
 
 ### Which model for which agent
 
-Run Review-Agent on a different model family than the one that wrote the
-code, and on the strongest model you have. In testing, a dense 31B model
-scored steadily, while a small mixture-of-experts model (about 3B active)
-missed different things on every run. Security-Agent held up on the small
-model (13, 11, and 13 of 14, against a frontier model's 13), because the
-scanners and its check script do most of the work. Its misses were judgment
-calls like path traversal, so for risky changes (auth, file handling, new
-endpoints) run it on your strongest model too.
+Review is where I'd spend on a model. Run Review-Agent on the strongest one
+you have, from a different family than the one that wrote the code. In my
+tests a dense 31B model scored about the same every time, and the small
+Qwen model missed different things on each run.
+
+Security-Agent is cheaper to run. It held up on the small model because the
+scanners and its check script do most of the work. What it missed were
+judgment calls like path traversal. For risky changes (auth, file handling,
+new endpoints), run it on your strongest model too.
 
 ### Start an agent in Claude Code
 
@@ -234,8 +234,8 @@ which `SKILL.md` to read. Don't add a `.hermes.md` file: Hermes
 loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 
 To give each agent its own Hermes profile, with its own `SOUL.md` and its
-own model, follow [HERMES.md](HERMES.md). That is how you run most agents on
-a cheap local model and keep a strong one for review.
+own model, follow [HERMES.md](HERMES.md). I use this to run most agents on
+the local model and keep a strong one for review.
 
 </details>
 
