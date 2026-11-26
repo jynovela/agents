@@ -1,15 +1,13 @@
 # Agents
 
 This is the way of building software with AI agents that I've settled on.
-It sits between two extremes. At one end you write the code yourself, or
-read and approve every change an agent makes. At the other you type "do the
-thing" and hope.
+It sits between the extremes of approving every change an agent makes and 
+just typing "do the thing".
 
-Here the work runs on tickets. The agents break a project down into
-tickets, and every piece of work starts from one. You check the work twice.
-You approve a ticket's acceptance criteria before anything is built, and
-you test the result on staging at the end. The agents handle what's in
-between.
+The agents break a project down into tickets, and every piece of work 
+starts from one. You only need to check the work twice. You approve a 
+ticket's acceptance criteria before anything is built, and you test the 
+result on staging at the end. The agents handle what's in between.
 
 One agent turns each criterion into a test that fails. A different agent
 writes code until those tests pass, and it can't touch the tests. Others
