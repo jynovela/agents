@@ -223,6 +223,10 @@ example "act as Docs-Agent". The agent list in `AGENTS.md` tells the model
 which `SKILL.md` to read. Don't add a `.hermes.md` file: Hermes
 loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 
+To give each agent its own Hermes profile, with its own `SOUL.md` and its
+own model, follow [HERMES.md](HERMES.md). That is how you run most agents on
+a cheap local model and keep a strong one for review.
+
 </details>
 
 ## Layout
@@ -234,9 +238,10 @@ What is in this repo, for when you want to read or change an agent.
 
 | Path | Read by | What it holds |
 | ---- | ------- | ------------- |
-| `agents/<name>/` | You, and `install.sh` | One folder per agent with everything it owns: `SKILL.md` (the instructions, and the source of truth), `agent.yaml` (what it needs from the project), `check.sh`, `tools/` (helper scripts, so a small model doesn't do fiddly text work by hand), and `claude.md` (the Claude Code wrapper) |
+| `agents/<name>/` | You, and `install.sh` | One folder per agent with everything it owns: `SKILL.md` (the instructions, and the source of truth), `agent.yaml` (what it needs from the project), `check.sh`, `tools/` (helper scripts, so a small model doesn't do fiddly text work by hand), `claude.md` (the Claude Code wrapper), and `hermes/SOUL.md` (the Hermes profile's identity file) |
 | `skills/<name>/` | You, and `install.sh` | The same shape for a skill: a procedure any agent, or you, can run. It has no wrapper. |
 | `shared/` | Every agent | `lib.sh`, the helpers every check script uses, and the checks that serve all agents: `lint-guard.sh`, `context-lint.sh`, `secret-scan.sh`, `spec-diff.sh`, `build-guard.sh`, and `doctor.sh`, which lists what each installed agent still needs. See `setup/lint.md`, `setup/security.md`, `setup/api.md`, and `setup/build.md`. |
+| `HERMES.md`, `hermes/profiles.sh` | You, when using Hermes | How to give each agent its own Hermes profile, and the script that creates them |
 | `INSTALL.md` | Claude Code, from the one-prompt setup | The steps to install the agents in a project and set it up for them |
 | `install.sh` | You | Copies agents and skills into a project and lists them in its `AGENTS.md` |
 | `tests/install-alone.sh` | You and CI, when changing this repo | Proves every agent installs and runs on its own |
