@@ -1,8 +1,9 @@
 # Agents
 
 I build software with AI agents, and I got tired of checking their work
-line by line. This repo is what I use now: ten agents you install into a
-project, each with one job, that build a ticket test-first.
+line by line. This repo is what I use now. It holds ten agents that you
+install into a project. Each has one job, and together they build a ticket
+test-first.
 
 You write a ticket and approve its acceptance criteria. One agent turns each
 criterion into a test that fails. A different agent writes code until those
