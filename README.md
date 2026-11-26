@@ -1,7 +1,7 @@
 # Agents
 
 This is the way of building software with AI agents that I've settled on.
-It sits between the extremes of approving every change an agent makes and
+It sits between the extremes of approving every code change an agent makes and
 just typing "do the thing".
 
 The agents break a project down into tickets, and every piece of work
