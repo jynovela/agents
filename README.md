@@ -267,7 +267,7 @@ it, so the two can't drift apart.
 | Design-Agent | Turns a user flow into screen specs and clickable low-fi wireframes | In testing |
 | API-Agent | Keeps the API spec in step with the code. Lists breaking changes for your approval | Ready |
 | Test-Agent | Turns acceptance criteria into tests against the running app, then verifies the code with real results | Ready |
-| Implementer-Agent | Writes the smallest code change that makes one ticket's tests pass | Built, not yet tested on a small model |
+| Implementer-Agent | Writes the smallest code change that makes one ticket's tests pass | Ready |
 | Docs-Agent | Keeps Markdown docs in step with the code and flags API spec drift | Ready |
 | Review-Agent | Reviews a branch against its ticket and gives a verdict. Never edits code | Ready |
 | Security-Agent | Reviews a branch for security problems after the scanners run. Never edits code | Ready |

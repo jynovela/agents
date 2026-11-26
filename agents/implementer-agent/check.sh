@@ -292,6 +292,20 @@ echo "$runs test run(s); at most $max allowed for $failing_before failing test(s
 [ "$runs" -le "$max" ] || say_fail "more than 3 fix attempts per failing test. Stop sooner and report what still fails."
 [ "$(value Runs)" = "$runs" ] || { [ "$stopped" != "None" ] && value Runs | grep -q '^Not run'; } || say_fail "\"Runs:\" says \"$(value Runs)\", but $LOG_DIR has $runs run log(s)"
 
+echo "== Lint errors fixed out of scope"
+out="$("$helper" lintfixed 2>&1)"
+if echo "$out" | grep -q '^LINTFIXED_SKIPPED'; then
+  echo "$out"
+elif ! echo "$out" | tail -1 | grep -q '^LINTFIXED_DONE$'; then
+  say_fail "implementer-run.sh lintfixed didn't finish. Its last line: $(echo "$out" | tail -1)"
+elif echo "$out" | grep -q '^LINT_FIXED '; then
+  while IFS= read -r l; do
+    say_fail "${l#LINT_FIXED } (a lint error that was there before is gone). Undo that edit: Lint-Agent fixes lint."
+  done <<< "$(echo "$out" | grep '^LINT_FIXED ')"
+else
+  echo "None."
+fi
+
 echo "== Handoffs"
 if [ "$stopped" != "None" ]; then
   echo "Skipped: the run stopped before any change."

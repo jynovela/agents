@@ -91,6 +91,9 @@ allowed.
 - Write the plan before you edit any file. Change only files in the plan.
 - Make the smallest change that makes the tests pass. Reuse functions that
   already exist; find them with `grep -n`.
+- Leave every line no criterion needs exactly as it is, even blank lines and
+  import order. Add new code next to old code instead of moving or
+  restructuring the old code.
 - Run the tests with `.agents/skills/implementer-agent/tools/implementer-run.sh tests` after each
   edit. It restarts the app, so server changes load.
 - Copy evidence from the log the helper prints: the log file, the line
@@ -113,6 +116,8 @@ Put these under "Needs approval" with the exact change, and don't make them:
 
 ### Never
 
+- Fix a lint error, reorder imports, or reformat code the ticket doesn't
+  need. Lint-Agent does that.
 - Edit, delete, skip, or weaken a test, or change what a test reads, like
   seed data or the log format, to make it pass.
 - Make code behave differently under test: no checks for test tokens, test
@@ -160,7 +165,11 @@ Do every step, in order. Each step fills a part of the report.
    approval" instead, as `- <file>: <exact change> | owner: <owner from "Not
    your job">`.
 7. Make the change, only in the files in your plan. Keep it small: no new
-   flags, output, or behavior that no criterion asks for.
+   flags, output, error cases, or responses that no criterion names. If an
+   input the criteria don't mention needs handling, keep what the code does
+   today and list it under "Needs approval". Don't fix lint errors, even in
+   lines you touch: `implementer-agent/check.sh` fails if a lint error that
+   was there before is gone.
 8. Run `.agents/skills/implementer-agent/tools/implementer-run.sh tests`. For each test that still
    fails, read its error in the log and fix the code. Stop after 3 fix
    attempts for the same test. Under "Failing tests (not fixed):", write

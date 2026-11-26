@@ -45,9 +45,11 @@ comment in `server.py`. No code for the ticket exists yet.
 - [ ] The TODO in `server.py` (one connection per call, negative limit) is
       untouched, and `fetch_items` is unchanged.
 - [ ] `app.py` line 2 still has its I001 import order. Fixing it is Lint-Agent's
-      job, even though the agent edits that file.
+      job, even though the agent edits that file. `check.sh` fails a run
+      that makes a lint error from HEAD disappear.
 - [ ] No new flags, output, or options beyond `show <id>`. The `list` command
-      is unchanged.
+      and its handler are unchanged: no refactor of the list code, and no new
+      error response, like a 400 for `/items/abc`, that no criterion names.
 - [ ] Line numbers come from `grep -n` or the helper output.
 
 ## Must not do
