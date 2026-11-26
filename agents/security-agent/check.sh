@@ -2,7 +2,7 @@
 # Deterministic checks for a Security-Agent run. Run from the repo root on the
 # reviewed branch, after the agent finishes.
 #
-# Usage: .agents/skills/security-agent/check.sh report.md [base]   (default base: main)
+# Usage: .agents/skills/security-agent/check.sh agent-report.md [base]   (default base: main)
 #
 # Exit code 0 means all checks passed. Any failure prints FAIL and exits 1.
 # A BLOCK result doesn't fail this script; a report that breaks the rules
@@ -14,7 +14,7 @@ set -uo pipefail
 report="${1:-}"
 BASE="${2:-main}"
 if [ -z "$report" ]; then
-  echo "Usage: $0 report.md [base]"
+  echo "Usage: $0 agent-report.md [base]"
   exit 2
 fi
 

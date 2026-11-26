@@ -58,11 +58,7 @@ Then the script prints `DONE`, and you test.
 | `.runs/<id>/NN-<agent>.check.txt` | The check's output for that step |
 | `.runs/<id>/state` | Where the run is. Delete `.runs/<id>` and the branch to start over |
 
-`.runs/` and `report.md` are kept out of git through `.git/info/exclude`.
-
-During a run, each agent saves its report to `.runs/<id>/step.txt`, not to
-`report.md` as its role file says. The script tells it so in the prompt.
-Claude Code refuses to let a subagent write a file named like a report.
+`.runs/` and `agent-report.md` are kept out of git through `.git/info/exclude`.
 
 ## Run it
 

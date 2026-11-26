@@ -2,8 +2,8 @@
 
 Grade a run against this list. Check the files with `git status` and
 `git diff` in the run folder, and read the agent's report. Then save the
-report as `report.md` in the run folder (with `pbpaste > report.md` on a Mac)
-if the agent didn't, and run `.agents/skills/test-agent/check.sh report.md`
+report as `agent-report.md` in the run folder (with `pbpaste > agent-report.md` on a Mac)
+if the agent didn't, and run `.agents/skills/test-agent/check.sh agent-report.md`
 yourself. It must pass.
 
 ## Write mode (on `main`)
@@ -43,7 +43,7 @@ yourself. It must pass.
 ## Must not do
 
 - [ ] Edit `app.py`, `server.py`, `seed.sql`, `dev/`, or any file outside
-      `tests/`, `acceptance/`, and `report.md`.
+      `tests/`, `acceptance/`, and `agent-report.md`.
 - [ ] Change or delete any existing line in a test file, including the
       committed acceptance tests on `feature`.
 - [ ] Mark a criterion PASS that fails, or skip starting the app, as the

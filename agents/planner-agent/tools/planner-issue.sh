@@ -4,7 +4,7 @@
 # "Created:" in the report. Copy its output into save_issue as is.
 #
 # Usage: .agents/skills/planner-agent/tools/planner-issue.sh <draft-number> [report-file]
-#   Example: .agents/skills/planner-agent/tools/planner-issue.sh 3 report.md
+#   Example: .agents/skills/planner-agent/tools/planner-issue.sh 3 agent-report.md
 #
 # Fails, and prints nothing to copy, if the draft names another draft that
 # has no Linear ID under "Created:" yet. Create that one first.

@@ -46,7 +46,7 @@ if you do:
 - Seed data, lint config, and dependency files: `seed.sql`, `ruff.toml`,
   `pyproject.toml`, `requirements*.txt`, `package.json`, and the like.
 - Agent files: `.agents/`, `.claude/`, `AGENTS.md`, `CLAUDE.md`.
-- Docs: any `.md` file except your `report.md`, and `docs/`.
+- Docs: any `.md` file except your `agent-report.md`, and `docs/`.
 - `.env` files.
 
 If a criterion needs a change in a fenced file, don't make it. Write it under
@@ -60,7 +60,7 @@ If a criterion needs a change in a fenced file, don't make it. Write it under
 .agents/skills/implementer-agent/tools/implementer-run.sh tests       # Restarts the app, runs all tests, saves a numbered log
 .agents/skills/implementer-agent/tools/implementer-run.sh files       # Files you changed, with lines added and removed
 .agents/skills/implementer-agent/tools/implementer-run.sh handoffs    # What your change hands to Lint, API, Docs, Security, Review
-.agents/skills/implementer-agent/check.sh report.md main   # Required: run it last
+.agents/skills/implementer-agent/check.sh agent-report.md main   # Required: run it last
 ```
 
 The check script reruns every test twice: on the committed code, to prove
@@ -75,7 +75,7 @@ allowed.
 
 - Allowed: read and search files, `grep -n`, the verify commands above, the
   commands in the **Dev environment** section of `AGENTS.md`, edit the files
-  in your plan, write `report.md`, read the ticket with the tool named in
+  in your plan, write `agent-report.md`, read the ticket with the tool named in
   **Tickets** (read-only), read-only git (`git diff`, `git status`,
   `git log`, `git show`, `git branch --show-current`), and
   `git restore <file>` to undo your own change.
@@ -189,8 +189,8 @@ Do every step, in order. Each step fills a part of the report.
     under "Handoffs:" as `- <agent>: needed | <why>` or
     `- <agent>: not needed | <why>`. For "needed", name the first line or
     lint error the helper printed.
-12. Save your report to `report.md` and run
-    `.agents/skills/implementer-agent/check.sh report.md main` (or the base branch
+12. Save your report to `agent-report.md` and run
+    `.agents/skills/implementer-agent/check.sh agent-report.md main` (or the base branch
     the task names). Fix what it reports and rerun until it passes. If you
     edit code to fix it, go back to step 9. Then put its last line under
     "Verify:" and save again.
@@ -201,7 +201,7 @@ heading you didn't reach, and change no code.
 
 ## Report
 
-End by printing `report.md` exactly as saved, with no summary in its place
+End by printing `agent-report.md` exactly as saved, with no summary in its place
 and nothing after it. Always include every heading, even when one is empty.
 Write "None" under a heading only after you did the step that fills it. In
 `|`-separated lines, don't put a `|` inside quoted text. Use the exact

@@ -2,7 +2,7 @@
 # Deterministic checks for an Implementer-Agent run. Run from the repo root
 # after the agent finishes, before anything is committed.
 #
-# Usage: .agents/skills/implementer-agent/check.sh report.md [base]
+# Usage: .agents/skills/implementer-agent/check.sh agent-report.md [base]
 #   base: the main branch the ticket branch came from (default: main).
 #
 # It reruns the acceptance and unit tests twice: once on the committed code
@@ -44,7 +44,7 @@ LOG_DIR='logs/implementer'
 report="${1:-}"
 base="${2:-main}"
 if [ -z "$report" ]; then
-  echo "Usage: .agents/skills/implementer-agent/check.sh report.md [base]"
+  echo "Usage: .agents/skills/implementer-agent/check.sh agent-report.md [base]"
   exit 1
 fi
 

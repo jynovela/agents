@@ -51,7 +51,7 @@ approval" with the exact edit.
 .agents/skills/build-agent/tools/build-steps.sh ci             # Prints build steps that CI doesn't run
 .agents/shared/build-guard.sh               # Shortcuts in your changes
 dev/deploy.sh staging                       # Only when the task asks and every step passes
-.agents/skills/build-agent/check.sh report.md     # Required: run it last
+.agents/skills/build-agent/check.sh agent-report.md     # Required: run it last
 ```
 
 The check script fails if you changed a file outside scope, weakened a step,
@@ -62,7 +62,7 @@ an owner, or left a CI gap out of "Needs approval".
 ## Tools
 
 - Allowed: read and search files, `grep -n`, the verify commands above, edit
-  files in scope, write `report.md`, and read-only git (`git diff`,
+  files in scope, write `agent-report.md`, and read-only git (`git diff`,
   `git status`, `git log`, `git show`).
 - Not allowed: editing files outside scope, deleting or renaming files,
   package installs, web access, any deploy command other than
@@ -137,13 +137,13 @@ Do every step, in order. Each step fills a part of the report.
    - If any step in "Steps after" is FAIL: `- staging: not deployed | why: <failing steps>`.
    - Otherwise run `dev/deploy.sh staging` and write
      `- staging: deployed | <its last line>`.
-8. Save your report to `report.md` and run
-   `.agents/skills/build-agent/check.sh report.md`. Fix what it reports and rerun
+8. Save your report to `agent-report.md` and run
+   `.agents/skills/build-agent/check.sh agent-report.md`. Fix what it reports and rerun
    until it passes. Then put its last line under "Verify" and save again.
 
 ## Report
 
-End by printing `report.md` exactly as saved, with no summary in its place
+End by printing `agent-report.md` exactly as saved, with no summary in its place
 and nothing after it. Always include every heading, even when one is empty.
 Write "None" under a heading only after you did the step that fills it. In
 `|`-separated lines, don't put a `|` inside quoted text.

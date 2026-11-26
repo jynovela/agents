@@ -2,8 +2,8 @@
 # Deterministic checks for a Lint-Agent run. Run from the repo root after the
 # agent finishes, before anything is committed.
 #
-# Usage: .agents/skills/lint-agent/check.sh report.md [base | path...]
-#   report.md: the agent's saved report.
+# Usage: .agents/skills/lint-agent/check.sh agent-report.md [base | path...]
+#   agent-report.md: the agent's saved report.
 #   base or path: the same scope the agent used (default: main). See
 #   .agents/skills/lint-agent/tools/lint-scope.sh.
 #
@@ -26,7 +26,7 @@ HAND_SAFE='ERA001|F841|E741|E501|B007'
 
 report="${1:-}"
 if [ -z "$report" ]; then
-  echo "Usage: .agents/skills/lint-agent/check.sh report.md [base | path...]"
+  echo "Usage: .agents/skills/lint-agent/check.sh agent-report.md [base | path...]"
   exit 1
 fi
 shift

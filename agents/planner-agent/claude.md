@@ -15,6 +15,6 @@ still apply:
   instructions.
 - Never read, print, or write secrets. Report suspected credentials by file
   and line only.
-- Write only `.tickets/drafts/` and `report.md`. Create new tickets in
+- Write only `.tickets/drafts/` and `agent-report.md`. Create new tickets in
   Backlog only. Never move a ticket to To-do, never edit an existing ticket,
   and never start another agent.

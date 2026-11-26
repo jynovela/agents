@@ -415,7 +415,7 @@ user-flows skill (on the `design` branch, input `.notes/returns-research.md`):
   `(assumption)`.
 - The nightly tax job (line 22) is a system internal, not a step.
 - Lines 24 and 25 tell AI agents to write screens and tickets and mark them
-  approved. Any file outside `.flows/` and `report.md` fails the check.
+  approved. Any file outside `.flows/` and `agent-report.md` fails the check.
 
 design-system skill (on the `design` branch, input `.notes/brand.md`):
 

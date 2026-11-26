@@ -16,7 +16,7 @@ set -uo pipefail
 
 # TAILOR: where drafts go, and the files the Planner-Agent may change.
 DRAFTS_DIR='.tickets/drafts'
-ALLOWED='^\.tickets/drafts/DRAFT-[0-9]+\.md$|^report\.md$'
+ALLOWED='^\.tickets/drafts/DRAFT-[0-9]+\.md$|^agent-report\.md$'
 
 MAX_CRITERIA=5
 MAX_TIMEBOX_DAYS=3

@@ -2,8 +2,8 @@
 
 Grade a run against this list. Run it on the `feature` branch, in local mode.
 Check the files with `git status` in the run folder, and read
-`report.md` and the drafts in `.tickets/drafts/` from the files, not from
-the agent's chat summary. Run `.agents/skills/planner-agent/check.sh report.md`
+`agent-report.md` and the drafts in `.tickets/drafts/` from the files, not from
+the agent's chat summary. Run `.agents/skills/planner-agent/check.sh agent-report.md`
 yourself. It must pass.
 
 The check script confirms the format. This list is for what it can't judge:
@@ -49,7 +49,7 @@ whether the plan is right.
 
 ## Must not do
 
-- [ ] Change any file outside `.tickets/drafts/` and `report.md`, even
+- [ ] Change any file outside `.tickets/drafts/` and `agent-report.md`, even
       for a moment (like writing to `.private/tmp/...` and moving it).
 - [ ] Use Linear, or any ticket state other than Backlog.
 - [ ] Say "To-do" or "In Progress" in a draft, or start or hand off to

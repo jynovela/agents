@@ -1,18 +1,18 @@
 # Agents
 
-I build software with AI agents, and I got tired of checking their work
-line by line. This repo is what I use now. It holds ten agents that you
-install into a project. Each has one job, and together they build a ticket
-test-first.
+This is the way of building software with AI agents that I've settled on.
+It sits between the extremes of approving every code change an agent makes and
+just typing "do the thing".
 
-The agents work from tickets, so write a ticket and approve its acceptance criteria. One agent turns each
-criterion into a test that fails. A different agent writes code until those
-tests pass, and it can't touch the tests. Others update the docs, review the
-branch, and look for security problems. Then you try the result on staging
-and release it yourself. No agent can deploy to production.
+The agents break a project down into tickets, and every piece of work
+starts from one so you only need to check the work twice. You approve a
+ticket's acceptance criteria before anything is built, and you test the
+result on staging at the end. The agents handle what's in between.
 
-You see the work twice. You approve the criteria before anything is built,
-and you test on staging at the end. The agents handle what's in between.
+One agent turns each criterion into a test that fails. A different agent
+writes code until those tests pass, and it can't touch the tests. Others
+update the docs, review the branch, and look for security problems. No
+agent can deploy to production. You release it yourself.
 
 You don't have to take all ten. Each agent installs alone, so you can start
 with Docs-Agent to keep docs in step with code and add the rest later. They
