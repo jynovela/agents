@@ -11,8 +11,8 @@
 #       step, for a ticket that adds or changes an endpoint, a CLI flag, or
 #       an environment variable. Default base: main.
 #   .agents/flow/ticket.sh done
-#       The agent named by the last NEXT has finished and saved its report
-#       to .runs/<id>/step.txt.
+#       The agent named by the last NEXT has finished and saved
+#       agent-report.md.
 #   .agents/flow/ticket.sh next      Print the current NEXT again.
 #   .agents/flow/ticket.sh status    Print where the ticket is.
 #
@@ -98,7 +98,7 @@ prompt_for() {
 
 print_next() {
   local queue step agent mode out
-  out=".runs/$id/step.txt"
+  out="agent-report.md"
   queue="$(get queue)"
   if [ -n "$(get ask)" ]; then
     echo "ASK: $(get ask)"
@@ -121,7 +121,7 @@ print_next() {
   case "$step" in *:*) mode="${step#*:}" ;; esac
   echo "NEXT: $agent"
   [ -n "$mode" ] && echo "MODE: $mode"
-  echo "PROMPT: $(prompt_for "$step") In this run your report file is $out, not report.md: wherever your instructions say report.md, use $out, also in the command that runs your check script. Save it before you finish."
+  echo "PROMPT: $(prompt_for "$step") Save your report to $out in the project root and run your check script before you finish."
   if [ "$(get tries)" -gt 0 ]; then
     echo "RETRY: this agent's last try failed its check. Add this to the prompt: Your last try failed the check. Read $(get last_check), fix what it lists, and save $out again."
   fi
@@ -167,7 +167,7 @@ if [ "$cmd" = "start" ]; then
   # Keep run files and reports out of git, without touching .gitignore.
   exclude="$(git rev-parse --git-path info/exclude)"
   mkdir -p "$(dirname "$exclude")"
-  for line in ".runs/" "/report.md"; do
+  for line in ".runs/" "/agent-report.md"; do
     grep -qxF "$line" "$exclude" 2>/dev/null || echo "$line" >> "$exclude"
   done
 
@@ -252,11 +252,9 @@ fail_try() {
   exit 0
 }
 
-# Claude Code refuses to let a subagent write a file named like a report, so
-# the report goes in a plainly named file under .runs/.
-out=".runs/$id/step.txt"
+out="agent-report.md"
 if [ ! -f "$out" ]; then
-  echo "FAIL: $title didn't save its report to $out." > "$check_out"
+  echo "FAIL: $title didn't save $out in the project root." > "$check_out"
   fail_try
 fi
 cp "$out" "$saved"

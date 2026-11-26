@@ -46,7 +46,7 @@ python3 -m unittest discover -s tests -t .                              # Unit t
 ruff check --fix $(.agents/skills/lint-agent/tools/lint-scope.sh main)                    # Safe autofixes, scoped files only
 ruff format $(.agents/skills/lint-agent/tools/lint-scope.sh main)                         # Formatting, scoped files only
 ruff check --output-format concise $(.agents/skills/lint-agent/tools/lint-scope.sh main)  # What's left, with file:line
-.agents/skills/lint-agent/check.sh report.md main                             # Required: run it last
+.agents/skills/lint-agent/check.sh agent-report.md main                             # Required: run it last
 ```
 
 If the task names a folder instead of a base branch, put the folder in place
@@ -61,7 +61,7 @@ the table below, or broke a unit test.
 ## Tools
 
 - Allowed: read and search files, `grep -n`, the verify commands above, edit
-  files in scope, write `report.md`, and read-only git (`git diff`,
+  files in scope, write `agent-report.md`, and read-only git (`git diff`,
   `git status`, `git log`, `git show`).
 - Not allowed: editing files outside scope, deleting or renaming files,
   `--unsafe-fixes`, editing lint config or hooks, package installs, web
@@ -151,14 +151,14 @@ Do every step, in order. Each step fills a part of the report.
    line of the output. If a test passed before and fails now, undo the hand
    fix that broke it, list that error under "Needs approval" instead, and run
    the tests again.
-10. Save your report to `report.md` and run
-    `.agents/skills/lint-agent/check.sh report.md main`. Fix what it reports and
+10. Save your report to `agent-report.md` and run
+    `.agents/skills/lint-agent/check.sh agent-report.md main`. Fix what it reports and
     rerun until it passes. Then put its last line under "Verify" and save
     again.
 
 ## Report
 
-End by printing `report.md` exactly as saved, with no summary in its place
+End by printing `agent-report.md` exactly as saved, with no summary in its place
 and nothing after it. Always include every heading, even when one is empty.
 Write "None" under a heading only after you did the step that fills it.
 

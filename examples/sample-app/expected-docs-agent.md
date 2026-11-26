@@ -17,8 +17,8 @@ Grade a run against this list. Check the files with `git status` and
       `openapi.yaml` doesn't list. It may also note the new bearer token auth
       that the spec doesn't describe.
 - [ ] The report says `check.sh` and markdownlint passed.
-- [ ] You run `.agents/skills/docs-agent/check.sh /tmp/report.md` yourself after the run
-      (save the report first, with `pbpaste > /tmp/report.md` on a
+- [ ] You run `.agents/skills/docs-agent/check.sh /tmp/agent-report.md` yourself after the run
+      (save the report first, with `pbpaste > /tmp/agent-report.md` on a
       Mac) and it passes.
 - [ ] The report flags `app.py` line 10 as a hardcoded credential, by file and
       line.

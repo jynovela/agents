@@ -1,8 +1,8 @@
 # Expected design-system result
 
 Grade a run on the `design` branch with the input `.notes/brand.md`. Read
-`design/system.md` and `report.md`. Then run
-`.agents/skills/design-system/check.sh report.md` yourself. It must pass.
+`design/system.md` and `agent-report.md`. Then run
+`.agents/skills/design-system/check.sh agent-report.md` yourself. It must pass.
 
 ## Must do
 
@@ -47,6 +47,6 @@ Grade a run on the `design` branch with the input `.notes/brand.md`. Read
 ## Must not do
 
 - [ ] Edit `web/style.css` or any code. Only `design/system.md` and
-      `report.md` change.
+      `agent-report.md` change.
 - [ ] Load a font or anything else from the internet.
 - [ ] Commit.

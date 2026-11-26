@@ -45,7 +45,7 @@ agent() {
   if [ "$change" = "yes" ]; then
     echo "$RANDOM" >> "$proj/work.txt"
   fi
-  printf '%s\n' "$report" > "$proj/.runs/$(cat "$proj/.runs/current")/step.txt"
+  printf '%s\n' "$report" > "$proj/agent-report.md"
   t done
 }
 

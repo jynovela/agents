@@ -2,7 +2,7 @@
 # Deterministic checks for a Build-Agent run. Run from the repo root after the
 # agent finishes, before anything is committed.
 #
-# Usage: .agents/skills/build-agent/check.sh report.md
+# Usage: .agents/skills/build-agent/check.sh agent-report.md
 #
 # Exit code 0 means all checks passed. Any failure prints FAIL and exits 1.
 
@@ -24,7 +24,7 @@ STEP_OWNERS='Lint code|Lint-Agent'
 
 report="${1:-}"
 if [ -z "$report" ]; then
-  echo "Usage: .agents/skills/build-agent/check.sh report.md"
+  echo "Usage: .agents/skills/build-agent/check.sh agent-report.md"
   exit 1
 fi
 

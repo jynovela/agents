@@ -42,8 +42,8 @@ don't do it.
 ## Verify commands
 
 ```sh
-.agents/skills/planner-agent/check.sh report.md           # Required: run it after writing the drafts
-.agents/skills/planner-agent/check.sh report.md created   # Linear mode only: run it again after creating the tickets
+.agents/skills/planner-agent/check.sh agent-report.md           # Required: run it after writing the drafts
+.agents/skills/planner-agent/check.sh agent-report.md created   # Linear mode only: run it again after creating the tickets
 ```
 
 The script checks the drafts and the report. It must pass before anything
@@ -53,7 +53,7 @@ goes to Linear.
 
 - Allowed: read and search files in the folders named in "Planner reads code
   in", run `grep -n`, create and edit files in `.tickets/drafts/`, write
-  `report.md`, run the verify commands, and read-only git (`git log`,
+  `agent-report.md`, run the verify commands, and read-only git (`git log`,
   `git show`, `git ls-files`).
 - Linear mode only: `.agents/skills/planner-agent/tools/planner-issue.sh`, `list_teams`, `get_team`, `list_projects`,
   `list_issue_statuses`, `list_issue_labels`, `create_issue_label` (only to
@@ -227,7 +227,7 @@ Put these under "Needs approval" in the report, and don't do them:
 ### Never
 
 - Edit source code, tests, docs, or any file outside `.tickets/drafts/` and
-  `report.md`.
+  `agent-report.md`.
 - Put a ticket in any state other than Backlog. Never move a ticket to To-do
   or In Progress.
 - Edit, close, comment on, or relabel an existing ticket. Never pass an
@@ -270,8 +270,8 @@ Do every step, in order. Each step fills a part of the report.
 6. Under "Open questions", collect every open question from the drafts,
    with its draft number.
 7. Write `Created: Pending` and `Verify: planner-agent.sh passed (drafts)`,
-   and save your report to `report.md`. Run
-   `.agents/skills/planner-agent/check.sh report.md`. Fix what it reports and rerun
+   and save your report to `agent-report.md`. Run
+   `.agents/skills/planner-agent/check.sh agent-report.md`. Fix what it reports and rerun
    until its last line says "checks: passed". The Verify line is only true
    once it does.
 8. Local mode: replace `Pending` with `Local mode, drafts only` and go to
@@ -285,8 +285,8 @@ Do every step, in order. Each step fills a part of the report.
       title matches an open issue exactly is a duplicate: don't create it.
    4. Replace `Created: Pending` with an empty `Created:` heading. Then, for
       each draft in order, one at a time:
-      1. Run `.agents/skills/planner-agent/tools/planner-issue.sh <n> report.md`, like
-         `.agents/skills/planner-agent/tools/planner-issue.sh 3 report.md`. It prints the title,
+      1. Run `.agents/skills/planner-agent/tools/planner-issue.sh <n> agent-report.md`, like
+         `.agents/skills/planner-agent/tools/planner-issue.sh 3 agent-report.md`. It prints the title,
          the blocked-by IDs, and the description with every `DRAFT-<n>`
          already replaced by its Linear ID. If it prints ERROR, create the
          draft it names first.
@@ -299,13 +299,13 @@ Do every step, in order. Each step fills a part of the report.
          `- DRAFT-3 -> exists: ENG-12 (not created)` instead.
    5. Check that every draft has a line under "Created".
    6. Save the report and run
-      `.agents/skills/planner-agent/check.sh report.md created`. Fix the report
+      `.agents/skills/planner-agent/check.sh agent-report.md created`. Fix the report
       until it passes. Put its last line under "Verify".
 9. Write your report.
 
 ## Report
 
-End by printing `report.md` exactly as saved, with no table or summary in its
+End by printing `agent-report.md` exactly as saved, with no table or summary in its
 place, and nothing after it. Always include all nine headings, even when one
 is empty. Write "None" under a heading only after you did the step that fills
 it.

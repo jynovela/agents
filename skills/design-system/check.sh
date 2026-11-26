@@ -2,7 +2,7 @@
 # Deterministic checks for a design-system skill run. Run from the repo root
 # after the agent finishes.
 #
-# Usage: .agents/skills/design-system/check.sh report.md
+# Usage: .agents/skills/design-system/check.sh agent-report.md
 #
 # Exit code 0 means all checks passed. Any failure prints FAIL and exits 1.
 # Secret values are never printed.
@@ -12,7 +12,7 @@ set -uo pipefail
 
 report="${1:-}"
 if [ -z "$report" ]; then
-  echo "Usage: $0 report.md"
+  echo "Usage: $0 agent-report.md"
   exit 2
 fi
 

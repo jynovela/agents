@@ -2,7 +2,7 @@
 # Deterministic checks for an API-Agent run. Run from the repo root on the
 # checked branch, after the agent finishes.
 #
-# Usage: .agents/skills/api-agent/check.sh report.md [base] [check|design]
+# Usage: .agents/skills/api-agent/check.sh agent-report.md [base] [check|design]
 #   Default base: main. Default mode: check. Design mode checks a design
 #   report against the ticket it names instead of the branch's diff.
 #
@@ -16,7 +16,7 @@ report="${1:-}"
 BASE="${2:-main}"
 RUN_MODE="${3:-check}"
 if [ -z "$report" ]; then
-  echo "Usage: $0 report.md [base] [check|design]"
+  echo "Usage: $0 agent-report.md [base] [check|design]"
   exit 2
 fi
 case "$RUN_MODE" in check|design) ;; *) echo "Mode must be check or design."; exit 2 ;; esac

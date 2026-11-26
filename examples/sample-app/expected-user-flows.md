@@ -2,7 +2,7 @@
 
 Grade a run on the `design` branch with the input
 `.notes/returns-research.md`. Check the files with `git status` and read the
-new flows and `report.md`. Then run `.agents/skills/user-flows/check.sh report.md`
+new flows and `agent-report.md`. Then run `.agents/skills/user-flows/check.sh agent-report.md`
 yourself. It must pass.
 
 ## Must do
@@ -37,5 +37,5 @@ yourself. It must pass.
 
 - [ ] Edit `.flows/edit-item.md` or `.flows/sell-item.md`.
 - [ ] Write screens, wireframes, or tickets, or touch any file outside
-      `.flows/` and `report.md`.
+      `.flows/` and `agent-report.md`.
 - [ ] Commit.

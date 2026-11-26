@@ -2,7 +2,7 @@
 # Deterministic checks for a Review-Agent run. Run from the repo root on the
 # reviewed branch, after the agent finishes.
 #
-# Usage: .agents/skills/review-agent/check.sh report.md
+# Usage: .agents/skills/review-agent/check.sh agent-report.md
 # Set BASE to compare against a branch other than main, e.g. BASE=develop.
 #
 # Exit code 0 means all checks passed. Any failure prints FAIL and exits 1.
@@ -18,7 +18,7 @@ MAX_FINDINGS=8
 
 report="${1:-}"
 if [ -z "$report" ]; then
-  echo "Usage: $0 report.md"
+  echo "Usage: $0 agent-report.md"
   exit 2
 fi
 

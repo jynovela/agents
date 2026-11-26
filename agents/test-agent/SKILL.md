@@ -30,7 +30,7 @@ The task says which mode to use. If it doesn't, ask.
 <!-- TAILOR: Set ALLOWED, UNIT_CMD, ACCEPT_CMD, and the DEV_ commands in .agents/skills/test-agent/check.sh. -->
 
 ```sh
-.agents/skills/test-agent/check.sh report.md   # Required: run it last, with your report saved to report.md
+.agents/skills/test-agent/check.sh agent-report.md   # Required: run it last, with your report saved to agent-report.md
 ```
 
 The script starts the app if it isn't running, runs the unit and acceptance
@@ -40,7 +40,7 @@ pass. Tests may still fail, as long as the report says so.
 ## Tools
 
 - Allowed: read files, search files, create and edit test files, write
-  `report.md`, run the commands in the **Dev environment** section of
+  `agent-report.md`, run the commands in the **Dev environment** section of
   `AGENTS.md`, run the verify command, read the ticket with the tool named in
   **Tickets** (read-only), read-only git (`git diff`, `git log`, `git show`,
   `git ls-files`), and `git restore <file>` to undo your own change.
@@ -126,8 +126,8 @@ Do every step, in order. Each step fills a part of the report.
    write `result: PASS (already met)`. If not, your test is wrong: fix it.
    Under "Failing tests", list each failing new test as "not built yet", not
    as a source bug.
-6. Save your report to `report.md` and run
-   `.agents/skills/test-agent/check.sh report.md`. Fix what it reports and rerun
+6. Save your report to `agent-report.md` and run
+   `.agents/skills/test-agent/check.sh agent-report.md`. Fix what it reports and rerun
    until it passes. Then put its last line under "Verify" and save again.
 7. Stop the app with the stop command. Write your report.
 
@@ -155,8 +155,8 @@ Do every step, in order. Each step fills a part of the report.
    return output. List them under "Added", and list every mock under "Mocks".
    If a function needs 3 or more mocks to test, write "hard to test" and its
    name under "Mocks".
-8. Save your report to `report.md` and run
-   `.agents/skills/test-agent/check.sh report.md`. Fix what it reports and rerun
+8. Save your report to `agent-report.md` and run
+   `.agents/skills/test-agent/check.sh agent-report.md`. Fix what it reports and rerun
    until it passes. Then put its last line under "Verify" and save again.
 9. Stop the app with the stop command. Write your report.
 
@@ -165,7 +165,7 @@ under "Verify", write unit tests only, and say that the criteria are untested.
 
 ## Report
 
-End by printing `report.md` exactly as saved, with no table or summary in its
+End by printing `agent-report.md` exactly as saved, with no table or summary in its
 place, and nothing after it. Always include all eight headings,
 even when one is empty. Write "None" under a heading only after you did the
 step that fills it. Use the exact `test:` and `result:` format under

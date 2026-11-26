@@ -16,7 +16,7 @@ set -uo pipefail
 . "$(dirname "$0")/../../shared/lib.sh"
 
 # TAILOR: files the Test-Agent may change (extended regex on repo-relative paths).
-ALLOWED='^report\.md$|^(.*/)?(tests?|__tests__|e2e|spec|acceptance)/.*$|^(.*/)?test_[^/]*\.py$|^(.*/)?[^/]*_test\.(py|go)$|^(.*/)?[^/]*\.(test|spec)\.[jt]sx?$'
+ALLOWED='^agent-report\.md$|^(.*/)?(tests?|__tests__|e2e|spec|acceptance)/.*$|^(.*/)?test_[^/]*\.py$|^(.*/)?[^/]*_test\.(py|go)$|^(.*/)?[^/]*\.(test|spec)\.[jt]sx?$'
 
 # TAILOR: acceptance test files (extended regex). Mocks aren't allowed in them.
 ACCEPT_PATH='^(.*/)?(acceptance|e2e)/.*$'
@@ -47,7 +47,7 @@ failing_in() { echo "$1" | grep -Eo "$FAIL_PATTERN" | sed -E "s/$FAIL_PATTERN/\2
 check_scope "$ALLOWED"
 
 changed="$(changed_files)"
-tests_changed="$(echo "$changed" | grep -E "$ALLOWED" | grep -v '^report\.md$' || true)"
+tests_changed="$(echo "$changed" | grep -E "$ALLOWED" | grep -v '^agent-report\.md$' || true)"
 
 echo "== Deleted test files"
 deleted="$(git diff --name-only --diff-filter=D HEAD | grep -E "$ALLOWED" || true)"
