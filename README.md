@@ -247,4 +247,4 @@ loads only one project file, and `.hermes.md` takes priority over `AGENTS.md`.
 | Build-Agent | Ready |
 | Security-Agent | Ready |
 | Review-Agent | Ready |
-| Implementer-Agent | Built, not yet tested on a small model |
+| Implementer-Agent | Ready |

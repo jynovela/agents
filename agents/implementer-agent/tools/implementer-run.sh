@@ -10,6 +10,8 @@
 #   files     Print each file the agent changed, with lines added and removed.
 #   handoffs  Print what the change hands to Lint, API, Docs, Security, and
 #             Review, with the lines that make each one needed.
+#   lintfixed Print each lint error that was in a changed file at HEAD and is
+#             gone now. The check script uses it: fixing lint is Lint-Agent's.
 #   raw       Like tests, but prints only the result lines and saves no log.
 #             The check script uses it.
 #   stop      Stop the app and wait until it no longer answers.
@@ -218,12 +220,39 @@ cmd_handoffs() {
   echo "HANDOFFS_DONE"
 }
 
+# Counts lint errors per rule code in text on stdin, as "<code> <count>".
+lint_counts() {
+  grep -Eo ':[0-9]+:[0-9]+: [A-Z]+[0-9]+' | sed -E 's/.* //' | sort | uniq -c | awk '{ print $2, $1 }'
+}
+
+cmd_lintfixed() {
+  local f tool before after code n now
+  tool="${LINT_CMD%% *}"
+  if [ -z "$LINT_CMD" ] || ! command -v "$tool" >/dev/null 2>&1; then
+    echo "LINTFIXED_SKIPPED: no lint command or $tool not installed"
+    return
+  fi
+  for f in $(code_files | grep -E "$LINT_FILES" || true); do
+    [ -f "$f" ] || continue
+    git cat-file -e "HEAD:$f" 2>/dev/null || continue
+    before="$(git show "HEAD:$f" | eval "$LINT_CMD --stdin-filename \"$f\" -" 2>/dev/null | lint_counts)"
+    after="$(eval "$LINT_CMD" "$f" 2>/dev/null | lint_counts)"
+    while read -r code n; do
+      [ -n "$code" ] || continue
+      now="$(echo "$after" | awk -v c="$code" '$1 == c { print $2 }')"
+      [ "${now:-0}" -lt "$n" ] && echo "LINT_FIXED $f $code $n -> ${now:-0}"
+    done <<< "$before"
+  done
+  echo "LINTFIXED_DONE"
+}
+
 case "${1:-}" in
   tests) cmd_tests ;;
   stop) stop_app ;;
   raw) run_all | grep -E '^(STOP_FAILED|START_FAILED|ACCEPT_RESULT|UNIT_SUMMARY|UNIT_FAIL|RUN_DONE)' ;;
   files) cmd_files ;;
   handoffs) cmd_handoffs ;;
+  lintfixed) cmd_lintfixed ;;
   hash) code_hash ;;
   *)
     echo "Usage: .agents/skills/implementer-agent/tools/implementer-run.sh tests|files|handoffs|raw|hash" >&2
